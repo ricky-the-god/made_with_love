@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(claude mcp add playwright npx \"@playwright/mcp@latest\")",
+      "Bash(npm run dev:*)",
+      "mcp__playwright__browser_navigate",
+      "Bash(ren \"next-shadcn-admin-dashboard\" \"ultimate_planner\")"
+    ]
+  }
+}
