@@ -14,7 +14,7 @@ export default async function PublicFamilyTreePage({ params }: { params: Promise
             <ArrowLeft className="size-4" />
           </a>
         </Button>
-        <h1 className="font-semibold text-xl text-muted-foreground">Discover</h1>
+        <h1 className="font-semibold text-muted-foreground text-xl">Discover</h1>
       </div>
 
       <div className="mb-6 rounded-2xl border border-amber-100 bg-amber-50/30 p-6 dark:border-amber-900/20 dark:bg-amber-950/10">
@@ -29,7 +29,7 @@ export default async function PublicFamilyTreePage({ params }: { params: Promise
 
       <div>
         <h3 className="mb-4 font-semibold text-lg">Public Recipes</h3>
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-amber-200 py-12 dark:border-amber-900/30">
+        <div className="flex flex-col items-center justify-center rounded-xl border border-amber-200 border-dashed py-12 dark:border-amber-900/30">
           <BookOpen className="mb-3 size-10 text-amber-300" />
           <p className="text-muted-foreground text-sm">No public recipes shared yet.</p>
         </div>

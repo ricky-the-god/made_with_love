@@ -35,9 +35,11 @@ type FormValues = z.infer<typeof schema>;
 
 interface NewRecipeFormProps {
   members: FamilyMember[];
+  preselectedMemberId?: string;
+  preselectedMemberName?: string;
 }
 
-export function NewRecipeForm({ members }: NewRecipeFormProps) {
+export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberName }: NewRecipeFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -48,6 +50,9 @@ export function NewRecipeForm({ members }: NewRecipeFormProps) {
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      member_id: preselectedMemberId ?? "",
+    },
   });
 
   function onSubmit(values: FormValues) {
@@ -69,7 +74,11 @@ export function NewRecipeForm({ members }: NewRecipeFormProps) {
         return;
       }
 
-      router.push(`/dashboard/recipes/${result.recipe.id}`);
+      if (preselectedMemberId) {
+        router.push(`/dashboard/tree/member/${preselectedMemberId}`);
+      } else {
+        router.push(`/dashboard/recipes/${result.recipe.id}`);
+      }
     });
   }
 
@@ -103,23 +112,34 @@ export function NewRecipeForm({ members }: NewRecipeFormProps) {
 
               <div className="grid gap-5 sm:grid-cols-2">
                 <div className="flex flex-col gap-2">
-                  <Label htmlFor="member">Family member</Label>
-                  {members.length > 0 ? (
-                    <Select onValueChange={(v) => setValue("member_id", v)}>
-                      <SelectTrigger id="member">
-                        <SelectValue placeholder="Who is this recipe from?" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {members.map((m) => (
-                          <SelectItem key={m.id} value={m.id}>
-                            {m.name}
-                            {m.relation ? ` (${m.relation})` : ""}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                  {preselectedMemberId ? (
+                    <>
+                      <Label>Family member</Label>
+                      <div className="flex items-center gap-2 rounded-md border border-input bg-muted/30 px-3 py-2">
+                        <span className="text-sm">{preselectedMemberName}</span>
+                      </div>
+                    </>
                   ) : (
-                    <Input disabled placeholder="Add family members first" />
+                    <>
+                      <Label htmlFor="member">Family member</Label>
+                      {members.length > 0 ? (
+                        <Select onValueChange={(v) => setValue("member_id", v)}>
+                          <SelectTrigger id="member">
+                            <SelectValue placeholder="Who is this recipe from?" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {members.map((m) => (
+                              <SelectItem key={m.id} value={m.id}>
+                                {m.name}
+                                {m.relation ? ` (${m.relation})` : ""}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Input disabled placeholder="Add family members first" />
+                      )}
+                    </>
                   )}
                 </div>
                 <div className="flex flex-col gap-2">
@@ -195,7 +215,7 @@ export function NewRecipeForm({ members }: NewRecipeFormProps) {
           </CardHeader>
           <CardContent>
             <div className="flex flex-col gap-5">
-              <div className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-amber-200 bg-amber-50/50 py-12 transition-colors hover:bg-amber-50 dark:border-amber-900/30 dark:bg-amber-950/10">
+              <div className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-amber-200 border-dashed bg-amber-50/50 py-12 transition-colors hover:bg-amber-50 dark:border-amber-900/30 dark:bg-amber-950/10">
                 <ImageUp className="size-10 text-amber-400" />
                 <div className="text-center">
                   <p className="font-medium">Drop your image here or click to browse</p>

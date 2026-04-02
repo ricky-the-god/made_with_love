@@ -141,12 +141,12 @@ export function CookingSession({ recipeId, recipeTitle, steps, ingredients }: Co
             <ChefHat className="size-4" />
             <span>Step {currentStep + 1}</span>
           </div>
-          <p className="text-lg leading-relaxed text-foreground">{steps[currentStep]}</p>
+          <p className="text-foreground text-lg leading-relaxed">{steps[currentStep]}</p>
         </div>
       )}
 
       {/* Animated guide placeholder */}
-      <div className="flex items-center gap-3 rounded-xl border border-dashed border-amber-200 px-4 py-3 text-sm text-muted-foreground dark:border-amber-900/30">
+      <div className="flex items-center gap-3 rounded-xl border border-amber-200 border-dashed px-4 py-3 text-muted-foreground text-sm dark:border-amber-900/30">
         <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-xl dark:bg-amber-900/30">
           👵
         </div>

@@ -1,15 +1,45 @@
-import { Compass, Search } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 
 const CULTURAL_COLLECTIONS = [
-  { region: "Southeast Asia", emoji: "🌿", description: "Vietnamese, Filipino, Thai, Indonesian family recipes" },
-  { region: "Mediterranean", emoji: "🫒", description: "Italian, Greek, Lebanese, Spanish culinary traditions" },
-  { region: "West Africa", emoji: "🌍", description: "Nigerian, Ghanaian, Senegalese family classics" },
-  { region: "Latin America", emoji: "🌶️", description: "Mexican, Colombian, Peruvian, Brazilian family dishes" },
+  {
+    region: "Southeast Asia",
+    emoji: "🌿",
+    description: "The flavors that Southeast Asian families carry across borders and generations.",
+  },
+  {
+    region: "Mediterranean",
+    emoji: "🫒",
+    description: "Slow-cooked, shared, and passed down through sun-drenched kitchens.",
+  },
+  {
+    region: "West Africa",
+    emoji: "🌍",
+    description: "Bold, nourishing, and rooted in community — food as identity and love.",
+  },
+  {
+    region: "Latin America",
+    emoji: "🌶️",
+    description: "From abuelas' tamales to Sunday asados — the recipes that hold families together.",
+  },
 ];
+
+function FeaturedStoryCard() {
+  return (
+    <div className="rounded-2xl border border-amber-100 bg-amber-50/40 p-6 dark:border-amber-900/20 dark:bg-amber-950/10">
+      <p className="mb-3 font-medium text-amber-700 text-xs uppercase tracking-wider dark:text-amber-400">
+        Featured story
+      </p>
+      <h2 className="mb-2 font-semibold text-foreground text-lg leading-snug">
+        "She never measured anything. That was the point."
+      </h2>
+      <p className="mb-4 text-muted-foreground text-sm leading-relaxed">
+        A family in Hanoi passed down their phở recipe entirely through memory — no quantities, no timers. Their
+        granddaughter is preserving it here, one estimated cup at a time.
+      </p>
+      <span className="font-medium text-amber-700 text-xs dark:text-amber-400">Vietnamese · Family story</span>
+    </div>
+  );
+}
 
 export default function DiscoverPage() {
   return (
@@ -21,15 +51,12 @@ export default function DiscoverPage() {
         </p>
       </div>
 
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input className="pl-9" placeholder="Search by country, culture, ingredient, or family name..." />
-      </div>
+      {/* Featured editorial story */}
+      <FeaturedStoryCard />
 
-      {/* Featured collections */}
+      {/* Food traditions grid */}
       <div>
-        <h2 className="mb-4 font-semibold text-lg">Cultural Collections</h2>
+        <h2 className="mb-4 font-semibold text-lg">Food Traditions</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           {CULTURAL_COLLECTIONS.map((c) => (
             <Card
@@ -51,12 +78,16 @@ export default function DiscoverPage() {
       {/* Public family trees */}
       <div>
         <h2 className="mb-4 font-semibold text-lg">Public Family Trees</h2>
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-amber-200 bg-amber-50/50 py-16 dark:border-amber-900/30 dark:bg-amber-950/10">
-          <Compass className="mb-3 size-10 text-amber-300" />
-          <p className="font-medium">No public families yet</p>
-          <p className="mt-1 max-w-sm text-center text-muted-foreground text-sm">
-            When families choose to share their recipes, their stories will appear here.
+        <div className="flex flex-col items-center justify-center rounded-xl border border-amber-200 border-dashed py-10 dark:border-amber-900/30">
+          <p className="max-w-xs text-center text-muted-foreground text-sm">
+            No public family trees yet. When families choose to share their stories, they'll appear here.
           </p>
+          <a
+            href="/dashboard/profile/family"
+            className="mt-4 text-amber-700 text-sm hover:underline dark:text-amber-400"
+          >
+            Share my family's recipes →
+          </a>
         </div>
       </div>
     </div>

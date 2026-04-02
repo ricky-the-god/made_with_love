@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 
 import { BookOpen, Compass, Heart, TreeDeciduous, User } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
@@ -21,7 +20,7 @@ import { usePreferencesStore } from "@/stores/preferences/preferences-provider";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 
-const NAV_ICONS = { TreeDeciduous, BookOpen, Compass, Heart, User };
+const _NAV_ICONS = { TreeDeciduous, BookOpen, Compass, Heart, User };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { sidebarVariant, sidebarCollapsible, isSynced } = usePreferencesStore(

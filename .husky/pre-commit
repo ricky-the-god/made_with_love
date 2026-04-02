@@ -1,3 +1,5 @@
+#!/bin/sh
+export PATH="/c/Program Files/nodejs:$PATH"
 npm run generate:presets
 git add src/lib/preferences/theme.ts
 npx lint-staged

@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient, createClient } from "@/lib/supabase/server";
 
 // -------------------------------------------------------
 // GET CURRENT USER'S PROFILE
@@ -31,11 +31,11 @@ export async function createFamily(familyName: string) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
   if (!user) return { error: "Not authenticated" };
 
-  // Create the family
-  const { data: family, error: familyError } = await supabase
+  const admin = createAdminClient();
+
+  const { data: family, error: familyError } = await admin
     .from("families")
     .insert({ family_name: familyName.trim(), owner_id: user.id })
     .select()
@@ -43,8 +43,7 @@ export async function createFamily(familyName: string) {
 
   if (familyError) return { error: familyError.message };
 
-  // Link the user's profile to the family
-  const { error: profileError } = await supabase
+  const { error: profileError } = await admin
     .from("profiles")
     .update({ family_id: family.id, role: "owner" })
     .eq("id", user.id);

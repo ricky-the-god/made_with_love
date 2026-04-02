@@ -1,16 +1,22 @@
-import { ArrowRight, LogOut, Settings, Users } from "lucide-react";
+import { ArrowRight, LogOut, Users } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { signOut } from "@/server/auth-actions";
+import { getUser, signOut } from "@/server/auth-actions";
 
 import { ThemeSwitcher } from "../_components/sidebar/theme-switcher";
 
-export default function ProfilePage() {
+export default async function ProfilePage() {
+  const user = await getUser();
+
+  const email = user?.email ?? null;
+  const displayName = email ? email.split("@")[0] : "My Account";
+  const initials = email ? email[0].toUpperCase() : "M";
+
   return (
-    <div className="mx-auto max-w-2xl flex flex-col gap-6">
+    <div className="mx-auto flex max-w-2xl flex-col gap-6">
       <h1 className="font-semibold text-2xl">Profile</h1>
 
       {/* User info */}
@@ -19,12 +25,12 @@ export default function ProfilePage() {
           <div className="flex items-center gap-4">
             <Avatar className="size-16 rounded-xl">
               <AvatarFallback className="rounded-xl bg-amber-100 text-2xl text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
-                Me
+                {initials}
               </AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-semibold text-lg">My Account</p>
-              <p className="text-muted-foreground text-sm">Family member</p>
+              <p className="font-semibold text-lg">{displayName}</p>
+              <p className="text-muted-foreground text-sm">{email ?? "My Account"}</p>
             </div>
           </div>
         </CardContent>

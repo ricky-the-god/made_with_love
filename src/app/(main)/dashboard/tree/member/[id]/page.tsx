@@ -5,7 +5,6 @@ import { ArrowLeft, BookOpen, Clock, Edit, Plus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { getInitials } from "@/lib/utils";
 import { getFamilyMember } from "@/server/family-actions";
@@ -21,6 +20,7 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
   }
 
   const initials = getInitials(member.name);
+  const firstName = member.name.split(" ")[0];
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -30,7 +30,7 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
             <ArrowLeft className="size-4" />
           </a>
         </Button>
-        <h1 className="font-semibold text-xl text-muted-foreground">Family Tree</h1>
+        <h1 className="font-semibold text-foreground text-xl">{member.name}&apos;s Cookbook</h1>
       </div>
 
       {/* Profile header */}
@@ -76,7 +76,7 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
           {member.bio ? (
             <p className="mt-3 text-muted-foreground text-sm leading-relaxed">{member.bio}</p>
           ) : (
-            <p className="mt-3 text-muted-foreground text-sm leading-relaxed italic">
+            <p className="mt-3 text-muted-foreground text-sm italic leading-relaxed">
               No biography added yet. Share who this person is, their cooking style, and what makes their food so
               meaningful.
             </p>
@@ -90,15 +90,9 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
           asChild
           className="bg-amber-700 text-white hover:bg-amber-800 dark:bg-amber-600 dark:hover:bg-amber-700"
         >
-          <a href="/dashboard/recipes/new">
+          <a href={`/dashboard/recipes/new?member=${member.id}`}>
             <Plus className="size-4" />
-            Add Recipe
-          </a>
-        </Button>
-        <Button variant="outline" asChild>
-          <a href="/dashboard/recipes">
-            <BookOpen className="size-4" />
-            All Recipes
+            Add recipe for {firstName}
           </a>
         </Button>
       </div>
@@ -107,22 +101,24 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
 
       {/* Recipes */}
       <div>
-        <h3 className="mb-4 font-semibold text-lg">
-          Recipe Book
-          {recipes.length > 0 && (
-            <span className="ml-2 font-normal text-muted-foreground text-sm">({recipes.length})</span>
-          )}
-        </h3>
+        <div className="mb-4 flex items-baseline justify-between gap-4">
+          <h3 className="font-semibold text-lg">{firstName}&apos;s Recipes</h3>
+          <p className="text-muted-foreground text-sm">
+            {recipes.length} {recipes.length === 1 ? "recipe" : "recipes"} preserved
+          </p>
+        </div>
 
         {recipes.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-amber-200 py-12 dark:border-amber-900/30">
+          <div className="flex flex-col items-center justify-center rounded-xl border border-amber-200 border-dashed py-12 dark:border-amber-900/30">
             <BookOpen className="mb-3 size-10 text-amber-300" />
             <p className="font-medium">No recipes yet</p>
-            <p className="mt-1 text-muted-foreground text-sm">Add the first recipe to their collection.</p>
+            <p className="mt-1 text-muted-foreground text-sm">
+              Be the first to preserve one of {firstName}&apos;s dishes.
+            </p>
             <Button asChild className="mt-4 bg-amber-700 text-white hover:bg-amber-800">
-              <a href="/dashboard/recipes/new">
+              <a href={`/dashboard/recipes/new?member=${member.id}`}>
                 <Plus className="size-4" />
-                Add Recipe
+                Add recipe for {firstName}
               </a>
             </Button>
           </div>

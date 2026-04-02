@@ -21,7 +21,7 @@ function RecipeCard({ recipe }: { recipe: RecipeWithMember }) {
   return (
     <a
       href={`/dashboard/recipes/${recipe.id}`}
-      className="group flex flex-col rounded-2xl border border-amber-100 bg-amber-50/30 transition-colors hover:border-amber-300 hover:bg-amber-50/60 dark:border-amber-900/20 dark:bg-amber-950/10 dark:hover:border-amber-800/40 dark:hover:bg-amber-950/20 overflow-hidden"
+      className="group flex flex-col overflow-hidden rounded-2xl border border-amber-100 bg-amber-50/30 transition-colors hover:border-amber-300 hover:bg-amber-50/60 dark:border-amber-900/20 dark:bg-amber-950/10 dark:hover:border-amber-800/40 dark:hover:bg-amber-950/20"
     >
       <div className="aspect-[3/1] bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900/20 dark:to-amber-800/20" />
 
@@ -65,7 +65,7 @@ export function FavoritesTabs({ personal, family }: FavoritesTabsProps) {
 
       <TabsContent value="personal" className="mt-6">
         {personal.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-amber-200 bg-amber-50/50 py-20 dark:border-amber-900/30 dark:bg-amber-950/10">
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-amber-200 border-dashed bg-amber-50/50 py-20 dark:border-amber-900/30 dark:bg-amber-950/10">
             <Heart className="mb-3 size-10 text-amber-300" />
             <p className="font-medium">No personal favorites yet</p>
             <p className="mt-1 max-w-xs text-center text-muted-foreground text-sm">
@@ -83,7 +83,7 @@ export function FavoritesTabs({ personal, family }: FavoritesTabsProps) {
 
       <TabsContent value="family" className="mt-6">
         {family.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-amber-200 bg-amber-50/50 py-20 dark:border-amber-900/30 dark:bg-amber-950/10">
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-amber-200 border-dashed bg-amber-50/50 py-20 dark:border-amber-900/30 dark:bg-amber-950/10">
             <Heart className="mb-3 size-10 fill-amber-300 text-amber-300" />
             <p className="font-medium">No family favorites yet</p>
             <p className="mt-1 max-w-xs text-center text-muted-foreground text-sm">

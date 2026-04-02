@@ -9,7 +9,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-stone-950">
       {/* ─── Nav ─────────────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-50 border-b border-amber-100/80 bg-white/90 backdrop-blur-sm dark:border-stone-800/60 dark:bg-stone-950/90">
+      <header className="sticky top-0 z-50 border-amber-100/80 border-b bg-white/90 backdrop-blur-sm dark:border-stone-800/60 dark:bg-stone-950/90">
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           {/* Wordmark */}
           <span
@@ -58,7 +58,7 @@ export default function LandingPage() {
           <div className="relative mx-auto max-w-3xl text-center">
             {/* Eyebrow */}
             <p
-              className="mb-6 text-sm font-medium uppercase tracking-widest text-amber-700 dark:text-amber-400"
+              className="mb-6 font-medium text-amber-700 text-sm uppercase tracking-widest dark:text-amber-400"
               style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
             >
               A living family archive
@@ -66,7 +66,7 @@ export default function LandingPage() {
 
             {/* Headline */}
             <h1
-              className="mb-6 text-5xl leading-[1.12] font-normal text-stone-800 sm:text-6xl dark:text-amber-50"
+              className="mb-6 font-normal text-5xl text-stone-800 leading-[1.12] sm:text-6xl dark:text-amber-50"
               style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
             >
               Every family has recipes{" "}
@@ -75,7 +75,7 @@ export default function LandingPage() {
 
             {/* Subheadline */}
             <p
-              className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-stone-500 dark:text-stone-400"
+              className="mx-auto mb-10 max-w-2xl text-lg text-stone-500 leading-relaxed dark:text-stone-400"
               style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
             >
               Made with Love is for immigrant families, diaspora communities, and anyone who has lost someone and wants
@@ -99,7 +99,7 @@ export default function LandingPage() {
                 asChild
                 variant="ghost"
                 size="lg"
-                className="rounded-full px-8 text-base text-amber-900 hover:bg-amber-50 dark:text-amber-300 dark:hover:bg-amber-950/30"
+                className="rounded-full px-8 text-amber-900 text-base hover:bg-amber-50 dark:text-amber-300 dark:hover:bg-amber-950/30"
               >
                 <Link href="#how-it-works">See how it works</Link>
               </Button>
@@ -123,7 +123,7 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <h3
-                    className="mb-2 text-lg font-medium text-stone-800 dark:text-amber-100"
+                    className="mb-2 font-medium text-lg text-stone-800 dark:text-amber-100"
                     style={{
                       fontFamily: "var(--font-gabriela, Georgia, serif)",
                     }}
@@ -131,7 +131,7 @@ export default function LandingPage() {
                     The Family Tree
                   </h3>
                   <p
-                    className="text-sm leading-relaxed text-stone-500 dark:text-stone-400"
+                    className="text-sm text-stone-500 leading-relaxed dark:text-stone-400"
                     style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
                   >
                     Every recipe belongs to a person. Build a living tree of the people who fed you — their faces, their
@@ -147,7 +147,7 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <h3
-                    className="mb-2 text-lg font-medium text-stone-800 dark:text-amber-100"
+                    className="mb-2 font-medium text-lg text-stone-800 dark:text-amber-100"
                     style={{
                       fontFamily: "var(--font-gabriela, Georgia, serif)",
                     }}
@@ -155,7 +155,7 @@ export default function LandingPage() {
                     Recipe Memories
                   </h3>
                   <p
-                    className="text-sm leading-relaxed text-stone-500 dark:text-stone-400"
+                    className="text-sm text-stone-500 leading-relaxed dark:text-stone-400"
                     style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
                   >
                     Go beyond ingredients. Attach stories, occasions, and the meaning behind every dish so the feeling —
@@ -171,7 +171,7 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <h3
-                    className="mb-2 text-lg font-medium text-stone-800 dark:text-amber-100"
+                    className="mb-2 font-medium text-lg text-stone-800 dark:text-amber-100"
                     style={{
                       fontFamily: "var(--font-gabriela, Georgia, serif)",
                     }}
@@ -179,7 +179,7 @@ export default function LandingPage() {
                     Guided Cooking
                   </h3>
                   <p
-                    className="text-sm leading-relaxed text-stone-500 dark:text-stone-400"
+                    className="text-sm text-stone-500 leading-relaxed dark:text-stone-400"
                     style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
                   >
                     Cook together even when apart. Step-by-step guidance that feels like being taught by someone you
@@ -200,13 +200,13 @@ export default function LandingPage() {
           <div className="mx-auto max-w-2xl text-center">
             <Heart className="mx-auto mb-6 size-6 text-amber-400 dark:text-amber-500" />
             <h2
-              className="mb-6 text-3xl font-normal leading-snug text-stone-800 sm:text-4xl dark:text-amber-50"
+              className="mb-6 font-normal text-3xl text-stone-800 leading-snug sm:text-4xl dark:text-amber-50"
               style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
             >
               For the families who carry their culture in their kitchens
             </h2>
             <p
-              className="text-base leading-[1.85] text-stone-500 dark:text-stone-400"
+              className="text-base text-stone-500 leading-[1.85] dark:text-stone-400"
               style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
             >
               For the grandmother whose handwritten recipe card is held together with tape. For the family that crossed
@@ -227,7 +227,7 @@ export default function LandingPage() {
           <div className="mx-auto max-w-6xl">
             <div className="mb-14 text-center">
               <h2
-                className="text-3xl font-normal text-stone-800 sm:text-4xl dark:text-amber-50"
+                className="font-normal text-3xl text-stone-800 sm:text-4xl dark:text-amber-50"
                 style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
               >
                 Simple from the first day
@@ -245,7 +245,7 @@ export default function LandingPage() {
               <div className="relative flex flex-col gap-4">
                 <div
                   aria-hidden
-                  className="mb-1 font-normal text-6xl text-amber-200 leading-none select-none dark:text-amber-900/60"
+                  className="mb-1 select-none font-normal text-6xl text-amber-200 leading-none dark:text-amber-900/60"
                   style={{
                     fontFamily: "var(--font-gabriela, Georgia, serif)",
                   }}
@@ -253,7 +253,7 @@ export default function LandingPage() {
                   01
                 </div>
                 <h3
-                  className="text-lg font-medium text-stone-800 dark:text-amber-100"
+                  className="font-medium text-lg text-stone-800 dark:text-amber-100"
                   style={{
                     fontFamily: "var(--font-gabriela, Georgia, serif)",
                   }}
@@ -261,7 +261,7 @@ export default function LandingPage() {
                   Build your family tree
                 </h3>
                 <p
-                  className="text-sm leading-relaxed text-stone-500 dark:text-stone-400"
+                  className="text-sm text-stone-500 leading-relaxed dark:text-stone-400"
                   style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
                 >
                   Add family members one by one — their names, their relation to you, a photo, a line about who they
@@ -273,7 +273,7 @@ export default function LandingPage() {
               <div className="relative flex flex-col gap-4">
                 <div
                   aria-hidden
-                  className="mb-1 font-normal text-6xl text-amber-200 leading-none select-none dark:text-amber-900/60"
+                  className="mb-1 select-none font-normal text-6xl text-amber-200 leading-none dark:text-amber-900/60"
                   style={{
                     fontFamily: "var(--font-gabriela, Georgia, serif)",
                   }}
@@ -281,7 +281,7 @@ export default function LandingPage() {
                   02
                 </div>
                 <h3
-                  className="text-lg font-medium text-stone-800 dark:text-amber-100"
+                  className="font-medium text-lg text-stone-800 dark:text-amber-100"
                   style={{
                     fontFamily: "var(--font-gabriela, Georgia, serif)",
                   }}
@@ -289,7 +289,7 @@ export default function LandingPage() {
                   Preserve the recipes
                 </h3>
                 <p
-                  className="text-sm leading-relaxed text-stone-500 dark:text-stone-400"
+                  className="text-sm text-stone-500 leading-relaxed dark:text-stone-400"
                   style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
                 >
                   Write recipes by hand or photograph an old recipe card — our AI reads and transcribes it for you to
@@ -301,7 +301,7 @@ export default function LandingPage() {
               <div className="relative flex flex-col gap-4">
                 <div
                   aria-hidden
-                  className="mb-1 font-normal text-6xl text-amber-200 leading-none select-none dark:text-amber-900/60"
+                  className="mb-1 select-none font-normal text-6xl text-amber-200 leading-none dark:text-amber-900/60"
                   style={{
                     fontFamily: "var(--font-gabriela, Georgia, serif)",
                   }}
@@ -309,7 +309,7 @@ export default function LandingPage() {
                   03
                 </div>
                 <h3
-                  className="text-lg font-medium text-stone-800 dark:text-amber-100"
+                  className="font-medium text-lg text-stone-800 dark:text-amber-100"
                   style={{
                     fontFamily: "var(--font-gabriela, Georgia, serif)",
                   }}
@@ -317,7 +317,7 @@ export default function LandingPage() {
                   Cook with memory
                 </h3>
                 <p
-                  className="text-sm leading-relaxed text-stone-500 dark:text-stone-400"
+                  className="text-sm text-stone-500 leading-relaxed dark:text-stone-400"
                   style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
                 >
                   Follow step-by-step guided cooking while learning the story behind each dish. Cook alongside the
@@ -333,7 +333,7 @@ export default function LandingPage() {
           <div className="mx-auto max-w-6xl">
             <div className="rounded-3xl border border-amber-100 bg-amber-50/60 px-8 py-16 text-center dark:border-amber-900/20 dark:bg-amber-950/10">
               <h2
-                className="mb-4 text-3xl font-normal text-stone-800 sm:text-4xl dark:text-amber-50"
+                className="mb-4 font-normal text-3xl text-stone-800 sm:text-4xl dark:text-amber-50"
                 style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
               >
                 Start preserving your family's culinary heritage
@@ -360,7 +360,7 @@ export default function LandingPage() {
       </main>
 
       {/* ─── Footer ──────────────────────────────────────────────────────── */}
-      <footer className="border-t border-amber-100/60 px-6 py-8 dark:border-stone-800/50">
+      <footer className="border-amber-100/60 border-t px-6 py-8 dark:border-stone-800/50">
         <p
           className="text-center text-sm text-stone-400 dark:text-stone-600"
           style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}

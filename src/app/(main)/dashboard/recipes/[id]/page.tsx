@@ -1,7 +1,15 @@
 import { notFound } from "next/navigation";
 
-import { ArrowLeft, ChefHat, Edit } from "lucide-react";
+import { ChefHat, Edit } from "lucide-react";
 
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type { FamilyMember, Memory } from "@/lib/supabase/types";
@@ -33,12 +41,26 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
 
   return (
     <div className="mx-auto max-w-3xl">
-      <div className="mb-6 flex items-center gap-3">
-        <Button variant="ghost" size="icon" asChild>
-          <a href="/dashboard/recipes">
-            <ArrowLeft className="size-4" />
-          </a>
-        </Button>
+      <div className="mb-6">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/dashboard/tree">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            {member?.id && member?.name && (
+              <>
+                <BreadcrumbItem>
+                  <BreadcrumbLink href={`/dashboard/tree/member/${member.id}`}>{member.name}'s Cookbook</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+              </>
+            )}
+            <BreadcrumbItem>
+              <BreadcrumbPage>{recipe.title}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
       </div>
 
       {/* Hero */}
@@ -54,9 +76,23 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
             <div>
               <h1 className="font-bold text-2xl leading-tight">{recipe.title}</h1>
               <p className="mt-1 text-muted-foreground text-sm">
-                {[member ? `By ${member.name}` : null, member?.country_of_origin ?? recipe.country_of_origin]
-                  .filter(Boolean)
-                  .join(" · ")}
+                {member ? (
+                  <>
+                    By{" "}
+                    {member.id ? (
+                      <a href={`/dashboard/tree/member/${member.id}`} className="hover:text-amber-700 hover:underline">
+                        {member.name}
+                      </a>
+                    ) : (
+                      member.name
+                    )}
+                    {(member.country_of_origin ?? recipe.country_of_origin) && (
+                      <> · {member.country_of_origin ?? recipe.country_of_origin}</>
+                    )}
+                  </>
+                ) : (
+                  (recipe.country_of_origin ?? null)
+                )}
               </p>
             </div>
             <div className="flex gap-2">
@@ -92,13 +128,13 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
                 {memory.occasion && (
                   <p className="font-medium text-amber-700 text-xs dark:text-amber-400">{memory.occasion}</p>
                 )}
-                {memory.text && <p className="text-muted-foreground text-sm leading-relaxed italic">{memory.text}</p>}
+                {memory.text && <p className="text-muted-foreground text-sm italic leading-relaxed">{memory.text}</p>}
                 {memory.meaning_note && <p className="mt-1 text-muted-foreground text-xs">{memory.meaning_note}</p>}
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-muted-foreground text-sm leading-relaxed italic">
+          <p className="text-muted-foreground text-sm italic leading-relaxed">
             No memory added yet. This is where the soul of the recipe lives.
           </p>
         )}

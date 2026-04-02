@@ -1,16 +1,22 @@
-import { BookOpen, Compass, Heart, type LucideIcon, TreeDeciduous, User } from "lucide-react";
+import { BookOpen, Compass, type LucideIcon, TreeDeciduous } from "lucide-react";
 
 export interface NavSubItem {
   title: string;
   url: string;
   icon?: LucideIcon;
+  comingSoon?: boolean;
+  newTab?: boolean;
+  isNew?: boolean;
 }
 
 export interface NavMainItem {
   title: string;
   url: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
   subItems?: NavSubItem[];
+  comingSoon?: boolean;
+  newTab?: boolean;
+  isNew?: boolean;
 }
 
 export interface NavGroup {
@@ -26,8 +32,6 @@ export const sidebarItems: NavGroup[] = [
       { title: "Tree", url: "/dashboard/tree", icon: TreeDeciduous },
       { title: "Recipes", url: "/dashboard/recipes", icon: BookOpen },
       { title: "Discover", url: "/dashboard/discover", icon: Compass },
-      { title: "Favorites", url: "/dashboard/favorites", icon: Heart },
-      { title: "Profile", url: "/dashboard/profile", icon: User },
     ],
   },
 ];
