@@ -27,22 +27,24 @@
 ## Project Status
 
 ### Built
-- **Auth UI** — v1 & v2 login/register pages, forms, Google OAuth button; no auth logic yet
-- **Dashboard shell** — sidebar layout, nav, theme switcher, account switcher
-- **CRM & Finance dashboards** — complete template pages; useful as UI reference
+- **Auth** — v2 login/register forms wired to Supabase (`loginWithEmail`, `registerWithEmail`, Google OAuth); `handle_new_user` trigger creates profile on signup
+- **App shell** — 5-tab nav (desktop sidebar + mobile bottom tab bar), theme switcher, user menu with sign out
+- **All 14 pages** — Tree, Member profile/add/edit, Recipes list/create/detail/edit, Guided cooking, Discover, Favorites, Profile, Family management, Onboarding (all with warm amber design, placeholder data)
+- **Supabase schema** — `supabase/migrations/001_initial_schema.sql` with profiles, families, family_members, recipes, memories, ai_outputs, invitations + full RLS policies
+- **TypeScript types** — `src/lib/supabase/types.ts` with all DB types + Database helper type
+- **Server actions** — `family-actions.ts` (family CRUD, members CRUD, invitations) + `recipe-actions.ts` (recipe CRUD, favorites, public discovery, memories)
 - **Theme system** — light/dark, presets, Zustand store, cookie + localStorage persistence
 - **56 shadcn/ui components** — ready to use, no further install needed
 
 ### Not Yet Built (MVP Priority)
-- Family tree visualization (the core feature — nothing exists)
-- Family member profiles
-- Recipe creation, upload, and editing
-- Claude AI recipe extraction from images
-- Guided cooking mode + animated family guide
-- Memory/story/voice note attachment
-- Supabase schema, migrations, and data layer
-- Supabase Auth integration (wire up existing auth UI)
-- Public discovery and sharing
+- Pages wired to real data (currently using placeholder/static content)
+- Claude AI recipe extraction from images (`/dashboard/recipes/new` → Upload tab)
+- Guided cooking steps generated from real recipe data
+- Animated family guide (cartoon avatar)
+- File/image upload to Supabase Storage (recipe images, member photos, voice notes)
+- Supabase Storage bucket creation and storage RLS policies
+- Public discovery with real data
+- Email delivery for family invitations
 
 ---
 
@@ -51,17 +53,22 @@
 ```
 src/
 ├── app/
-│   ├── (external)/          # Landing page
+│   ├── (external)/          # Redirects to /dashboard/tree
 │   └── (main)/
-│       ├── auth/            # v1 & v2 login/register (UI only)
-│       └── dashboard/       # Main app shell + templates
+│       ├── auth/v2/         # Login + register (wired to Supabase)
+│       ├── onboarding/      # 5-step first-run flow
+│       └── dashboard/       # App shell (5-tab nav) + all feature pages
+│           ├── tree/        # Family tree + member profiles
+│           ├── recipes/     # Recipes list, create, detail, cook
+│           ├── discover/    # Cultural discovery + public families
+│           ├── favorites/   # Personal + family favorites
+│           └── profile/     # Account + family management
 ├── components/ui/           # 56 shadcn/ui components
-├── lib/                     # utils.ts, cookie/localStorage helpers, fonts
-├── server/                  # Server Actions (server-actions.ts)
+├── lib/supabase/            # client.ts, server.ts, types.ts
+├── server/                  # auth-actions.ts, family-actions.ts, recipe-actions.ts
 ├── stores/preferences/      # Zustand store + provider
-├── hooks/                   # use-mobile.ts
 ├── config/app-config.ts     # App metadata
-└── data/users.ts            # Mock data (temporary)
+└── supabase/migrations/     # 001_initial_schema.sql
 ```
 
 ---
