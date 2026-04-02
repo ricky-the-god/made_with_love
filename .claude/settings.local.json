@@ -5,9 +5,14 @@
       "Bash(claude mcp add playwright npx \"@playwright/mcp@latest\")",
       "Bash(npm run dev:*)",
       "mcp__playwright__browser_navigate",
-      "Bash(ren \"next-shadcn-admin-dashboard\" \"ultimate_planner\")",
-      "Bash(npm --version)",
-      "Bash(taskkill:*)"
+      "Bash(git pull:*)",
+      "Bash(git stash:*)",
+      "Bash(git restore:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(find C:\\\\Users\\\\RICKY\\\\Desktop\\\\made_with_love:*)",
+      "Bash(find \"C:\\\\Users\\\\RICKY\\\\Desktop\\\\made_with_love\" -type f ! -path \"*/node_modules/*\" ! -path \"*/.next/*\" -exec grep -l \"ultimate\\\\|Ultimate\" {} \\\\;)"
     ]
   }
 }
