@@ -8,6 +8,12 @@
 
 # testing
 /coverage
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+# Playwright auth state — contains real session tokens, never commit
+tests/.auth-state.json
 
 # next.js
 /.next/
@@ -20,17 +26,51 @@
 .DS_Store
 *.pem
 *.sh
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.AppleDouble
+.LSOverride
+
+# IDE & Editor
+.vscode/
+!.vscode/extensions.json
+.idea/
+.code-workspace
+.history/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
 
 # debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
+.pnpm-debug.log*
 
 # local env files
 .env*.local
+.env
+.env.production.local
+.env.test.local
+.env.development.local
 
 # vercel
 .vercel
+
+# Cache & Build Tools
+.turbo/
+.cache/
+.next/cache/
+
+# Local development
+.claude/
+.claude-code/
 
 # typescript
 *.tsbuildinfo
