@@ -69,8 +69,8 @@ pnpm-debug.log*
 .next/cache/
 
 # Local development
-.claude/
-.claude-code/
+#.claude/
+#.claude-code/
 
 # typescript
 *.tsbuildinfo

@@ -10,40 +10,39 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { formatCurrency } from "@/lib/utils";
 
-const now = new Date();
-
-const upcomingPayments = [
-  {
-    id: 1,
-    icon: Home,
-    title: "Apartment Rent",
-    amount: 1200,
-    date: `Due on ${format(addDays(now, 2), "do MMMM yyyy")}`,
-  },
-  {
-    id: 2,
-    icon: Zap,
-    title: "Electricity Bill",
-    amount: 75,
-    date: `Due on ${format(addDays(now, 2), "do MMMM yyyy")}`,
-  },
-  {
-    id: 3,
-    icon: Sparkles,
-    title: "ChatGPT Plus",
-    amount: 20,
-    date: `Due on ${format(addDays(now, 7), "do MMMM yyyy")}`,
-  },
-  {
-    id: 4,
-    icon: Receipt,
-    title: "Credit Card Payment",
-    amount: 420,
-    date: `Due on ${format(addDays(now, 9), "do MMMM yyyy")}`,
-  },
-];
-
 export function CardOverview() {
+  const now = new Date();
+
+  const upcomingPayments = [
+    {
+      id: 1,
+      icon: Home,
+      title: "Apartment Rent",
+      amount: 1200,
+      date: `Due on ${format(addDays(now, 2), "do MMMM yyyy")}`,
+    },
+    {
+      id: 2,
+      icon: Zap,
+      title: "Electricity Bill",
+      amount: 75,
+      date: `Due on ${format(addDays(now, 2), "do MMMM yyyy")}`,
+    },
+    {
+      id: 3,
+      icon: Sparkles,
+      title: "ChatGPT Plus",
+      amount: 20,
+      date: `Due on ${format(addDays(now, 7), "do MMMM yyyy")}`,
+    },
+    {
+      id: 4,
+      icon: Receipt,
+      title: "Credit Card Payment",
+      amount: 420,
+      date: `Due on ${format(addDays(now, 9), "do MMMM yyyy")}`,
+    },
+  ];
   return (
     <Card className="shadow-xs">
       <CardHeader className="items-center">

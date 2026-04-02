@@ -5,9 +5,20 @@
       "Bash(claude mcp add playwright npx \"@playwright/mcp@latest\")",
       "Bash(npm run dev:*)",
       "mcp__playwright__browser_navigate",
-      "Bash(ren \"next-shadcn-admin-dashboard\" \"ultimate_planner\")",
-      "Bash(npm --version)",
-      "Bash(taskkill:*)"
+      "Bash(git pull:*)",
+      "Bash(git stash:*)",
+      "Bash(git restore:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(find C:\\\\Users\\\\RICKY\\\\Desktop\\\\made_with_love:*)",
+      "Bash(find \"C:\\\\Users\\\\RICKY\\\\Desktop\\\\made_with_love\" -type f ! -path \"*/node_modules/*\" ! -path \"*/.next/*\" -exec grep -l \"ultimate\\\\|Ultimate\" {} \\\\;)",
+      "Bash(git push:*)",
+      "Bash(taskkill //F //IM node.exe)",
+      "Bash(npm run:*)",
+      "Bash(npx biome:*)",
+      "Bash(git -C \"C:/Users/dquan/OneDrive/Desktop/made_with_love/.claude/worktrees/agent-ac22898b\" status)",
+      "Bash(git -C \"C:/Users/dquan/OneDrive/Desktop/made_with_love/.claude/worktrees/agent-a32c6b01\" status)"
     ]
   }
 }
