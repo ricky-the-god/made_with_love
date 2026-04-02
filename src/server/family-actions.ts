@@ -253,3 +253,58 @@ export async function getPendingInvitations() {
 
   return data ?? [];
 }
+
+// -------------------------------------------------------
+// ACCEPT FAMILY INVITATION
+// -------------------------------------------------------
+export async function acceptFamilyInvitation(token: string) {
+  const supabase = await createClient();
+  const admin = createAdminClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  // Use admin client so RLS on family_invitations doesn't block the lookup
+  const { data: invitation } = await admin
+    .from("family_invitations")
+    .select("*")
+    .eq("token", token)
+    .is("accepted_at", null)
+    .gt("expires_at", new Date().toISOString())
+    .single();
+
+  if (!invitation) return { error: "This invite link is invalid or has expired." };
+
+  // Check user doesn't already belong to a family
+  const { data: profile } = await supabase.from("profiles").select("family_id").eq("id", user.id).single();
+
+  if (profile?.family_id) return { error: "You already belong to a family space." };
+
+  // Link user to the family with the invited role
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .update({ family_id: invitation.family_id, role: invitation.role })
+    .eq("id", user.id);
+
+  if (profileError) return { error: profileError.message };
+
+  // Atomically mark invitation accepted — check count to guard against race conditions
+  const { count, error: acceptError } = await admin
+    .from("family_invitations")
+    .update({ accepted_at: new Date().toISOString() })
+    .eq("id", invitation.id)
+    .is("accepted_at", null) // only update if still unaccepted
+    .select("id", { count: "exact", head: true });
+
+  if (acceptError || count === 0) {
+    // Another request already claimed this invite — roll back the profile update
+    await supabase.from("profiles").update({ family_id: null, role: null }).eq("id", user.id);
+    return { error: "This invite was already used. Please request a new one." };
+  }
+
+  revalidatePath("/dashboard");
+  return { success: true };
+}
