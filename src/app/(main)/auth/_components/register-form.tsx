@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -8,6 +9,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { registerWithEmail } from "@/server/auth-actions";
 
 const FormSchema = z
   .object({
@@ -21,6 +23,8 @@ const FormSchema = z
   });
 
 export function RegisterForm() {
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -31,13 +35,14 @@ export function RegisterForm() {
   });
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    toast("You submitted the following values", {
-      description: (
-        <pre className="mt-2 w-[320px] rounded-md bg-neutral-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+    setIsLoading(true);
+    const result = await registerWithEmail(data.email, data.password);
+    setIsLoading(false);
+    if (result?.error) {
+      toast.error(result.error);
+    } else {
+      toast.success("Account created! Check your email to confirm your address.");
+    }
   };
 
   return (
@@ -88,8 +93,8 @@ export function RegisterForm() {
             </FormItem>
           )}
         />
-        <Button className="w-full" type="submit">
-          Register
+        <Button className="w-full" type="submit" disabled={isLoading}>
+          {isLoading ? "Creating account…" : "Register"}
         </Button>
       </form>
     </Form>
