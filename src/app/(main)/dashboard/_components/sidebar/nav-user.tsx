@@ -52,7 +52,7 @@ export function NavUser() {
               </a>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <a href="/dashboard/profile">
+              <a href="/dashboard/settings">
                 <Settings className="size-4" />
                 Settings
               </a>
