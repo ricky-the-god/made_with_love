@@ -27,7 +27,7 @@ export async function registerWithEmail(email: string, password: string) {
 
   // Supabase sends a confirmation email by default.
   // Redirect to login so the user can confirm before signing in.
-  redirect("/auth/v1/login");
+  redirect("/auth/v2/login");
 }
 
 export async function signInWithGoogle() {
@@ -52,7 +52,7 @@ export async function signInWithGoogle() {
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  redirect("/auth/v1/login");
+  redirect("/auth/v2/login");
 }
 
 export async function getSession() {

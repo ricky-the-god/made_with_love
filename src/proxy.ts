@@ -1,5 +1,6 @@
-import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
+
+import { createServerClient } from "@supabase/ssr";
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -32,20 +33,21 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
   const isAuthRoute = pathname.startsWith("/auth");
-  const isPublicRoute = isAuthRoute || pathname.startsWith("/api") || pathname === "/";
+  const isOnboardingRoute = pathname.startsWith("/onboarding");
+  const isPublicRoute = isAuthRoute || isOnboardingRoute || pathname.startsWith("/api") || pathname === "/";
 
   // Redirect unauthenticated users trying to access protected routes
   if (!user && !isPublicRoute) {
     const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = "/auth/v1/login";
+    loginUrl.pathname = "/auth/v2/login";
     return NextResponse.redirect(loginUrl);
   }
 
   // Redirect authenticated users away from auth pages
   if (user && isAuthRoute) {
-    const dashboardUrl = request.nextUrl.clone();
-    dashboardUrl.pathname = "/dashboard";
-    return NextResponse.redirect(dashboardUrl);
+    const treeUrl = request.nextUrl.clone();
+    treeUrl.pathname = "/dashboard/tree";
+    return NextResponse.redirect(treeUrl);
   }
 
   return supabaseResponse;
