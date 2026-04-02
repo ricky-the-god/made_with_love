@@ -170,15 +170,17 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
         </>
       )}
 
-      <Separator className="my-6" />
-
-      {/* Cook CTA */}
-      <Button asChild size="lg" className="w-full bg-amber-700 text-white hover:bg-amber-800 dark:bg-amber-600">
-        <a href={`/dashboard/recipes/${id}/cook`}>
-          <ChefHat className="size-5" />
-          Start cooking
-        </a>
-      </Button>
+      {recipe.steps && recipe.steps.trim().length > 0 && (
+        <>
+          <Separator className="my-6" />
+          <Button asChild size="lg" className="w-full bg-amber-700 text-white hover:bg-amber-800 dark:bg-amber-600">
+            <a href={`/dashboard/recipes/${id}/cook`}>
+              <ChefHat className="size-5" />
+              Start cooking
+            </a>
+          </Button>
+        </>
+      )}
     </div>
   );
 }
