@@ -5,9 +5,10 @@ import { redirect } from "next/navigation";
 
 import { AppSidebar } from "@/app/(main)/dashboard/_components/sidebar/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { ONBOARDING_SKIPPED_COOKIE } from "@/lib/cookies";
 import { SIDEBAR_COLLAPSIBLE_VALUES, SIDEBAR_VARIANT_VALUES } from "@/lib/preferences/layout";
 import { cn } from "@/lib/utils";
-import { getProfile, ONBOARDING_SKIPPED_COOKIE } from "@/server/family-actions";
+import { getProfile } from "@/server/family-actions";
 import { getPreference } from "@/server/server-actions";
 
 export default async function Layout({ children }: Readonly<{ children: ReactNode }>) {

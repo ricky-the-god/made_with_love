@@ -3,10 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { ONBOARDING_SKIPPED_COOKIE } from "@/lib/cookies";
 import { createAdminClient, createClient } from "@/lib/supabase/server";
 import { setValueToCookie } from "@/server/server-actions";
-
-export const ONBOARDING_SKIPPED_COOKIE = "onboarding_skipped";
 
 // -------------------------------------------------------
 // GET CURRENT USER'S PROFILE
