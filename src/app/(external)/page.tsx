@@ -5,6 +5,8 @@ import { ArrowRight, BookOpen, ChefHat, Heart, TreePine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
+import { HeroSection } from "./_components/hero-section";
+
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-stone-950">
@@ -42,75 +44,7 @@ export default function LandingPage() {
 
       <main>
         {/* ─── Hero ────────────────────────────────────────────────────────── */}
-        <section className="relative overflow-hidden bg-gradient-to-b from-amber-50/60 to-white px-6 pt-24 pb-20 dark:from-stone-900/60 dark:to-stone-950">
-          {/* Soft decorative grain overlay */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.03] dark:opacity-[0.06]"
-            style={{
-              backgroundImage:
-                "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")",
-              backgroundRepeat: "repeat",
-              backgroundSize: "128px",
-            }}
-          />
-
-          <div className="relative mx-auto max-w-3xl text-center">
-            {/* Eyebrow */}
-            <p
-              className="mb-6 font-medium text-amber-700 text-sm uppercase tracking-widest dark:text-amber-400"
-              style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
-            >
-              A living family archive
-            </p>
-
-            {/* Headline */}
-            <h1
-              className="mb-6 font-normal text-5xl text-stone-800 leading-[1.12] sm:text-6xl dark:text-amber-50"
-              style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
-            >
-              Every family has recipes{" "}
-              <em className="text-amber-800 not-italic dark:text-amber-300">worth remembering.</em>
-            </h1>
-
-            {/* Subheadline */}
-            <p
-              className="mx-auto mb-10 max-w-2xl text-lg text-stone-500 leading-relaxed dark:text-stone-400"
-              style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
-            >
-              Made with Love is for immigrant families, diaspora communities, and anyone who has lost someone and wants
-              to hold onto the food they made. Preserve not just the recipe — preserve the person, the story, and the
-              memory behind every dish.
-            </p>
-
-            {/* CTAs */}
-            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Button
-                asChild
-                size="lg"
-                className="rounded-full bg-amber-700 px-8 text-base text-white shadow-md hover:bg-amber-800 dark:bg-amber-600 dark:hover:bg-amber-700"
-              >
-                <Link href="/auth/v2/register">
-                  Start preserving
-                  <ArrowRight className="ml-1 size-4" />
-                </Link>
-              </Button>
-              <Button
-                asChild
-                variant="ghost"
-                size="lg"
-                className="rounded-full px-8 text-amber-900 text-base hover:bg-amber-50 dark:text-amber-300 dark:hover:bg-amber-950/30"
-              >
-                <Link href="#how-it-works">See how it works</Link>
-              </Button>
-            </div>
-
-            {/* Social proof line */}
-            <p className="mt-8 text-sm text-stone-400 dark:text-stone-500">
-              A tender, unhurried place for your family's culinary heritage
-            </p>
-          </div>
-        </section>
+        <HeroSection />
 
         {/* ─── Feature highlights ──────────────────────────────────────────── */}
         <section className="px-6 py-20">
