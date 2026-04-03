@@ -6,6 +6,7 @@ import { Minus, Plus, ScanLine } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { ButtonSoftGlow } from "@/components/ui/button-soft-glow";
+import { normalizeRelationValue } from "@/lib/family-constants";
 import type { FamilyMember } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils";
 
@@ -51,12 +52,116 @@ function getLinkedParentIds(member: FamilyMemberWithLegacyParent) {
   return [];
 }
 
+// Which roles form a romantic couple — used to draw horizontal couple H-lines.
+const COUPLE_ROLE_PAIRS: Record<string, string[]> = {
+  husband: ["wife", "spouse", "partner", "myself"],
+  wife: ["husband", "spouse", "partner", "myself"],
+  spouse: ["husband", "wife", "spouse", "partner", "myself"],
+  partner: ["husband", "wife", "spouse", "partner", "myself"],
+  myself: ["husband", "wife", "spouse", "partner"],
+  // Inferred couples from generational roles
+  mother: ["father"],
+  father: ["mother"],
+  grandmother: ["grandfather"],
+  grandfather: ["grandmother"],
+  "great-grandmother": ["great-grandfather"],
+  "great-grandfather": ["great-grandmother"],
+};
+
+// Maps each child-role to the expected parent-role(s) in the tree.
+// This drives automatic connector inference across all generations.
+const CHILD_TO_PARENT_RELATIONS: Record<string, string[]> = {
+  // Youngest generation → parents
+  child: ["myself", "mother", "father"],
+  son: ["myself", "mother", "father"],
+  daughter: ["myself", "mother", "father"],
+  // The logged-in user is a child of their parents too
+  myself: ["mother", "father"],
+  // Siblings share the same parents as "myself"
+  sister: ["mother", "father"],
+  brother: ["mother", "father"],
+  // Parents are also children of grandparents
+  mother: ["grandfather", "grandmother"],
+  father: ["grandfather", "grandmother"],
+  // Aunts/uncles are siblings of parents → children of grandparents
+  aunt: ["grandfather", "grandmother"],
+  uncle: ["grandfather", "grandmother"],
+  // Grandparents are children of great-grandparents
+  grandmother: ["great-grandfather", "great-grandmother"],
+  grandfather: ["great-grandfather", "great-grandmother"],
+  // Great-aunts/uncles are siblings of grandparents → children of great-grandparents
+  "great-aunt": ["great-grandfather", "great-grandmother"],
+  "great-uncle": ["great-grandfather", "great-grandmother"],
+  // Explicit grandchild roles
+  granddaughter: ["grandfather", "grandmother"],
+  grandson: ["grandfather", "grandmother"],
+  grandchild: ["grandfather", "grandmother"],
+  // Lateral / extended family
+  cousin: ["uncle", "aunt"],
+  nephew: ["uncle", "aunt", "brother", "sister"],
+  niece: ["uncle", "aunt", "brother", "sister"],
+};
+
+function getLastName(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  return parts.length ? parts[parts.length - 1].toLowerCase() : "";
+}
+
+// Lower score = better parent candidate for this child.
+function rankParentCandidate(child: FamilyMember, candidate: FamilyMember, expectedParentRelations: string[]) {
+  const candidateRelation = normalizeRelationValue(candidate.relation) ?? "";
+  const isExpectedParent = expectedParentRelations.includes(candidateRelation);
+  const childLastName = getLastName(child.name);
+  const sameLastName = childLastName !== "" && childLastName === getLastName(candidate.name);
+  const generationGap =
+    child.generation && candidate.generation ? Math.abs(candidate.generation - (child.generation - 1)) : 99;
+
+  let score = 0;
+  if (!isExpectedParent) score += 100;
+  score += generationGap * 10;
+  if (!sameLastName) score += 3;
+
+  return score;
+}
+
+// Relations whose parents are outside the tree (different family origin).
+// Never auto-infer parents for these.
+const NO_INFER_RELATIONS = new Set(["husband", "wife", "spouse", "partner", "family-friend", "mentor", "other"]);
+
 function inferAutomaticParentIds(member: FamilyMember, members: FamilyMember[]) {
+  const memberRelation = normalizeRelationValue(member.relation) ?? "";
+
+  // Members who married in or are family friends have parents outside this tree.
+  if (NO_INFER_RELATIONS.has(memberRelation)) return [];
+
+  const otherMembers = members.filter((candidate) => candidate.id !== member.id);
+  const expectedParentRelations = CHILD_TO_PARENT_RELATIONS[memberRelation] ?? [];
+
+  if (expectedParentRelations.length > 0) {
+    // Find candidates whose relation matches the expected parent roles.
+    const parentCandidates = otherMembers
+      .filter((candidate) => {
+        const rel = normalizeRelationValue(candidate.relation) ?? "";
+        return expectedParentRelations.includes(rel);
+      })
+      .sort((a, b) => {
+        const scoreDiff =
+          rankParentCandidate(member, a, expectedParentRelations) -
+          rankParentCandidate(member, b, expectedParentRelations);
+        if (scoreDiff !== 0) return scoreDiff;
+        return a.name.localeCompare(b.name);
+      })
+      .slice(0, 2)
+      .map((candidate) => candidate.id);
+
+    if (parentCandidates.length > 0) return parentCandidates;
+  }
+
   if (!member.generation || member.generation <= 1) return [];
 
-  // Auto-link to up to two people in the immediately older generation.
-  return members
-    .filter((candidate) => candidate.id !== member.id && candidate.generation === member.generation! - 1)
+  // Fallback: up to two people in the immediately older generation.
+  return otherMembers
+    .filter((candidate) => candidate.generation === member.generation! - 1)
     .sort((a, b) => a.name.localeCompare(b.name))
     .slice(0, 2)
     .map((candidate) => candidate.id);
@@ -79,7 +184,7 @@ export function FamilyTreeCanvas({
   const [ty, setTy] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [selected, setSelected] = useState<FamilyMember | null>(null);
-  const [connectors, setConnectors] = useState<string[]>([]);
+  const [connectors, setConnectors] = useState<{ d: string; type: "child" | "couple" }[]>([]);
   const [svgDims, setSvgDims] = useState({ w: 0, h: 0 });
 
   const dragRef = useRef<{
@@ -89,12 +194,13 @@ export function FamilyTreeCanvas({
     startTy: number;
   } | null>(null);
 
-  // ── Connector paths: one bezier per member → their specific parent ─────────
+  // ── Connector paths: smooth bezier parent-child + dashed couple lines ──────
   const computeConnectors = useCallback(() => {
     const content = contentRef.current;
     if (!content) return;
 
-    const paths: string[] = [];
+    const paths: { d: string; type: "child" | "couple" }[] = [];
+    const drawnCoupleLines = new Set<string>();
 
     // Build position map from rendered node elements
     const nodePos = new Map<string, { cx: number; yTop: number; yBottom: number }>();
@@ -106,23 +212,81 @@ export function FamilyTreeCanvas({
       });
     }
 
-    // Draw one bezier per member → each explicit parent link, or inferred generation link.
     for (const member of members as FamilyMemberWithLegacyParent[]) {
       const explicitParentIds = getLinkedParentIds(member);
       const parentIds = explicitParentIds.length ? explicitParentIds : inferAutomaticParentIds(member, members);
       if (!parentIds.length) continue;
-      const child = nodePos.get(member.id);
-      if (!child) continue;
+      const childPos = nodePos.get(member.id);
+      if (!childPos) continue;
 
-      for (const parentId of parentIds) {
-        const parent = nodePos.get(parentId);
-        if (!parent) continue;
+      if (parentIds.length >= 2) {
+        const pAPos = nodePos.get(parentIds[0]);
+        const pBPos = nodePos.get(parentIds[1]);
+        if (!pAPos || !pBPos) continue;
 
-        const midY = (parent.yBottom + child.yTop) / 2;
-        paths.push(
-          `M ${parent.cx} ${parent.yBottom} C ${parent.cx} ${midY} ${child.cx} ${midY} ${child.cx} ${child.yTop}`,
-        );
+        const leftCx = Math.min(pAPos.cx, pBPos.cx);
+        const rightCx = Math.max(pAPos.cx, pBPos.cx);
+        const coupleY = Math.max(pAPos.yBottom, pBPos.yBottom);
+        const midX = (pAPos.cx + pBPos.cx) / 2;
+
+        // Horizontal couple connector (drawn once per unique couple)
+        const coupleKey = [parentIds[0], parentIds[1]].sort().join(":");
+        if (!drawnCoupleLines.has(coupleKey)) {
+          drawnCoupleLines.add(coupleKey);
+          // Dashed couple bridge drawn at the bottom of the taller node
+          paths.push({ d: `M ${leftCx} ${coupleY} H ${rightCx}`, type: "couple" });
+        }
+
+        // Smooth bezier drop from couple midpoint to child
+        const elbowY = coupleY + (childPos.yTop - coupleY) / 2;
+        paths.push({
+          d: `M ${midX} ${coupleY} C ${midX} ${elbowY} ${childPos.cx} ${elbowY} ${childPos.cx} ${childPos.yTop}`,
+          type: "child",
+        });
+      } else {
+        const pPos = nodePos.get(parentIds[0]);
+        if (!pPos) continue;
+        const elbowY = pPos.yBottom + (childPos.yTop - pPos.yBottom) / 2;
+        // Smooth S-curve: starts going down from parent, arrives going down at child
+        paths.push({
+          d: `M ${pPos.cx} ${pPos.yBottom} C ${pPos.cx} ${elbowY} ${childPos.cx} ${elbowY} ${childPos.cx} ${childPos.yTop}`,
+          type: "child",
+        });
       }
+    }
+
+    // ── Pass 2: explicit couple H-lines for spouse-tagged members ───────────
+    for (const member of members) {
+      const rel = normalizeRelationValue(member.relation) ?? "";
+      const partnerRels = COUPLE_ROLE_PAIRS[rel];
+      if (!partnerRels) continue;
+
+      const memberPos = nodePos.get(member.id);
+      if (!memberPos) continue;
+
+      // Find best match: same generation, complementary role, same last name preferred.
+      const partner = members
+        .filter((m) => m.id !== member.id && m.generation === member.generation)
+        .filter((m) => partnerRels.includes(normalizeRelationValue(m.relation) ?? ""))
+        .sort((a, b) => {
+          const ml = getLastName(member.name);
+          return (getLastName(a.name) === ml ? 0 : 1) - (getLastName(b.name) === ml ? 0 : 1);
+        })[0];
+
+      if (!partner) continue;
+
+      const partnerPos = nodePos.get(partner.id);
+      if (!partnerPos) continue;
+
+      const coupleKey = [member.id, partner.id].sort().join(":");
+      if (drawnCoupleLines.has(coupleKey)) continue;
+      drawnCoupleLines.add(coupleKey);
+
+      const coupleY = Math.max(memberPos.yBottom, partnerPos.yBottom);
+      paths.push({
+        d: `M ${Math.min(memberPos.cx, partnerPos.cx)} ${coupleY} H ${Math.max(memberPos.cx, partnerPos.cx)}`,
+        type: "couple",
+      });
     }
 
     setSvgDims({ w: content.scrollWidth, h: content.scrollHeight });
@@ -130,13 +294,20 @@ export function FamilyTreeCanvas({
   }, [members]);
 
   useEffect(() => {
-    // Wait one frame so offsets are measured after layout settles.
-    const frame = requestAnimationFrame(computeConnectors);
+    // Double-RAF ensures layout is fully settled after hydration before measuring offsets.
+    let frame2: number;
+    const frame1 = requestAnimationFrame(() => {
+      frame2 = requestAnimationFrame(computeConnectors);
+    });
+    // Fallback: re-measure after fonts/images may have shifted layout.
+    const timer = setTimeout(computeConnectors, 300);
     const observer = new ResizeObserver(computeConnectors);
     if (contentRef.current) observer.observe(contentRef.current);
     window.addEventListener("resize", computeConnectors);
     return () => {
-      cancelAnimationFrame(frame);
+      cancelAnimationFrame(frame1);
+      cancelAnimationFrame(frame2);
+      clearTimeout(timer);
       window.removeEventListener("resize", computeConnectors);
       observer.disconnect();
     };
@@ -205,21 +376,34 @@ export function FamilyTreeCanvas({
           <svg
             aria-hidden="true"
             className="pointer-events-none absolute top-0 left-0"
-            width={svgDims.w}
-            height={svgDims.h}
+            width={svgDims.w || "100%"}
+            height={svgDims.h || "100%"}
+            style={{ overflow: "visible" }}
           >
-            {connectors.map((d, i) => (
-              <path
-                // biome-ignore lint/suspicious/noArrayIndexKey: stable ordered list
-                key={i}
-                d={d}
-                fill="none"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="stroke-amber-500/70 dark:stroke-amber-500/60"
-              />
-            ))}
+            {connectors.map((connector, i) =>
+              connector.type === "couple" ? (
+                <path
+                  // biome-ignore lint/suspicious/noArrayIndexKey: stable ordered list
+                  key={i}
+                  d={connector.d}
+                  fill="none"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeDasharray="5 4"
+                  className="stroke-rose-400/60 dark:stroke-rose-400/40"
+                />
+              ) : (
+                <path
+                  // biome-ignore lint/suspicious/noArrayIndexKey: stable ordered list
+                  key={i}
+                  d={connector.d}
+                  fill="none"
+                  strokeWidth={1.5}
+                  strokeLinecap="round"
+                  className="stroke-amber-600/50 dark:stroke-amber-400/40"
+                />
+              ),
+            )}
           </svg>
         )}
 

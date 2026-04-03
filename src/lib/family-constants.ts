@@ -1,5 +1,9 @@
 export const RELATION_OPTIONS = [
   { value: "myself", label: "Myself" },
+  { value: "husband", label: "Husband" },
+  { value: "wife", label: "Wife" },
+  { value: "spouse", label: "Spouse" },
+  { value: "partner", label: "Partner" },
   { value: "mother", label: "Mother" },
   { value: "father", label: "Father" },
   { value: "grandmother", label: "Grandmother" },
@@ -62,3 +66,32 @@ export function getRelationLabel(relation?: string | null) {
 
 /** Relations where a "parent in tree" selector should appear in the add/edit form. */
 export const RELATIONS_REQUIRING_PARENT = new Set<string>(["nephew", "niece", "child", "cousin", "son", "daughter"]);
+
+/**
+ * All normalized relation values for which an explicit parent link makes sense
+ * in the family tree (excludes the root node "myself" and couple/non-tree relations).
+ */
+export const RELATIONS_WITH_PARENTS = new Set<string>([
+  "mother",
+  "father",
+  "grandmother",
+  "grandfather",
+  "great-grandmother",
+  "great-grandfather",
+  "great-aunt",
+  "great-uncle",
+  "aunt",
+  "uncle",
+  "sister",
+  "brother",
+  "cousin",
+  "nephew",
+  "niece",
+  "child",
+  "daughter",
+  "son",
+  "granddaughter",
+  "grandson",
+  "grandchild",
+  "other",
+]);
