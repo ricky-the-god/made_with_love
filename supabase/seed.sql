@@ -210,7 +210,7 @@ begin
       v_lili_id,
       v_family_id,
       'Lili Santos',
-      'Me',
+      'Myself',
       4,
       'Started this archive out of fear that family flavors could vanish faster than the stories behind them.',
       'United States',

@@ -18,7 +18,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { COUNTRY_OPTIONS } from "@/data/recipe-options";
-import { RELATIONS, RELATIONS_REQUIRING_PARENT } from "@/lib/family-constants";
+import {
+  getRelationLabel,
+  normalizeRelationValue,
+  RELATION_OPTIONS,
+  RELATIONS_REQUIRING_PARENT,
+} from "@/lib/family-constants";
 import type { FamilyMember } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils";
 import { updateFamilyMember } from "@/server/family-actions";
@@ -64,7 +69,7 @@ export function EditMemberForm({ member, members }: EditMemberFormProps) {
     resolver: zodResolver(schema),
     defaultValues: {
       name: member.name,
-      relation: member.relation ?? undefined,
+      relation: getRelationLabel(member.relation) ?? undefined,
       country_of_origin: member.country_of_origin ?? undefined,
       cultural_background: member.cultural_background ?? undefined,
       bio: member.bio ?? undefined,
@@ -77,7 +82,9 @@ export function EditMemberForm({ member, members }: EditMemberFormProps) {
   const isMemorial = watch("is_memorial");
   const selectedRelation = watch("relation");
   const selectedParentIds = watch("parent_ids") ?? [];
-  const showParentSelector = selectedRelation ? RELATIONS_REQUIRING_PARENT.has(selectedRelation) : false;
+  const showParentSelector = selectedRelation
+    ? RELATIONS_REQUIRING_PARENT.has(normalizeRelationValue(selectedRelation) ?? "")
+    : false;
   const otherMembers = members.filter((familyMember) => familyMember.id !== member.id);
 
   function toggleParent(id: string, checked: boolean) {
@@ -121,16 +128,16 @@ export function EditMemberForm({ member, members }: EditMemberFormProps) {
         <div className="flex flex-col gap-2">
           <Label htmlFor="relation">Relation to you</Label>
           <Select
-            defaultValue={member.relation ?? undefined}
+            defaultValue={getRelationLabel(member.relation) ?? undefined}
             onValueChange={(value) => setValue("relation", value, { shouldDirty: true })}
           >
             <SelectTrigger id="relation">
               <SelectValue placeholder="Select relation" />
             </SelectTrigger>
             <SelectContent>
-              {RELATIONS.map((relation) => (
-                <SelectItem key={relation} value={relation.toLowerCase().replace(/\s+/g, "-")}>
-                  {relation}
+              {RELATION_OPTIONS.map((relation) => (
+                <SelectItem key={relation.value} value={relation.label}>
+                  {relation.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -228,7 +235,7 @@ export function EditMemberForm({ member, members }: EditMemberFormProps) {
                 <span className="text-sm">
                   {relatedMember.name}
                   {relatedMember.relation ? (
-                    <span className="text-muted-foreground"> ({relatedMember.relation})</span>
+                    <span className="text-muted-foreground"> ({getRelationLabel(relatedMember.relation)})</span>
                   ) : null}
                 </span>
               </label>

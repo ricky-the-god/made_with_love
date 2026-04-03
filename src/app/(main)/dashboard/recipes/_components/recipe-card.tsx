@@ -3,6 +3,7 @@
 import { Clock, Heart } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { getRelationLabel } from "@/lib/family-constants";
 
 interface RecipeCardProps {
   recipe: {
@@ -25,6 +26,7 @@ interface RecipeCardProps {
 
 export function RecipeCard({ recipe, href }: RecipeCardProps) {
   const member = recipe.family_members;
+  const relationLabel = getRelationLabel(member?.relation);
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-amber-100 bg-amber-50/30 transition-colors hover:border-amber-300 hover:bg-amber-50/60 dark:border-amber-900/20 dark:bg-amber-950/10 dark:hover:border-amber-800/40 dark:hover:bg-amber-950/20">
@@ -60,7 +62,7 @@ export function RecipeCard({ recipe, href }: RecipeCardProps) {
             ) : (
               member.name
             )}
-            {member.relation ? ` · ${member.relation}` : ""}
+            {relationLabel ? ` · ${relationLabel}` : ""}
           </p>
         )}
 

@@ -19,7 +19,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { COUNTRY_OPTIONS } from "@/data/recipe-options";
-import { RELATIONS, RELATIONS_REQUIRING_PARENT } from "@/lib/family-constants";
+import {
+  getRelationLabel,
+  normalizeRelationValue,
+  RELATION_OPTIONS,
+  RELATIONS_REQUIRING_PARENT,
+} from "@/lib/family-constants";
 import type { FamilyMember } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils";
 import { createFamilyMember } from "@/server/family-actions";
@@ -68,7 +73,9 @@ export function NewMemberForm({ members }: NewMemberFormProps) {
   const isMemorial = watch("is_memorial");
   const selectedRelation = watch("relation");
   const selectedParentIds = watch("parent_ids") ?? [];
-  const showParentSelector = selectedRelation ? RELATIONS_REQUIRING_PARENT.has(selectedRelation) : false;
+  const showParentSelector = selectedRelation
+    ? RELATIONS_REQUIRING_PARENT.has(normalizeRelationValue(selectedRelation) ?? "")
+    : false;
 
   function toggleParent(id: string, checked: boolean) {
     const current = selectedParentIds;
@@ -118,9 +125,9 @@ export function NewMemberForm({ members }: NewMemberFormProps) {
                   <SelectValue placeholder="Select relation" />
                 </SelectTrigger>
                 <SelectContent>
-                  {RELATIONS.map((r) => (
-                    <SelectItem key={r} value={r.toLowerCase().replace(/\s+/g, "-")}>
-                      {r}
+                  {RELATION_OPTIONS.map((relation) => (
+                    <SelectItem key={relation.value} value={relation.label}>
+                      {relation.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -214,7 +221,9 @@ export function NewMemberForm({ members }: NewMemberFormProps) {
                     />
                     <span className="text-sm">
                       {m.name}
-                      {m.relation ? <span className="text-muted-foreground"> ({m.relation})</span> : null}
+                      {m.relation ? (
+                        <span className="text-muted-foreground"> ({getRelationLabel(m.relation)})</span>
+                      ) : null}
                     </span>
                   </label>
                 ))}
