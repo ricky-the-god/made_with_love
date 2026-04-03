@@ -11,7 +11,13 @@ export interface Profile {
   full_name: string | null;
   avatar_url: string | null;
   family_id: string | null;
-  role: UserRole;
+  role: UserRole | null;
+  pref_recipes_private_by_default: boolean;
+  pref_show_in_discover: boolean;
+  pref_show_memorial_public: boolean;
+  pref_notify_invitations: boolean;
+  pref_notify_new_recipe: boolean;
+  pref_notify_new_memory: boolean;
   created_at: string;
   updated_at: string;
 }
