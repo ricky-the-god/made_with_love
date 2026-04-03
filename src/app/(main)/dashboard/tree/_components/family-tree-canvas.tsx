@@ -2,11 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { Heart, Minus, Plus, ScanLine, X } from "lucide-react";
+import { Minus, Plus, ScanLine } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import type { FamilyMember } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils";
+
+import { BookOpenModal } from "./book-open-modal";
 
 // ── Cover colour palette (deterministic from member id) ────────────────────
 const COVER_COLORS = [
@@ -35,10 +37,11 @@ interface GenRow {
 interface FamilyTreeCanvasProps {
   rows: GenRow[];
   recipeCountByMember: Record<string, number>;
+  recipesByMember: Record<string, { id: string; title: string; is_favorite: boolean }[]>;
 }
 
 // ── Component ──────────────────────────────────────────────────────────────
-export function FamilyTreeCanvas({ rows, recipeCountByMember }: FamilyTreeCanvasProps) {
+export function FamilyTreeCanvas({ rows, recipeCountByMember, recipesByMember }: FamilyTreeCanvasProps) {
   const outerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
@@ -47,11 +50,7 @@ export function FamilyTreeCanvas({ rows, recipeCountByMember }: FamilyTreeCanvas
   const [tx, setTx] = useState(0);
   const [ty, setTy] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-  const [selected, setSelected] = useState<{
-    member: FamilyMember;
-    px: number;
-    py: number;
-  } | null>(null);
+  const [selected, setSelected] = useState<FamilyMember | null>(null);
   const [connectors, setConnectors] = useState<string[]>([]);
   const [svgDims, setSvgDims] = useState({ w: 0, h: 0 });
 
@@ -159,17 +158,9 @@ export function FamilyTreeCanvas({ rows, recipeCountByMember }: FamilyTreeCanvas
     setIsDragging(false);
   }
 
-  // ── Node click → popup ────────────────────────────────────────────────────
-  function handleNodeClick(member: FamilyMember, el: HTMLButtonElement) {
-    const outer = outerRef.current;
-    if (!outer) return;
-    const outerRect = outer.getBoundingClientRect();
-    const nodeRect = el.getBoundingClientRect();
-    const popupW = 264;
-    const rawPx = nodeRect.right - outerRect.left + 14;
-    const px = Math.min(rawPx, outer.offsetWidth - popupW - 8);
-    const py = Math.max(8, nodeRect.top - outerRect.top);
-    setSelected({ member, px, py });
+  // ── Node click → book modal ────────────────────────────────────────────────
+  function handleNodeClick(member: FamilyMember) {
+    setSelected(member);
   }
 
   return (
@@ -184,11 +175,11 @@ export function FamilyTreeCanvas({ rows, recipeCountByMember }: FamilyTreeCanvas
       onMouseMove={handleMouseMove}
       onMouseUp={stopDrag}
       onMouseLeave={stopDrag}
-      onClick={(e) => {
-        if (!(e.target as HTMLElement).closest("[data-popup]")) setSelected(null);
+      onClick={() => {
+        // Clicks on the canvas (not on a node) don't need to dismiss — modal handles its own backdrop
       }}
-      onKeyDown={(e) => {
-        if (e.key === "Escape") setSelected(null);
+      onKeyDown={() => {
+        // Keyboard dismiss is handled inside BookOpenModal
       }}
     >
       {/* ── Transform container (pan + zoom) ────────────────────────────── */}
@@ -234,7 +225,7 @@ export function FamilyTreeCanvas({ rows, recipeCountByMember }: FamilyTreeCanvas
                 {row.members.map((member) => {
                   const count = recipeCountByMember[member.id] ?? 0;
                   const colors = coverColor(member);
-                  const isSelected = selected?.member.id === member.id;
+                  const isSelected = selected?.id === member.id;
 
                   return (
                     <button
@@ -247,7 +238,7 @@ export function FamilyTreeCanvas({ rows, recipeCountByMember }: FamilyTreeCanvas
                       }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleNodeClick(member, e.currentTarget);
+                        handleNodeClick(member);
                       }}
                       className={cn(
                         "flex flex-col items-center gap-2.5 transition-transform duration-150 focus:outline-none",
@@ -303,66 +294,14 @@ export function FamilyTreeCanvas({ rows, recipeCountByMember }: FamilyTreeCanvas
         </div>
       </div>
 
-      {/* ── Popup card (in outer container space, unaffected by transform) ── */}
+      {/* ── Book-open modal (fixed, centered, covers viewport) ─────────── */}
       {selected && (
-        <div
-          data-popup
-          role="dialog"
-          aria-modal="false"
-          aria-label={`${selected.member.name} profile`}
-          className="absolute z-20 w-64 rounded-2xl border border-stone-100 bg-white shadow-2xl dark:border-stone-800 dark:bg-stone-900"
-          style={{ left: selected.px, top: selected.py }}
-          onClick={(e) => e.stopPropagation()}
-          onKeyDown={(e) => e.stopPropagation()}
-        >
-          <div className="relative p-5">
-            <button
-              type="button"
-              onClick={() => setSelected(null)}
-              className="absolute top-3 right-3 rounded-full p-1 text-muted-foreground hover:bg-stone-100 dark:hover:bg-stone-800"
-            >
-              <X className="size-3.5" />
-            </button>
-
-            <h3 className="pr-5 font-bold text-amber-800 text-lg leading-tight dark:text-amber-300">
-              {selected.member.name}
-            </h3>
-
-            {(selected.member.relation || selected.member.country_of_origin) && (
-              <p className="mt-1 text-muted-foreground text-xs capitalize">
-                {[selected.member.relation, selected.member.country_of_origin].filter(Boolean).join(" · ")}
-              </p>
-            )}
-
-            {selected.member.bio && (
-              <p className="mt-3 line-clamp-3 text-muted-foreground text-sm italic leading-relaxed">
-                {selected.member.bio}
-              </p>
-            )}
-
-            {(recipeCountByMember[selected.member.id] ?? 0) > 0 && (
-              <p className="mt-2 text-amber-600 text-xs dark:text-amber-400">
-                {recipeCountByMember[selected.member.id]}{" "}
-                {recipeCountByMember[selected.member.id] === 1 ? "recipe" : "recipes"} preserved
-              </p>
-            )}
-
-            <div className="mt-4 flex items-center gap-2">
-              <a
-                href={`/dashboard/tree/member/${selected.member.id}`}
-                className="flex-1 rounded-lg bg-amber-700 px-3 py-2 text-center font-medium text-sm text-white transition-colors hover:bg-amber-800"
-              >
-                View Story
-              </a>
-              <button
-                type="button"
-                className="rounded-lg border border-stone-200 p-2 text-muted-foreground transition-colors hover:text-rose-500 dark:border-stone-700"
-              >
-                <Heart className="size-4" />
-              </button>
-            </div>
-          </div>
-        </div>
+        <BookOpenModal
+          member={selected}
+          recipes={recipesByMember[selected.id] ?? []}
+          coverColors={coverColor(selected)}
+          onClose={() => setSelected(null)}
+        />
       )}
 
       {/* ── Zoom controls (bottom-left) ────────────────────────────────── */}
