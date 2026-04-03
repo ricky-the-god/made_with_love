@@ -10,7 +10,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,7 +17,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { COUNTRY_OPTIONS } from "@/data/recipe-options";
-import { RELATIONS, RELATIONS_REQUIRING_PARENT } from "@/lib/family-constants";
+import {
+  getRelationLabel,
+  normalizeRelationValue,
+  RELATION_OPTIONS,
+  RELATIONS_WITH_PARENTS,
+} from "@/lib/family-constants";
 import type { FamilyMember } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils";
 import { updateFamilyMember } from "@/server/family-actions";
@@ -53,6 +57,7 @@ export function EditMemberForm({ member, members }: EditMemberFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [isCountryPickerOpen, setIsCountryPickerOpen] = useState(false);
+  const [selectedParentIds, setSelectedParentIds] = useState<string[]>(member.parent_ids ?? []);
 
   const {
     register,
@@ -64,28 +69,40 @@ export function EditMemberForm({ member, members }: EditMemberFormProps) {
     resolver: zodResolver(schema),
     defaultValues: {
       name: member.name,
-      relation: member.relation ?? undefined,
+      relation: member.relation ? (normalizeRelationValue(member.relation) ?? undefined) : undefined,
       country_of_origin: member.country_of_origin ?? undefined,
       cultural_background: member.cultural_background ?? undefined,
       bio: member.bio ?? undefined,
       generation: member.generation ?? undefined,
       is_memorial: member.is_memorial,
-      parent_ids: member.parent_ids ?? [],
     },
   });
 
   const isMemorial = watch("is_memorial");
-  const selectedRelation = watch("relation");
-  const selectedParentIds = watch("parent_ids") ?? [];
-  const showParentSelector = selectedRelation ? RELATIONS_REQUIRING_PARENT.has(selectedRelation) : false;
   const otherMembers = members.filter((familyMember) => familyMember.id !== member.id);
 
-  function toggleParent(id: string, checked: boolean) {
-    const current = selectedParentIds;
-    setValue("parent_ids", checked ? [...current, id] : current.filter((parentId) => parentId !== id), {
-      shouldDirty: true,
-    });
+  function toggleParent(id: string) {
+    setSelectedParentIds((prev) =>
+      prev.includes(id) ? prev.filter((p) => p !== id) : prev.length < 2 ? [...prev, id] : prev,
+    );
   }
+
+  const watchedRelation = watch("relation");
+  const watchedGeneration = watch("generation");
+
+  // Only show the picker for relations that have parents in the tree.
+  const showParentPicker =
+    otherMembers.length > 0 &&
+    !!watchedRelation &&
+    RELATIONS_WITH_PARENTS.has(normalizeRelationValue(watchedRelation) ?? "");
+
+  // Filter to the generation immediately above so only plausible parents appear.
+  const parentCandidates = showParentPicker
+    ? otherMembers.filter((m) => {
+        if (watchedGeneration && m.generation) return m.generation === watchedGeneration - 1;
+        return true;
+      })
+    : [];
 
   function onSubmit(values: FormValues) {
     startTransition(async () => {
@@ -97,7 +114,7 @@ export function EditMemberForm({ member, members }: EditMemberFormProps) {
         bio: values.bio || undefined,
         generation: values.generation || undefined,
         is_memorial: values.is_memorial ?? false,
-        parent_ids: values.parent_ids?.length ? values.parent_ids : undefined,
+        parent_ids: showParentPicker ? selectedParentIds : [],
       });
 
       if (result && "error" in result) {
@@ -121,16 +138,19 @@ export function EditMemberForm({ member, members }: EditMemberFormProps) {
         <div className="flex flex-col gap-2">
           <Label htmlFor="relation">Relation to you</Label>
           <Select
-            defaultValue={member.relation ?? undefined}
-            onValueChange={(value) => setValue("relation", value, { shouldDirty: true })}
+            defaultValue={normalizeRelationValue(member.relation) ?? undefined}
+            onValueChange={(value) => {
+              setValue("relation", value, { shouldDirty: true });
+              setSelectedParentIds([]);
+            }}
           >
             <SelectTrigger id="relation">
               <SelectValue placeholder="Select relation" />
             </SelectTrigger>
             <SelectContent>
-              {RELATIONS.map((relation) => (
-                <SelectItem key={relation} value={relation.toLowerCase().replace(/\s+/g, "-")}>
-                  {relation}
+              {RELATION_OPTIONS.map((relation) => (
+                <SelectItem key={relation.value} value={relation.value}>
+                  {relation.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -195,7 +215,10 @@ export function EditMemberForm({ member, members }: EditMemberFormProps) {
         <Label htmlFor="generation">Generation</Label>
         <Select
           defaultValue={member.generation?.toString() ?? undefined}
-          onValueChange={(value) => setValue("generation", Number(value), { shouldDirty: true })}
+          onValueChange={(value) => {
+            setValue("generation", Number(value), { shouldDirty: true });
+            setSelectedParentIds([]);
+          }}
         >
           <SelectTrigger id="generation">
             <SelectValue placeholder="Select generation" />
@@ -210,33 +233,33 @@ export function EditMemberForm({ member, members }: EditMemberFormProps) {
         </Select>
       </div>
 
-      {showParentSelector && otherMembers.length > 0 && (
+      {showParentPicker && (
         <div className="flex flex-col gap-2">
-          <Label>Parents in family tree</Label>
-          <div className="flex flex-col gap-2 rounded-lg border border-amber-100 bg-amber-50/50 p-3 dark:border-amber-900/20 dark:bg-amber-950/10">
-            {otherMembers.map((relatedMember) => (
-              <label
-                key={relatedMember.id}
-                htmlFor={`parent-${relatedMember.id}`}
-                className="flex cursor-pointer items-center gap-2.5"
-              >
-                <Checkbox
-                  id={`parent-${relatedMember.id}`}
-                  checked={selectedParentIds.includes(relatedMember.id)}
-                  onCheckedChange={(checked) => toggleParent(relatedMember.id, !!checked)}
+          <Label>Connected to (parent/guardian in tree)</Label>
+          <p className="text-muted-foreground text-xs">
+            Select up to 2 members who are this person&apos;s parents in the tree.
+          </p>
+          {parentCandidates.length === 0 && watchedGeneration && (
+            <p className="text-muted-foreground text-xs">
+              No members found in the generation above. Add generation {watchedGeneration - 1} members first, or skip to
+              let the tree infer connections automatically.
+            </p>
+          )}
+          <div className="flex max-h-40 flex-col gap-1.5 overflow-y-auto rounded-lg border border-input p-2">
+            {parentCandidates.map((m) => (
+              <label key={m.id} className="flex cursor-pointer items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  className="size-4 accent-amber-700"
+                  checked={selectedParentIds.includes(m.id)}
+                  onChange={() => toggleParent(m.id)}
+                  disabled={!selectedParentIds.includes(m.id) && selectedParentIds.length >= 2}
                 />
-                <span className="text-sm">
-                  {relatedMember.name}
-                  {relatedMember.relation ? (
-                    <span className="text-muted-foreground"> ({relatedMember.relation})</span>
-                  ) : null}
-                </span>
+                <span className="font-medium">{m.name}</span>
+                {m.relation && <span className="text-muted-foreground text-xs">({getRelationLabel(m.relation)})</span>}
               </label>
             ))}
           </div>
-          <p className="text-muted-foreground text-xs">
-            Select one or both parents. Determines connector lines in the tree.
-          </p>
         </div>
       )}
 

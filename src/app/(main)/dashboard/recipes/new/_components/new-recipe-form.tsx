@@ -22,6 +22,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { COUNTRY_OPTIONS, RECIPE_CATEGORY_OPTIONS } from "@/data/recipe-options";
+import { getRelationLabel } from "@/lib/family-constants";
 import type { FamilyMember } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils";
 import { createRecipe } from "@/server/recipe-actions";
@@ -247,7 +248,7 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
                               {members.map((member) => (
                                 <SelectItem key={member.id} value={member.id}>
                                   {member.name}
-                                  {member.relation ? ` (${member.relation})` : ""}
+                                  {member.relation ? ` (${getRelationLabel(member.relation)})` : ""}
                                 </SelectItem>
                               ))}
                             </SelectContent>

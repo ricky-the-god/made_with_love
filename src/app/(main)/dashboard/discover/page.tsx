@@ -1,10 +1,11 @@
 import Link from "next/link";
 
-import { Search } from "lucide-react";
+import { Search, SlidersHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { getPublicFamilies } from "@/server/family-actions";
 import { getPublicRecipes } from "@/server/recipe-actions";
 
@@ -222,6 +223,40 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
               className="pl-9"
             />
           </div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button type="button" variant="outline">
+                <SlidersHorizontal className="size-4" />
+                Filters
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-72 p-3">
+              <p className="mb-2 font-medium text-sm">Filter by region</p>
+              <div className="flex flex-wrap gap-2">
+                {CULTURAL_COLLECTIONS.map((collection) => {
+                  const isActive = activeCollection?.slug === collection.slug;
+                  return (
+                    <Button
+                      key={collection.slug}
+                      variant={isActive ? "default" : "outline"}
+                      size="sm"
+                      className={isActive ? "bg-amber-700 text-white hover:bg-amber-800" : ""}
+                      asChild
+                    >
+                      <Link href={buildDiscoverHref(collection.slug, q ?? null, recipes ?? null, traditions ?? null)}>
+                        {collection.emoji} {collection.region}
+                      </Link>
+                    </Button>
+                  );
+                })}
+              </div>
+              {(activeCollection || q) && (
+                <Button variant="ghost" size="sm" className="mt-2 w-full" asChild>
+                  <Link href="/dashboard/discover">Clear filters</Link>
+                </Button>
+              )}
+            </PopoverContent>
+          </Popover>
           <Button type="submit" className="bg-amber-700 text-white hover:bg-amber-800">
             Search
           </Button>
@@ -299,7 +334,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
       </div>
 
       {/* Food traditions grid */}
-      <div>
+      <div id="food-traditions">
         <h2 className="mb-4 font-semibold text-lg">Food Traditions</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           {visibleTraditions.map((c) => (
