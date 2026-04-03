@@ -21,10 +21,19 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
     getPreference("sidebar_variant", SIDEBAR_VARIANT_VALUES, "inset"),
     getPreference("sidebar_collapsible", SIDEBAR_COLLAPSIBLE_VALUES, "icon"),
   ]);
+  const displayName = profile.full_name?.trim() || profile.email?.split("@")[0] || "My Account";
 
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
-      <AppSidebar variant={variant} collapsible={collapsible} />
+      <AppSidebar
+        variant={variant}
+        collapsible={collapsible}
+        user={{
+          name: displayName,
+          email: profile.email ?? "",
+          avatarUrl: profile.avatar_url ?? null,
+        }}
+      />
       <SidebarInset
         className={cn(
           "[html[data-content-layout=centered]_&]:mx-auto! [html[data-content-layout=centered]_&]:max-w-screen-2xl!",

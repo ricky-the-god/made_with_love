@@ -4,11 +4,12 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { createAdminClient, createClient } from "@/lib/supabase/server";
+import type { Profile } from "@/lib/supabase/types";
 
 // -------------------------------------------------------
 // GET CURRENT USER'S PROFILE
 // -------------------------------------------------------
-export async function getProfile() {
+export async function getProfile(): Promise<Profile | null> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -18,7 +19,7 @@ export async function getProfile() {
 
   const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
 
-  return data;
+  return (data as Profile | null) ?? null;
 }
 
 // -------------------------------------------------------
