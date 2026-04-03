@@ -80,7 +80,7 @@ export default async function PublicRecipePage({ params }: { params: Promise<{ i
               <a href="/auth/v2/register">Start your own family cookbook</a>
             </Button>
             <Button variant="outline" asChild>
-              <a href="/">Back to Made with Love</a>
+              <a href="/dashboard/discover">Back to Made with Love</a>
             </Button>
           </div>
         </div>
