@@ -5,7 +5,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Minus, Plus, ScanLine } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { ButtonSoftGlow } from "@/components/ui/button-soft-glow";
 import { normalizeRelationValue } from "@/lib/family-constants";
 import type { FamilyMember } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils";
@@ -126,7 +125,7 @@ function rankParentCandidate(child: FamilyMember, candidate: FamilyMember, expec
 
 // Relations whose parents are outside the tree (different family origin).
 // Never auto-infer parents for these.
-const NO_INFER_RELATIONS = new Set(["husband", "wife", "spouse", "partner", "family-friend", "mentor", "other"]);
+const NO_INFER_RELATIONS = new Set(["husband", "wife", "family-friend", "mentor", "other"]);
 
 function inferAutomaticParentIds(member: FamilyMember, members: FamilyMember[]) {
   const memberRelation = normalizeRelationValue(member.relation) ?? "";
@@ -500,16 +499,6 @@ export function FamilyTreeCanvas({
           readOnly={readOnly}
         />
       )}
-
-      {/* ── Add Member button (bottom-right) ─────────────────────────── */}
-      <div className="absolute right-4 bottom-4">
-        <ButtonSoftGlow asChild>
-          <a href="/dashboard/tree/member/new">
-            <Plus className="size-4" />
-            Add Member
-          </a>
-        </ButtonSoftGlow>
-      </div>
 
       {/* ── Zoom controls (bottom-left) ────────────────────────────────── */}
       <div className="absolute bottom-4 left-4 flex flex-col gap-1.5">
