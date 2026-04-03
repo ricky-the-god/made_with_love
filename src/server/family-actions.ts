@@ -312,6 +312,20 @@ export async function acceptFamilyInvitation(token: string) {
 }
 
 // -------------------------------------------------------
+// GET ALL PUBLIC FAMILIES (for discover page)
+// -------------------------------------------------------
+export async function getPublicFamilies(limit = 20) {
+  const admin = createAdminClient();
+  const { data } = await admin
+    .from("families")
+    .select("id, family_name, privacy_setting, created_at")
+    .eq("privacy_setting", "public")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  return data ?? [];
+}
+
+// -------------------------------------------------------
 // GET PUBLIC FAMILY INFO (for friend/discover view)
 // -------------------------------------------------------
 export async function getPublicFamilyInfo(familyId: string) {
