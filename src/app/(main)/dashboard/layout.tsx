@@ -1,14 +1,20 @@
 import type { ReactNode } from "react";
 
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 import { AppSidebar } from "@/app/(main)/dashboard/_components/sidebar/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { SIDEBAR_COLLAPSIBLE_VALUES, SIDEBAR_VARIANT_VALUES } from "@/lib/preferences/layout";
 import { cn } from "@/lib/utils";
+import { getProfile } from "@/server/family-actions";
 import { getPreference } from "@/server/server-actions";
 
 export default async function Layout({ children }: Readonly<{ children: ReactNode }>) {
+  const profile = await getProfile();
+  if (!profile) redirect("/auth/v2/login");
+  if (!profile.family_id) redirect("/onboarding");
+
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value !== "false";
   const [variant, collapsible] = await Promise.all([

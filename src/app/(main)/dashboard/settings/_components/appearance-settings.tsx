@@ -18,7 +18,6 @@ import {
   applySidebarCollapsible,
   applySidebarVariant,
 } from "@/lib/preferences/layout-utils";
-import { PREFERENCE_DEFAULTS } from "@/lib/preferences/preferences-config";
 import { persistPreference } from "@/lib/preferences/preferences-storage";
 import { THEME_MODE_OPTIONS, THEME_PRESET_OPTIONS, type ThemeMode, type ThemePreset } from "@/lib/preferences/theme";
 import { applyThemePreset } from "@/lib/preferences/theme-utils";
@@ -84,7 +83,7 @@ export function AppearanceSettings() {
       {/* Theme */}
       <div className="space-y-4">
         <div className="space-y-1">
-          <Label className="text-sm font-medium">Theme mode</Label>
+          <Label className="font-medium text-sm">Theme mode</Label>
           <p className="text-muted-foreground text-xs">Choose between light, dark, or your system default.</p>
         </div>
         <ToggleGroup type="single" value={themeMode} onValueChange={onThemeModeChange} className="w-full **:flex-1">
@@ -99,7 +98,7 @@ export function AppearanceSettings() {
       {/* Preset */}
       <div className="space-y-4">
         <div className="space-y-1">
-          <Label className="text-sm font-medium">Color preset</Label>
+          <Label className="font-medium text-sm">Color preset</Label>
           <p className="text-muted-foreground text-xs">Change the accent color used across the app.</p>
         </div>
         <Select value={themePreset} onValueChange={onThemePresetChange}>
@@ -126,7 +125,7 @@ export function AppearanceSettings() {
       {/* Font */}
       <div className="space-y-4">
         <div className="space-y-1">
-          <Label className="text-sm font-medium">Font</Label>
+          <Label className="font-medium text-sm">Font</Label>
           <p className="text-muted-foreground text-xs">Select the typeface used throughout the app.</p>
         </div>
         <Select value={font} onValueChange={onFontChange}>
@@ -146,7 +145,7 @@ export function AppearanceSettings() {
       {/* Layout */}
       <div className="space-y-4">
         <div className="space-y-1">
-          <Label className="text-sm font-medium">Content layout</Label>
+          <Label className="font-medium text-sm">Content layout</Label>
           <p className="text-muted-foreground text-xs">
             Centered keeps content readable; full width uses all available space.
           </p>
@@ -168,7 +167,7 @@ export function AppearanceSettings() {
       {/* Sidebar variant */}
       <div className="space-y-4">
         <div className="space-y-1">
-          <Label className="text-sm font-medium">Sidebar style</Label>
+          <Label className="font-medium text-sm">Sidebar style</Label>
           <p className="text-muted-foreground text-xs">How the sidebar sits within the page.</p>
         </div>
         <ToggleGroup type="single" value={variant} onValueChange={onSidebarVariantChange} className="w-full **:flex-1">
@@ -183,7 +182,7 @@ export function AppearanceSettings() {
       {/* Sidebar collapse */}
       <div className="space-y-4">
         <div className="space-y-1">
-          <Label className="text-sm font-medium">Sidebar collapse mode</Label>
+          <Label className="font-medium text-sm">Sidebar collapse mode</Label>
           <p className="text-muted-foreground text-xs">
             Icon mode keeps the sidebar visible as icons; offcanvas slides it off-screen.
           </p>

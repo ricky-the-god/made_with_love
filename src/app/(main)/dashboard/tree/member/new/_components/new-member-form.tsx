@@ -11,6 +11,7 @@ import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,25 +19,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { COUNTRY_OPTIONS } from "@/data/recipe-options";
+import { RELATIONS, RELATIONS_REQUIRING_PARENT } from "@/lib/family-constants";
+import type { FamilyMember } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils";
 import { createFamilyMember } from "@/server/family-actions";
-
-const RELATIONS = [
-  "Myself",
-  "Mother",
-  "Father",
-  "Grandmother",
-  "Grandfather",
-  "Aunt",
-  "Uncle",
-  "Sister",
-  "Brother",
-  "Cousin",
-  "Child",
-  "Family friend",
-  "Mentor",
-  "Other",
-];
 
 const GENERATION_OPTIONS = [
   { value: "1", label: "1 — Great-grandparents" },
@@ -54,11 +40,16 @@ const schema = z.object({
   bio: z.string().optional(),
   generation: z.coerce.number().int().min(1).max(5).optional(),
   is_memorial: z.boolean().optional(),
+  parent_ids: z.array(z.string().uuid()).optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
 
-export function NewMemberForm() {
+interface NewMemberFormProps {
+  members: FamilyMember[];
+}
+
+export function NewMemberForm({ members }: NewMemberFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [isCountryPickerOpen, setIsCountryPickerOpen] = useState(false);
@@ -71,10 +62,18 @@ export function NewMemberForm() {
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { is_memorial: false },
+    defaultValues: { is_memorial: false, parent_ids: [] },
   });
 
   const isMemorial = watch("is_memorial");
+  const selectedRelation = watch("relation");
+  const selectedParentIds = watch("parent_ids") ?? [];
+  const showParentSelector = selectedRelation ? RELATIONS_REQUIRING_PARENT.has(selectedRelation) : false;
+
+  function toggleParent(id: string, checked: boolean) {
+    const current = selectedParentIds;
+    setValue("parent_ids", checked ? [...current, id] : current.filter((p) => p !== id));
+  }
 
   function onSubmit(values: FormValues) {
     startTransition(async () => {
@@ -86,10 +85,10 @@ export function NewMemberForm() {
         bio: values.bio || undefined,
         generation: values.generation || undefined,
         is_memorial: values.is_memorial ?? false,
+        parent_ids: values.parent_ids?.length ? values.parent_ids : undefined,
       });
 
       if ("error" in result) {
-        // Surface error — could use a toast; for now keep it simple with alert
         alert(result.error);
         return;
       }
@@ -201,6 +200,30 @@ export function NewMemberForm() {
             </Select>
             <p className="text-muted-foreground text-xs">Helps organise the family tree by time period.</p>
           </div>
+
+          {showParentSelector && members.length > 0 && (
+            <div className="flex flex-col gap-2">
+              <Label>Parents in family tree</Label>
+              <div className="flex flex-col gap-2 rounded-lg border border-amber-100 bg-amber-50/50 p-3 dark:border-amber-900/20 dark:bg-amber-950/10">
+                {members.map((m) => (
+                  <label key={m.id} htmlFor={`parent-${m.id}`} className="flex cursor-pointer items-center gap-2.5">
+                    <Checkbox
+                      id={`parent-${m.id}`}
+                      checked={selectedParentIds.includes(m.id)}
+                      onCheckedChange={(checked) => toggleParent(m.id, !!checked)}
+                    />
+                    <span className="text-sm">
+                      {m.name}
+                      {m.relation ? <span className="text-muted-foreground"> ({m.relation})</span> : null}
+                    </span>
+                  </label>
+                ))}
+              </div>
+              <p className="text-muted-foreground text-xs">
+                Select one or both parents. Determines connector lines in the tree.
+              </p>
+            </div>
+          )}
 
           <div className="flex flex-col gap-2">
             <Label htmlFor="bio">Short biography</Label>

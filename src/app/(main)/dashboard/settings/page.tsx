@@ -24,7 +24,7 @@ export default async function SettingsPage() {
     <div className="mx-auto flex max-w-2xl flex-col gap-6">
       <div>
         <h1 className="font-semibold text-2xl">Settings</h1>
-        <p className="text-muted-foreground text-sm mt-1">Manage your preferences, privacy, and account.</p>
+        <p className="mt-1 text-muted-foreground text-sm">Manage your preferences, privacy, and account.</p>
       </div>
 
       {/* Appearance */}

@@ -65,6 +65,7 @@ create table public.family_members (
   birth_year          int,
   is_memorial         boolean not null default false,
   linked_user_id      uuid references public.profiles(id) on delete set null,
+  parent_ids          uuid[] not null default '{}',
   created_by          uuid not null references public.profiles(id),
   created_at          timestamptz not null default now(),
   updated_at          timestamptz not null default now()

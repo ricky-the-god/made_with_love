@@ -31,6 +31,7 @@ export interface FamilyMember {
   name: string;
   relation: string | null;
   generation: number | null;
+  parent_ids: string[];
   photo_url: string | null;
   bio: string | null;
   country_of_origin: string | null;
@@ -103,6 +104,13 @@ export interface FamilyInvitation {
   token: string;
   accepted_at: string | null;
   expires_at: string;
+  created_at: string;
+}
+
+export interface FamilyConnection {
+  id: string;
+  user_id: string;
+  family_id: string;
   created_at: string;
 }
 

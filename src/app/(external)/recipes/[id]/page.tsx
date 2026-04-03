@@ -57,7 +57,7 @@ export default async function PublicRecipePage({ params }: { params: Promise<{ i
             >
               {recipe.title}
             </h1>
-            <p className="max-w-3xl text-muted-foreground text-base leading-relaxed">
+            <p className="max-w-3xl text-base text-muted-foreground leading-relaxed">
               {recipe.description ?? "A family recipe shared from Made with Love."}
             </p>
             <p className="text-muted-foreground text-sm">Shared publicly from {APP_CONFIG.name}</p>
@@ -80,7 +80,7 @@ export default async function PublicRecipePage({ params }: { params: Promise<{ i
               <a href="/auth/v2/register">Start your own family cookbook</a>
             </Button>
             <Button variant="outline" asChild>
-              <a href="/">Back to Made with Love</a>
+              <a href="/dashboard/discover">Back to Made with Love</a>
             </Button>
           </div>
         </div>

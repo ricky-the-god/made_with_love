@@ -131,6 +131,7 @@ export async function createFamilyMember(input: {
   name: string;
   relation?: string;
   generation?: number;
+  parent_ids?: string[];
   bio?: string;
   country_of_origin?: string;
   cultural_background?: string;
@@ -173,6 +174,7 @@ export async function updateFamilyMember(
     name?: string;
     relation?: string;
     generation?: number;
+    parent_ids?: string[];
     bio?: string;
     country_of_origin?: string;
     cultural_background?: string;
@@ -252,4 +254,142 @@ export async function getPendingInvitations() {
     .order("created_at", { ascending: false });
 
   return data ?? [];
+}
+
+// -------------------------------------------------------
+// ACCEPT FAMILY INVITATION
+// -------------------------------------------------------
+export async function acceptFamilyInvitation(token: string) {
+  const supabase = await createClient();
+  const admin = createAdminClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  // Use admin client so RLS on family_invitations doesn't block the lookup
+  const { data: invitation } = await admin
+    .from("family_invitations")
+    .select("*")
+    .eq("token", token)
+    .is("accepted_at", null)
+    .gt("expires_at", new Date().toISOString())
+    .single();
+
+  if (!invitation) return { error: "This invite link is invalid or has expired." };
+
+  // Check user doesn't already belong to a family
+  const { data: profile } = await supabase.from("profiles").select("family_id").eq("id", user.id).single();
+
+  if (profile?.family_id) return { error: "You already belong to a family space." };
+
+  // Link user to the family with the invited role
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .update({ family_id: invitation.family_id, role: invitation.role })
+    .eq("id", user.id);
+
+  if (profileError) return { error: profileError.message };
+
+  // Atomically mark invitation accepted — check count to guard against race conditions
+  const { count, error: acceptError } = await admin
+    .from("family_invitations")
+    .update({ accepted_at: new Date().toISOString() })
+    .eq("id", invitation.id)
+    .is("accepted_at", null) // only update if still unaccepted
+    .select("id", { count: "exact", head: true });
+
+  if (acceptError || count === 0) {
+    // Another request already claimed this invite — roll back the profile update
+    await supabase.from("profiles").update({ family_id: null, role: null }).eq("id", user.id);
+    return { error: "This invite was already used. Please request a new one." };
+  }
+
+  revalidatePath("/dashboard");
+  return { success: true };
+}
+
+// -------------------------------------------------------
+// GET PUBLIC FAMILY INFO (for friend/discover view)
+// -------------------------------------------------------
+export async function getPublicFamilyInfo(familyId: string) {
+  const admin = createAdminClient();
+  const { data } = await admin.from("families").select("*").eq("id", familyId).eq("privacy_setting", "public").single();
+  return data;
+}
+
+// -------------------------------------------------------
+// GET PUBLIC FAMILY MEMBERS
+// -------------------------------------------------------
+export async function getPublicFamilyMembers(familyId: string) {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("family_members")
+    .select("*")
+    .eq("family_id", familyId)
+    .order("generation", { ascending: true })
+    .order("name", { ascending: true });
+  return data ?? [];
+}
+
+// -------------------------------------------------------
+// GET CONNECTED FAMILIES
+// -------------------------------------------------------
+export async function getConnectedFamilies() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data } = await supabase
+    .from("family_connections")
+    .select("*, families(id, family_name, privacy_setting)")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
+  return data ?? [];
+}
+
+// -------------------------------------------------------
+// ADD FAMILY CONNECTION
+// -------------------------------------------------------
+export async function addFamilyConnection(familyId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
+  // Verify the target family is public
+  const info = await getPublicFamilyInfo(familyId);
+  if (!info) return { error: "This family is not found or is not public." };
+
+  const { error } = await supabase
+    .from("family_connections")
+    .upsert({ user_id: user.id, family_id: familyId }, { onConflict: "user_id,family_id" });
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/dashboard/friends");
+  return { success: true };
+}
+
+// -------------------------------------------------------
+// REMOVE FAMILY CONNECTION
+// -------------------------------------------------------
+export async function removeFamilyConnection(familyId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
+  const { error } = await supabase.from("family_connections").delete().eq("user_id", user.id).eq("family_id", familyId);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/dashboard/friends");
+  return { success: true };
 }

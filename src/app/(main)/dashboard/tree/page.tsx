@@ -19,9 +19,12 @@ export default async function TreePage() {
 
   // recipe count per member
   const recipeCountByMember: Record<string, number> = {};
+  const recipesByMember: Record<string, { id: string; title: string; is_favorite: boolean }[]> = {};
   for (const recipe of recipes) {
     if (recipe.member_id) {
       recipeCountByMember[recipe.member_id] = (recipeCountByMember[recipe.member_id] ?? 0) + 1;
+      if (!recipesByMember[recipe.member_id]) recipesByMember[recipe.member_id] = [];
+      recipesByMember[recipe.member_id].push({ id: recipe.id, title: recipe.title, is_favorite: recipe.is_favorite });
     }
   }
 
@@ -85,7 +88,12 @@ export default async function TreePage() {
         </div>
       ) : (
         <div className="flex-1 overflow-hidden rounded-2xl border border-amber-100 bg-amber-50/20 dark:border-amber-900/20 dark:bg-amber-950/5">
-          <FamilyTreeCanvas rows={rows} recipeCountByMember={recipeCountByMember} />
+          <FamilyTreeCanvas
+            rows={rows}
+            members={members}
+            recipeCountByMember={recipeCountByMember}
+            recipesByMember={recipesByMember}
+          />
         </div>
       )}
     </div>

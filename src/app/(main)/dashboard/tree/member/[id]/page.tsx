@@ -10,6 +10,8 @@ import { getInitials } from "@/lib/utils";
 import { getFamilyMember } from "@/server/family-actions";
 import { getMemberRecipes } from "@/server/recipe-actions";
 
+import { DeleteMemberButton } from "./_components/delete-member-button";
+
 export default async function MemberProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
@@ -65,12 +67,15 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
                 <p className="text-muted-foreground text-sm">{member.cultural_background}</p>
               )}
             </div>
-            <Button variant="outline" size="sm" asChild>
-              <a href={`/dashboard/tree/member/${id}/edit`}>
-                <Edit className="size-3.5" />
-                Edit
-              </a>
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" asChild>
+                <a href={`/dashboard/tree/member/${id}/edit`}>
+                  <Edit className="size-3.5" />
+                  Edit
+                </a>
+              </Button>
+              <DeleteMemberButton memberId={id} memberName={member.name} />
+            </div>
           </div>
 
           {member.bio ? (

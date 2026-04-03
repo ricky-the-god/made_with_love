@@ -1,18 +1,18 @@
+import { notFound } from "next/navigation";
+
 import { ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getFamilyMember } from "@/server/family-actions";
+import { getFamilyMember, getFamilyMembers } from "@/server/family-actions";
 
 import { EditMemberForm } from "./_components/edit-member-form";
 
 export default async function EditMemberPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const member = await getFamilyMember(id);
+  const [member, members] = await Promise.all([getFamilyMember(id), getFamilyMembers()]);
 
-  if (!member) {
-    return null;
-  }
+  if (!member) notFound();
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -34,7 +34,7 @@ export default async function EditMemberPage({ params }: { params: Promise<{ id:
           <CardDescription>Changes will be reflected across all their recipes and memories.</CardDescription>
         </CardHeader>
         <CardContent>
-          <EditMemberForm member={member} />
+          <EditMemberForm member={member} members={members} />
         </CardContent>
       </Card>
     </div>

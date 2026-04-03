@@ -2,6 +2,8 @@
 
 import { useState, useTransition } from "react";
 
+import { useRouter } from "next/navigation";
+
 import { ArrowLeft, ArrowRight, Heart, TreeDeciduous, Users } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -9,9 +11,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { createFamily, createFamilyMember } from "@/server/family-actions";
+import { acceptFamilyInvitation, createFamily, createFamilyMember } from "@/server/family-actions";
 
 export default function OnboardingPage() {
+  const router = useRouter();
   const [mode, setMode] = useState<"choose" | "create" | "join" | null>(null);
   const [step, setStep] = useState(0);
   const [familyName, setFamilyName] = useState("");
@@ -29,6 +32,23 @@ export default function OnboardingPage() {
     setMode(null);
     setStep(0);
     setError(null);
+  }
+
+  function handleJoinSubmit() {
+    if (!inviteCode.trim()) {
+      setError("Please enter your invite code.");
+      return;
+    }
+    setError(null);
+    startTransition(async () => {
+      const result = await acceptFamilyInvitation(inviteCode.trim());
+      if ("error" in result) {
+        setError(result.error);
+      } else {
+        router.refresh();
+        router.push("/dashboard/tree");
+      }
+    });
   }
 
   function handleCreateContinue() {
@@ -247,22 +267,23 @@ export default function OnboardingPage() {
                 <Label htmlFor="invite-code">Invite code</Label>
                 <Input
                   id="invite-code"
-                  placeholder="e.g. NGUYEN-2024"
+                  placeholder="Paste your invite code"
                   value={inviteCode}
                   onChange={(e) => setInviteCode(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleJoinSubmit()}
+                  disabled={isPending}
                   autoFocus
                 />
                 {error && <p className="text-destructive text-sm">{error}</p>}
               </div>
               <div className="flex w-full flex-col gap-3">
                 <Button
-                  asChild
+                  onClick={handleJoinSubmit}
+                  disabled={isPending}
                   className="w-full bg-amber-700 text-white hover:bg-amber-800 dark:bg-amber-600 dark:hover:bg-amber-700"
                 >
-                  <a href="/dashboard/tree">
-                    Join family tree
-                    <ArrowRight className="size-4" />
-                  </a>
+                  {isPending ? "Joining…" : "Join family tree"}
+                  {!isPending && <ArrowRight className="size-4" />}
                 </Button>
                 <Button variant="ghost" size="sm" onClick={resetToWelcome} className="text-muted-foreground">
                   <ArrowLeft className="mr-1 size-3" />
