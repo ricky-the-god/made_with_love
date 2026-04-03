@@ -3,13 +3,13 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getFamilyMember, getFamilyMembers } from "@/server/family-actions";
 
 import { EditMemberForm } from "./_components/edit-member-form";
 
 export default async function EditMemberPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-
   const [member, members] = await Promise.all([getFamilyMember(id), getFamilyMembers()]);
 
   if (!member) notFound();
@@ -28,7 +28,15 @@ export default async function EditMemberPage({ params }: { params: Promise<{ id:
         </div>
       </div>
 
-      <EditMemberForm member={member} members={members} />
+      <Card className="border-amber-100 dark:border-amber-900/20">
+        <CardHeader>
+          <CardTitle className="text-lg">Profile details</CardTitle>
+          <CardDescription>Changes will be reflected across all their recipes and memories.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <EditMemberForm member={member} members={members} />
+        </CardContent>
+      </Card>
     </div>
   );
 }

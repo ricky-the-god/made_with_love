@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { useAppCopy } from "@/lib/i18n/use-app-copy";
 import type { UserPreferences } from "@/server/settings-actions";
 import { saveUserPreferences } from "@/server/settings-actions";
 
@@ -36,12 +37,13 @@ function PrefSwitch({ label, description, checked, onChange, isPending }: PrefSw
 
 export function UserPrefSettings({ initialPrefs, section }: Props) {
   const [isPending, startTransition] = useTransition();
+  const copy = useAppCopy();
 
   const save = (patch: Partial<UserPreferences>) => {
     startTransition(async () => {
       const result = await saveUserPreferences(patch);
       if (result.error) {
-        toast.error("Failed to save preference");
+        toast.error(copy.preferenceSaveFailed);
       }
     });
   };
@@ -50,24 +52,24 @@ export function UserPrefSettings({ initialPrefs, section }: Props) {
     return (
       <div className="space-y-4">
         <PrefSwitch
-          label="Make new recipes private by default"
-          description="New recipes will only be visible to your family."
+          label={copy.privacyNewRecipesLabel}
+          description={copy.privacyNewRecipesDescription}
           checked={initialPrefs.pref_recipes_private_by_default}
           onChange={(v) => save({ pref_recipes_private_by_default: v })}
           isPending={isPending}
         />
         <Separator />
         <PrefSwitch
-          label="Appear in cultural discovery"
-          description="Allow your family's public recipes to appear in Discover."
+          label={copy.privacyDiscoverLabel}
+          description={copy.privacyDiscoverDescription}
           checked={initialPrefs.pref_show_in_discover}
           onChange={(v) => save({ pref_show_in_discover: v })}
           isPending={isPending}
         />
         <Separator />
         <PrefSwitch
-          label="Show memorial profiles publicly"
-          description="Allow others to view memorial family member profiles."
+          label={copy.privacyMemorialLabel}
+          description={copy.privacyMemorialDescription}
           checked={initialPrefs.pref_show_memorial_public}
           onChange={(v) => save({ pref_show_memorial_public: v })}
           isPending={isPending}
@@ -79,24 +81,24 @@ export function UserPrefSettings({ initialPrefs, section }: Props) {
   return (
     <div className="space-y-4">
       <PrefSwitch
-        label="Family invitation emails"
-        description="Get notified when someone accepts your family invite."
+        label={copy.notificationsInvitesLabel}
+        description={copy.notificationsInvitesDescription}
         checked={initialPrefs.pref_notify_invitations}
         onChange={(v) => save({ pref_notify_invitations: v })}
         isPending={isPending}
       />
       <Separator />
       <PrefSwitch
-        label="New recipe added by family"
-        description="Notify me when a family member uploads a new recipe."
+        label={copy.notificationsRecipeLabel}
+        description={copy.notificationsRecipeDescription}
         checked={initialPrefs.pref_notify_new_recipe}
         onChange={(v) => save({ pref_notify_new_recipe: v })}
         isPending={isPending}
       />
       <Separator />
       <PrefSwitch
-        label="Memory and story updates"
-        description="Notify me when a memory is attached to a recipe I care about."
+        label={copy.notificationsMemoryLabel}
+        description={copy.notificationsMemoryDescription}
         checked={initialPrefs.pref_notify_new_memory}
         onChange={(v) => save({ pref_notify_new_memory: v })}
         isPending={isPending}

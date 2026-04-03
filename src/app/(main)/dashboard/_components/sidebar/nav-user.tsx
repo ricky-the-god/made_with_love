@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleUser, LogOut, Settings } from "lucide-react";
+import { Accessibility, CircleUser, LogOut, Settings } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -12,10 +12,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
+import { useAppCopy } from "@/lib/i18n/use-app-copy";
 import { signOut } from "@/server/auth-actions";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
+  const copy = useAppCopy();
 
   return (
     <SidebarMenu>
@@ -32,8 +34,8 @@ export function NavUser() {
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">My Account</span>
-                <span className="truncate text-muted-foreground text-xs">Family member</span>
+                <span className="truncate font-medium">{copy.myAccount}</span>
+                <span className="truncate text-muted-foreground text-xs">{copy.familyMemberRole}</span>
               </div>
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -43,18 +45,26 @@ export function NavUser() {
             align="end"
             sideOffset={4}
           >
-            <DropdownMenuLabel className="font-normal text-muted-foreground text-xs">My Account</DropdownMenuLabel>
+            <DropdownMenuLabel className="font-normal text-muted-foreground text-xs">
+              {copy.myAccount}
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <a href="/dashboard/profile">
                 <CircleUser className="size-4" />
-                Profile
+                {copy.profile}
               </a>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <a href="/dashboard/settings">
                 <Settings className="size-4" />
-                Settings
+                {copy.settings}
+              </a>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <a href="/dashboard/settings/accessibility">
+                <Accessibility className="size-4" />
+                {copy.accessibilityTitle}
               </a>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -62,7 +72,7 @@ export function NavUser() {
               <form action={signOut}>
                 <button type="submit" className="flex w-full items-center gap-2">
                   <LogOut className="size-4" />
-                  Sign out
+                  {copy.signOut}
                 </button>
               </form>
             </DropdownMenuItem>

@@ -25,7 +25,7 @@ export function FriendButton({ familyId, isConnected: initialConnected }: Friend
     startTransition(async () => {
       const result = next ? await addFamilyConnection(familyId) : await removeFamilyConnection(familyId);
 
-      if (result && "error" in result) {
+      if (result && "error" in result && result.error) {
         setConnected(!next); // revert
         setError(result.error);
       }

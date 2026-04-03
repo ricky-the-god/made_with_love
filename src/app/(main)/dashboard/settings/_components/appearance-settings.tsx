@@ -3,7 +3,8 @@
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { type FontKey, fontOptions } from "@/lib/fonts/registry";
+import { APP_LANGUAGE_OPTIONS, type AppLanguage, applyAppLanguagePreference } from "@/lib/i18n/app-language";
+import { useAppCopy } from "@/lib/i18n/use-app-copy";
 import {
   CONTENT_LAYOUT_OPTIONS,
   type ContentLayout,
@@ -12,25 +13,21 @@ import {
   type SidebarCollapsible,
   type SidebarVariant,
 } from "@/lib/preferences/layout";
-import {
-  applyContentLayout,
-  applyFont,
-  applySidebarCollapsible,
-  applySidebarVariant,
-} from "@/lib/preferences/layout-utils";
+import { applyContentLayout, applySidebarCollapsible, applySidebarVariant } from "@/lib/preferences/layout-utils";
 import { persistPreference } from "@/lib/preferences/preferences-storage";
 import { THEME_MODE_OPTIONS, THEME_PRESET_OPTIONS, type ThemeMode, type ThemePreset } from "@/lib/preferences/theme";
 import { applyThemePreset } from "@/lib/preferences/theme-utils";
 import { usePreferencesStore } from "@/stores/preferences/preferences-provider";
 
 export function AppearanceSettings() {
+  const copy = useAppCopy();
   const themeMode = usePreferencesStore((s) => s.themeMode);
   const resolvedThemeMode = usePreferencesStore((s) => s.resolvedThemeMode);
   const setThemeMode = usePreferencesStore((s) => s.setThemeMode);
   const themePreset = usePreferencesStore((s) => s.themePreset);
   const setThemePreset = usePreferencesStore((s) => s.setThemePreset);
-  const font = usePreferencesStore((s) => s.font);
-  const setFont = usePreferencesStore((s) => s.setFont);
+  const appLanguage = usePreferencesStore((s) => s.appLanguage);
+  const setAppLanguage = usePreferencesStore((s) => s.setAppLanguage);
   const contentLayout = usePreferencesStore((s) => s.contentLayout);
   const setContentLayout = usePreferencesStore((s) => s.setContentLayout);
   const variant = usePreferencesStore((s) => s.sidebarVariant);
@@ -50,11 +47,11 @@ export function AppearanceSettings() {
     persistPreference("theme_preset", preset);
   };
 
-  const onFontChange = (value: FontKey | "") => {
+  const onAppLanguageChange = (value: AppLanguage | "") => {
     if (!value) return;
-    applyFont(value);
-    setFont(value);
-    persistPreference("font", value);
+    applyAppLanguagePreference(value);
+    setAppLanguage(value);
+    persistPreference("app_language", value);
   };
 
   const onContentLayoutChange = (layout: ContentLayout | "") => {
@@ -83,8 +80,8 @@ export function AppearanceSettings() {
       {/* Theme */}
       <div className="space-y-4">
         <div className="space-y-1">
-          <Label className="font-medium text-sm">Theme mode</Label>
-          <p className="text-muted-foreground text-xs">Choose between light, dark, or your system default.</p>
+          <Label className="font-medium text-sm">{copy.themeModeLabel}</Label>
+          <p className="text-muted-foreground text-xs">{copy.themeModeDescription}</p>
         </div>
         <ToggleGroup type="single" value={themeMode} onValueChange={onThemeModeChange} className="w-full **:flex-1">
           {THEME_MODE_OPTIONS.map((opt) => (
@@ -98,8 +95,8 @@ export function AppearanceSettings() {
       {/* Preset */}
       <div className="space-y-4">
         <div className="space-y-1">
-          <Label className="font-medium text-sm">Color preset</Label>
-          <p className="text-muted-foreground text-xs">Change the accent color used across the app.</p>
+          <Label className="font-medium text-sm">{copy.colorPresetLabel}</Label>
+          <p className="text-muted-foreground text-xs">{copy.colorPresetDescription}</p>
         </div>
         <Select value={themePreset} onValueChange={onThemePresetChange}>
           <SelectTrigger className="w-full">
@@ -122,20 +119,19 @@ export function AppearanceSettings() {
         </Select>
       </div>
 
-      {/* Font */}
       <div className="space-y-4">
         <div className="space-y-1">
-          <Label className="font-medium text-sm">Font</Label>
-          <p className="text-muted-foreground text-xs">Select the typeface used throughout the app.</p>
+          <Label className="font-medium text-sm">{copy.appLanguageLabel}</Label>
+          <p className="text-muted-foreground text-xs">{copy.appLanguageDescription}</p>
         </div>
-        <Select value={font} onValueChange={onFontChange}>
+        <Select value={appLanguage} onValueChange={onAppLanguageChange}>
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select font" />
+            <SelectValue placeholder={copy.appLanguageLabel} />
           </SelectTrigger>
           <SelectContent>
-            {fontOptions.map((f) => (
-              <SelectItem key={f.key} value={f.key}>
-                {f.label}
+            {APP_LANGUAGE_OPTIONS.map((language) => (
+              <SelectItem key={language.value} value={language.value}>
+                {language.label}
               </SelectItem>
             ))}
           </SelectContent>
@@ -145,10 +141,8 @@ export function AppearanceSettings() {
       {/* Layout */}
       <div className="space-y-4">
         <div className="space-y-1">
-          <Label className="font-medium text-sm">Content layout</Label>
-          <p className="text-muted-foreground text-xs">
-            Centered keeps content readable; full width uses all available space.
-          </p>
+          <Label className="font-medium text-sm">{copy.contentLayoutLabel}</Label>
+          <p className="text-muted-foreground text-xs">{copy.contentLayoutDescription}</p>
         </div>
         <ToggleGroup
           type="single"
@@ -167,8 +161,8 @@ export function AppearanceSettings() {
       {/* Sidebar variant */}
       <div className="space-y-4">
         <div className="space-y-1">
-          <Label className="font-medium text-sm">Sidebar style</Label>
-          <p className="text-muted-foreground text-xs">How the sidebar sits within the page.</p>
+          <Label className="font-medium text-sm">{copy.sidebarStyleLabel}</Label>
+          <p className="text-muted-foreground text-xs">{copy.sidebarStyleDescription}</p>
         </div>
         <ToggleGroup type="single" value={variant} onValueChange={onSidebarVariantChange} className="w-full **:flex-1">
           {SIDEBAR_VARIANT_OPTIONS.map((opt) => (
@@ -182,10 +176,8 @@ export function AppearanceSettings() {
       {/* Sidebar collapse */}
       <div className="space-y-4">
         <div className="space-y-1">
-          <Label className="font-medium text-sm">Sidebar collapse mode</Label>
-          <p className="text-muted-foreground text-xs">
-            Icon mode keeps the sidebar visible as icons; offcanvas slides it off-screen.
-          </p>
+          <Label className="font-medium text-sm">{copy.sidebarCollapseLabel}</Label>
+          <p className="text-muted-foreground text-xs">{copy.sidebarCollapseDescription}</p>
         </div>
         <ToggleGroup
           type="single"

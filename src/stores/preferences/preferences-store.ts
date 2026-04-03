@@ -1,6 +1,8 @@
 import { createStore } from "zustand/vanilla";
 
 import type { FontKey } from "@/lib/fonts/registry";
+import type { AppLanguage } from "@/lib/i18n/app-language";
+import type { ReducedMotionPreference, TextSizePreference } from "@/lib/preferences/accessibility";
 import type { ContentLayout, NavbarStyle, SidebarCollapsible, SidebarVariant } from "@/lib/preferences/layout";
 import { PREFERENCE_DEFAULTS } from "@/lib/preferences/preferences-config";
 import type { ResolvedThemeMode, ThemeMode, ThemePreset } from "@/lib/preferences/theme";
@@ -9,6 +11,9 @@ export type PreferencesState = {
   themeMode: ThemeMode;
   resolvedThemeMode: ResolvedThemeMode;
   themePreset: ThemePreset;
+  reducedMotion: ReducedMotionPreference;
+  textSize: TextSizePreference;
+  appLanguage: AppLanguage;
   font: FontKey;
   contentLayout: ContentLayout;
   navbarStyle: NavbarStyle;
@@ -17,6 +22,9 @@ export type PreferencesState = {
   setThemeMode: (mode: ThemeMode) => void;
   setResolvedThemeMode: (mode: ResolvedThemeMode) => void;
   setThemePreset: (preset: ThemePreset) => void;
+  setReducedMotion: (value: ReducedMotionPreference) => void;
+  setTextSize: (value: TextSizePreference) => void;
+  setAppLanguage: (value: AppLanguage) => void;
   setFont: (font: FontKey) => void;
   setContentLayout: (layout: ContentLayout) => void;
   setNavbarStyle: (style: NavbarStyle) => void;
@@ -31,6 +39,9 @@ export const createPreferencesStore = (init?: Partial<PreferencesState>) =>
     themeMode: init?.themeMode ?? PREFERENCE_DEFAULTS.theme_mode,
     resolvedThemeMode: init?.resolvedThemeMode ?? "light",
     themePreset: init?.themePreset ?? PREFERENCE_DEFAULTS.theme_preset,
+    reducedMotion: init?.reducedMotion ?? PREFERENCE_DEFAULTS.reduced_motion,
+    textSize: init?.textSize ?? PREFERENCE_DEFAULTS.text_size,
+    appLanguage: init?.appLanguage ?? PREFERENCE_DEFAULTS.app_language,
     font: init?.font ?? PREFERENCE_DEFAULTS.font,
     contentLayout: init?.contentLayout ?? PREFERENCE_DEFAULTS.content_layout,
     navbarStyle: init?.navbarStyle ?? PREFERENCE_DEFAULTS.navbar_style,
@@ -39,6 +50,9 @@ export const createPreferencesStore = (init?: Partial<PreferencesState>) =>
     setThemeMode: (mode) => set({ themeMode: mode }),
     setResolvedThemeMode: (mode) => set({ resolvedThemeMode: mode }),
     setThemePreset: (preset) => set({ themePreset: preset }),
+    setReducedMotion: (value) => set({ reducedMotion: value }),
+    setTextSize: (value) => set({ textSize: value }),
+    setAppLanguage: (value) => set({ appLanguage: value }),
     setFont: (font) => set({ font }),
     setContentLayout: (layout) => set({ contentLayout: layout }),
     setNavbarStyle: (style) => set({ navbarStyle: style }),

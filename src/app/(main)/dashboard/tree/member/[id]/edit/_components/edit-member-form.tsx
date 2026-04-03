@@ -1,22 +1,26 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { RELATIONS } from "@/lib/family-constants";
+import { COUNTRY_OPTIONS } from "@/data/recipe-options";
+import { RELATIONS, RELATIONS_REQUIRING_PARENT } from "@/lib/family-constants";
 import type { FamilyMember } from "@/lib/supabase/types";
+import { cn } from "@/lib/utils";
 import { updateFamilyMember } from "@/server/family-actions";
 
 const GENERATION_OPTIONS = [
@@ -48,6 +52,7 @@ interface EditMemberFormProps {
 export function EditMemberForm({ member, members }: EditMemberFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [isCountryPickerOpen, setIsCountryPickerOpen] = useState(false);
 
   const {
     register,
@@ -70,15 +75,16 @@ export function EditMemberForm({ member, members }: EditMemberFormProps) {
   });
 
   const isMemorial = watch("is_memorial");
-  const _selectedRelation = watch("relation");
+  const selectedRelation = watch("relation");
   const selectedParentIds = watch("parent_ids") ?? [];
-
-  // Other members (exclude self from parent options)
-  const otherMembers = members.filter((m) => m.id !== member.id);
+  const showParentSelector = selectedRelation ? RELATIONS_REQUIRING_PARENT.has(selectedRelation) : false;
+  const otherMembers = members.filter((familyMember) => familyMember.id !== member.id);
 
   function toggleParent(id: string, checked: boolean) {
     const current = selectedParentIds;
-    setValue("parent_ids", checked ? [...current, id] : current.filter((p) => p !== id));
+    setValue("parent_ids", checked ? [...current, id] : current.filter((parentId) => parentId !== id), {
+      shouldDirty: true,
+    });
   }
 
   function onSubmit(values: FormValues) {
@@ -91,7 +97,7 @@ export function EditMemberForm({ member, members }: EditMemberFormProps) {
         bio: values.bio || undefined,
         generation: values.generation || undefined,
         is_memorial: values.is_memorial ?? false,
-        parent_ids: values.parent_ids ?? [],
+        parent_ids: values.parent_ids?.length ? values.parent_ids : undefined,
       });
 
       if (result && "error" in result) {
@@ -100,136 +106,180 @@ export function EditMemberForm({ member, members }: EditMemberFormProps) {
       }
 
       router.push(`/dashboard/tree/member/${member.id}`);
+      router.refresh();
     });
   }
 
   return (
-    <Card className="border-amber-100 dark:border-amber-900/20">
-      <CardHeader>
-        <CardTitle className="text-lg">Profile details</CardTitle>
-        <CardDescription>Changes will be reflected across all their recipes and memories.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
-          <div className="grid gap-5 sm:grid-cols-2">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="name">Full name *</Label>
-              <Input id="name" placeholder="e.g. Grandma Rosa" {...register("name")} />
-              {errors.name && <p className="text-destructive text-xs">{errors.name.message}</p>}
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="relation">Relation to you</Label>
-              <Select defaultValue={member.relation ?? undefined} onValueChange={(v) => setValue("relation", v)}>
-                <SelectTrigger id="relation">
-                  <SelectValue placeholder="Select relation" />
-                </SelectTrigger>
-                <SelectContent>
-                  {RELATIONS.map((r) => (
-                    <SelectItem key={r} value={r.toLowerCase().replace(/\s+/g, "-")}>
-                      {r}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+      <div className="grid gap-5 sm:grid-cols-2">
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="name">Full name *</Label>
+          <Input id="name" placeholder="e.g. Grandma Rosa" {...register("name")} />
+          {errors.name && <p className="text-destructive text-xs">{errors.name.message}</p>}
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="relation">Relation to you</Label>
+          <Select
+            defaultValue={member.relation ?? undefined}
+            onValueChange={(value) => setValue("relation", value, { shouldDirty: true })}
+          >
+            <SelectTrigger id="relation">
+              <SelectValue placeholder="Select relation" />
+            </SelectTrigger>
+            <SelectContent>
+              {RELATIONS.map((relation) => (
+                <SelectItem key={relation} value={relation.toLowerCase().replace(/\s+/g, "-")}>
+                  {relation}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
-          <div className="grid gap-5 sm:grid-cols-2">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="country">Country of origin</Label>
-              <Input id="country" placeholder="e.g. Vietnam, Italy, Mexico" {...register("country_of_origin")} />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="culture">Cultural background</Label>
-              <Input id="culture" placeholder="e.g. Southern Vietnamese" {...register("cultural_background")} />
-            </div>
-          </div>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="country">Country of origin</Label>
+          <Popover open={isCountryPickerOpen} onOpenChange={setIsCountryPickerOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                role="combobox"
+                aria-expanded={isCountryPickerOpen}
+                className={cn(
+                  "w-full justify-between font-normal",
+                  !watch("country_of_origin") && "text-muted-foreground",
+                )}
+              >
+                {watch("country_of_origin") || "Search and select a country"}
+                <ChevronsUpDown className="size-4 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+              <Command>
+                <CommandInput placeholder="Search countries..." />
+                <CommandList>
+                  <CommandEmpty>No country found.</CommandEmpty>
+                  <CommandGroup>
+                    {COUNTRY_OPTIONS.map((country) => (
+                      <CommandItem
+                        key={country}
+                        value={country}
+                        onSelect={() => {
+                          const nextCountry = country === watch("country_of_origin") ? "" : country;
+                          setValue("country_of_origin", nextCountry, { shouldDirty: true });
+                          setIsCountryPickerOpen(false);
+                        }}
+                      >
+                        <Check
+                          className={cn("size-4", watch("country_of_origin") === country ? "opacity-100" : "opacity-0")}
+                        />
+                        {country}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="culture">Cultural background</Label>
+          <Input id="culture" placeholder="e.g. Southern Vietnamese" {...register("cultural_background")} />
+        </div>
+      </div>
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="generation">Generation</Label>
-            <Select
-              defaultValue={member.generation?.toString() ?? undefined}
-              onValueChange={(v) => setValue("generation", Number(v))}
-            >
-              <SelectTrigger id="generation">
-                <SelectValue placeholder="Select generation" />
-              </SelectTrigger>
-              <SelectContent>
-                {GENERATION_OPTIONS.map((g) => (
-                  <SelectItem key={g.value} value={g.value}>
-                    {g.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="generation">Generation</Label>
+        <Select
+          defaultValue={member.generation?.toString() ?? undefined}
+          onValueChange={(value) => setValue("generation", Number(value), { shouldDirty: true })}
+        >
+          <SelectTrigger id="generation">
+            <SelectValue placeholder="Select generation" />
+          </SelectTrigger>
+          <SelectContent>
+            {GENERATION_OPTIONS.map((generation) => (
+              <SelectItem key={generation.value} value={generation.value}>
+                {generation.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
-          {otherMembers.length > 0 && (
-            <div className="flex flex-col gap-2">
-              <Label>Parents in family tree</Label>
-              <div className="flex flex-col gap-2 rounded-lg border border-amber-100 bg-amber-50/50 p-3 dark:border-amber-900/20 dark:bg-amber-950/10">
-                {otherMembers.map((m) => (
-                  <label key={m.id} htmlFor={`parent-${m.id}`} className="flex cursor-pointer items-center gap-2.5">
-                    <Checkbox
-                      id={`parent-${m.id}`}
-                      checked={selectedParentIds.includes(m.id)}
-                      onCheckedChange={(checked) => toggleParent(m.id, !!checked)}
-                    />
-                    <span className="text-sm">
-                      {m.name}
-                      {m.relation ? <span className="text-muted-foreground"> ({m.relation})</span> : null}
-                    </span>
-                  </label>
-                ))}
-              </div>
-              <p className="text-muted-foreground text-xs">
-                Select one or both parents. Determines connector lines in the tree.
-              </p>
-            </div>
-          )}
-
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="bio">Short biography</Label>
-            <Textarea
-              id="bio"
-              placeholder="A few words about who they are, their cooking style, or what makes them special..."
-              className="min-h-[100px] resize-none"
-              {...register("bio")}
-            />
+      {showParentSelector && otherMembers.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <Label>Parents in family tree</Label>
+          <div className="flex flex-col gap-2 rounded-lg border border-amber-100 bg-amber-50/50 p-3 dark:border-amber-900/20 dark:bg-amber-950/10">
+            {otherMembers.map((relatedMember) => (
+              <label
+                key={relatedMember.id}
+                htmlFor={`parent-${relatedMember.id}`}
+                className="flex cursor-pointer items-center gap-2.5"
+              >
+                <Checkbox
+                  id={`parent-${relatedMember.id}`}
+                  checked={selectedParentIds.includes(relatedMember.id)}
+                  onCheckedChange={(checked) => toggleParent(relatedMember.id, !!checked)}
+                />
+                <span className="text-sm">
+                  {relatedMember.name}
+                  {relatedMember.relation ? (
+                    <span className="text-muted-foreground"> ({relatedMember.relation})</span>
+                  ) : null}
+                </span>
+              </label>
+            ))}
           </div>
+          <p className="text-muted-foreground text-xs">
+            Select one or both parents. Determines connector lines in the tree.
+          </p>
+        </div>
+      )}
 
-          <div className="flex items-center gap-3 rounded-lg border border-amber-100 bg-amber-50/50 px-4 py-3 dark:border-amber-900/20 dark:bg-amber-950/10">
-            <input
-              type="checkbox"
-              id="memorial"
-              className="size-4 accent-amber-700"
-              checked={isMemorial ?? false}
-              onChange={(e) => setValue("is_memorial", e.target.checked)}
-            />
-            <div>
-              <Label htmlFor="memorial" className="cursor-pointer font-medium">
-                Memorial profile
-              </Label>
-              <p className="text-muted-foreground text-xs">
-                This person has passed away. Their profile will be handled with care and respect.
-              </p>
-            </div>
-          </div>
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="bio">Short biography</Label>
+        <Textarea
+          id="bio"
+          placeholder="A few words about who they are, their cooking style, or what makes them special..."
+          className="min-h-[100px] resize-none"
+          {...register("bio")}
+        />
+      </div>
 
-          <div className="flex gap-3 pt-2">
-            <Button
-              type="submit"
-              disabled={isPending}
-              className="flex-1 bg-amber-700 text-white hover:bg-amber-800 dark:bg-amber-600 dark:hover:bg-amber-700"
-            >
-              {isPending ? "Saving..." : "Save changes"}
-            </Button>
-            <Button variant="outline" asChild>
-              <a href={`/dashboard/tree/member/${member.id}`}>Cancel</a>
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+      <div className="flex items-center gap-3 rounded-lg border border-amber-100 bg-amber-50/50 px-4 py-3 dark:border-amber-900/20 dark:bg-amber-950/10">
+        <input
+          type="checkbox"
+          id="memorial"
+          className="size-4 accent-amber-700"
+          checked={isMemorial ?? false}
+          onChange={(event) => setValue("is_memorial", event.target.checked, { shouldDirty: true })}
+        />
+        <div>
+          <Label htmlFor="memorial" className="cursor-pointer font-medium">
+            Memorial profile
+          </Label>
+          <p className="text-muted-foreground text-xs">
+            This person has passed away. Their profile will be handled with care and respect.
+          </p>
+        </div>
+      </div>
+
+      <div className="flex gap-3 pt-2">
+        <Button
+          type="submit"
+          disabled={isPending}
+          className="flex-1 bg-amber-700 text-white hover:bg-amber-800 dark:bg-amber-600 dark:hover:bg-amber-700"
+        >
+          {isPending ? "Saving..." : "Save changes"}
+        </Button>
+        <Button variant="outline" asChild>
+          <a href={`/dashboard/tree/member/${member.id}`}>Cancel</a>
+        </Button>
+      </div>
+    </form>
   );
 }
