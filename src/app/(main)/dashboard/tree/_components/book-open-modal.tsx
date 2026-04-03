@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { BookOpen, Heart, Pencil, Star, X } from "lucide-react";
 
+import { getRelationLabel } from "@/lib/family-constants";
 import type { FamilyMember } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils";
 
@@ -45,6 +46,7 @@ export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly 
 
   const visibleRecipes = recipes.slice(0, 6);
   const hasMore = recipes.length > 6;
+  const relationLabel = getRelationLabel(member.relation);
 
   return (
     /* Backdrop */
@@ -86,9 +88,9 @@ export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly 
               <div className="flex items-start gap-2">
                 <div>
                   <h2 className="font-bold text-amber-800 text-xl leading-tight dark:text-amber-700">{member.name}</h2>
-                  {(member.relation || member.country_of_origin) && (
+                  {(relationLabel || member.country_of_origin) && (
                     <p className="mt-0.5 text-muted-foreground text-xs capitalize">
-                      {[member.relation, member.country_of_origin].filter(Boolean).join(" · ")}
+                      {[relationLabel, member.country_of_origin].filter(Boolean).join(" · ")}
                     </p>
                   )}
                 </div>
@@ -194,7 +196,7 @@ export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly 
             <p className="text-[9px] text-white/40 uppercase tracking-widest">Made with Love</p>
             <div>
               <p className="font-bold text-base text-white leading-tight">{member.name}</p>
-              {member.relation && <p className="mt-1 text-white/60 text-xs capitalize">{member.relation}</p>}
+              {relationLabel && <p className="mt-1 text-white/60 text-xs capitalize">{relationLabel}</p>}
             </div>
             <p className="text-[9px] text-white/40">
               {recipes.length} {recipes.length === 1 ? "recipe" : "recipes"}

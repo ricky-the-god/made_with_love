@@ -51,11 +51,24 @@ export default async function TreePage() {
   return (
     <div className="flex h-full flex-col gap-6">
       {/* Header */}
-      <div>
-        <h1 className="font-semibold text-2xl text-foreground">Family Tree</h1>
-        <p className="mt-1 text-muted-foreground text-sm">
-          Your living family archive — tap a person to explore their recipes and memories.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-semibold text-2xl text-foreground">Family Tree</h1>
+          <p className="mt-1 text-muted-foreground text-sm">
+            Your living family archive — tap a person to explore their recipes and memories.
+          </p>
+        </div>
+        {members.length > 0 && (
+          <Button
+            asChild
+            className="shrink-0 bg-amber-700 text-white hover:bg-amber-800 dark:bg-amber-600 dark:hover:bg-amber-700"
+          >
+            <a href="/dashboard/tree/member/new">
+              <Plus className="size-4" />
+              Add Member
+            </a>
+          </Button>
+        )}
       </div>
 
       {/* Empty state */}

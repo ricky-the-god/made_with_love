@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { getRelationLabel } from "@/lib/family-constants";
 import { getInitials } from "@/lib/utils";
 import { getFamilyMember } from "@/server/family-actions";
 import { getMemberRecipes } from "@/server/recipe-actions";
@@ -23,6 +24,7 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
 
   const initials = getInitials(member.name);
   const firstName = member.name.split(" ")[0];
+  const relationLabel = getRelationLabel(member.relation);
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -61,7 +63,7 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
                 )}
               </div>
               <p className="mt-0.5 text-muted-foreground">
-                {[member.relation, member.country_of_origin].filter(Boolean).join(" · ")}
+                {[relationLabel, member.country_of_origin].filter(Boolean).join(" · ")}
               </p>
               {member.cultural_background && (
                 <p className="text-muted-foreground text-sm">{member.cultural_background}</p>
