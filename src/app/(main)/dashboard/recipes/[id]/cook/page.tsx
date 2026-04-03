@@ -12,12 +12,12 @@ export default async function GuidedCookingPage({ params }: { params: Promise<{ 
     notFound();
   }
 
-  const steps = recipe.steps
+  const steps: string[] = recipe.steps
     ? recipe.steps
         .split("\n")
-        .map((l) => l.trim())
+        .map((l: string) => l.trim())
         .filter(Boolean)
-        .map((l) => l.replace(/^\d+\.\s*/, ""))
+        .map((l: string) => l.replace(/^\d+\.\s*/, ""))
     : [];
 
   return (

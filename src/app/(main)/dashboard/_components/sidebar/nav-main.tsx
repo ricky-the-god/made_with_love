@@ -27,11 +27,12 @@ export function NavMain({ items }: NavMainProps) {
             <SidebarMenu>
               {group.items.map((item) => {
                 const isActive = path.startsWith(item.url);
+                const Icon = item.icon;
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={isActive} tooltip={item.title} size="lg">
                       <Link prefetch={false} href={item.url}>
-                        <item.icon />
+                        {Icon ? <Icon /> : null}
                         <span>{item.title}</span>
                       </Link>
                     </SidebarMenuButton>

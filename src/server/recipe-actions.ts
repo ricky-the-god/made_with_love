@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient, createClient } from "@/lib/supabase/server";
 
 // -------------------------------------------------------
 // GET ALL RECIPES FOR THE CURRENT FAMILY
@@ -65,6 +65,31 @@ export async function getRecipe(recipeId: string) {
     `,
     )
     .eq("id", recipeId)
+    .single();
+
+  return data;
+}
+
+// -------------------------------------------------------
+// GET SINGLE PUBLIC RECIPE
+// -------------------------------------------------------
+export async function getPublicRecipe(recipeId: string) {
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    return null;
+  }
+
+  const supabase = createAdminClient();
+
+  const { data } = await supabase
+    .from("recipes")
+    .select(
+      `
+      *,
+      memories ( * )
+    `,
+    )
+    .eq("id", recipeId)
+    .eq("visibility", "public")
     .single();
 
   return data;
@@ -146,7 +171,16 @@ export async function updateRecipe(
 
   revalidatePath(`/dashboard/recipes/${recipeId}`);
   revalidatePath("/dashboard/recipes");
+  revalidatePath("/dashboard/discover");
+  revalidatePath(`/recipes/${recipeId}`);
   return { success: true };
+}
+
+// -------------------------------------------------------
+// SET RECIPE VISIBILITY
+// -------------------------------------------------------
+export async function setRecipeVisibility(recipeId: string, visibility: "private" | "family" | "public") {
+  return updateRecipe(recipeId, { visibility });
 }
 
 // -------------------------------------------------------
@@ -210,7 +244,11 @@ export async function getFavoriteRecipes() {
 // GET PUBLIC RECIPES (for Discover)
 // -------------------------------------------------------
 export async function getPublicRecipes(limit = 20) {
-  const supabase = await createClient();
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    return [];
+  }
+
+  const supabase = createAdminClient();
 
   const { data } = await supabase
     .from("recipes")

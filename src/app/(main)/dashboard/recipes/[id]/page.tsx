@@ -17,6 +17,7 @@ import { getRecipe } from "@/server/recipe-actions";
 
 import { AddMemoryForm } from "./_components/add-memory-form";
 import { FavoriteButton } from "./_components/favorite-button";
+import { ShareRecipePanel } from "./_components/share-recipe-panel";
 
 export default async function RecipeDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -116,6 +117,8 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
           )}
         </div>
       </div>
+
+      <ShareRecipePanel recipeId={recipe.id} initialVisibility={recipe.visibility} />
 
       {/* Memories / Stories — shown before ingredients by design */}
       <div className="mb-6 rounded-xl border border-amber-100 bg-amber-50/50 p-5 dark:border-amber-900/20 dark:bg-amber-950/10">

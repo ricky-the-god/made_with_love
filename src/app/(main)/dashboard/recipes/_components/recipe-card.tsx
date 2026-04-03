@@ -20,16 +20,17 @@ interface RecipeCardProps {
       relation: string | null;
     } | null;
   };
+  href?: string;
 }
 
-export function RecipeCard({ recipe }: RecipeCardProps) {
+export function RecipeCard({ recipe, href }: RecipeCardProps) {
   const member = recipe.family_members;
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-amber-100 bg-amber-50/30 transition-colors hover:border-amber-300 hover:bg-amber-50/60 dark:border-amber-900/20 dark:bg-amber-950/10 dark:hover:border-amber-800/40 dark:hover:bg-amber-950/20">
       {/* Stretched link — covers the whole card, sits below interactive children */}
       <a
-        href={`/dashboard/recipes/${recipe.id}`}
+        href={href ?? `/dashboard/recipes/${recipe.id}`}
         className="absolute inset-0 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
       >
         <span className="sr-only">{recipe.title}</span>
