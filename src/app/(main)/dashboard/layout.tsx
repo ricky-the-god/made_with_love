@@ -7,14 +7,14 @@ import { AppSidebar } from "@/app/(main)/dashboard/_components/sidebar/app-sideb
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { SIDEBAR_COLLAPSIBLE_VALUES, SIDEBAR_VARIANT_VALUES } from "@/lib/preferences/layout";
 import { cn } from "@/lib/utils";
-import { getProfile } from "@/server/family-actions";
+import { getProfile, ONBOARDING_SKIPPED_COOKIE } from "@/server/family-actions";
 import { getPreference } from "@/server/server-actions";
 
 export default async function Layout({ children }: Readonly<{ children: ReactNode }>) {
   const [profile, cookieStore] = await Promise.all([getProfile(), cookies()]);
   if (!profile) redirect("/auth/v2/login");
   if (!profile.family_id) {
-    const skipped = cookieStore.get("onboarding_skipped")?.value;
+    const skipped = cookieStore.get(ONBOARDING_SKIPPED_COOKIE)?.value;
     if (!skipped) redirect("/onboarding");
   }
 

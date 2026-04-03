@@ -1,10 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { createAdminClient, createClient } from "@/lib/supabase/server";
+import { setValueToCookie } from "@/server/server-actions";
+
+export const ONBOARDING_SKIPPED_COOKIE = "onboarding_skipped";
 
 // -------------------------------------------------------
 // GET CURRENT USER'S PROFILE
@@ -316,12 +318,7 @@ export async function acceptFamilyInvitation(token: string) {
 // SKIP ONBOARDING (let user into dashboard without a family)
 // -------------------------------------------------------
 export async function skipOnboarding() {
-  const cookieStore = await cookies();
-  cookieStore.set("onboarding_skipped", "1", {
-    path: "/",
-    maxAge: 60 * 60 * 24 * 365,
-    sameSite: "lax",
-  });
+  await setValueToCookie(ONBOARDING_SKIPPED_COOKIE, "1", { maxAge: 60 * 60 * 24 * 365 });
 }
 
 // -------------------------------------------------------

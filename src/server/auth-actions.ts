@@ -13,7 +13,9 @@ export async function loginWithEmail(email: string, password: string, redirectTo
     return { error: error.message };
   }
 
-  redirect(redirectTo ?? "/dashboard");
+  // Only allow relative paths to prevent open redirect attacks
+  const safeRedirect = redirectTo?.startsWith("/") && !redirectTo.startsWith("//") ? redirectTo : "/dashboard";
+  redirect(safeRedirect);
 }
 
 export async function registerWithEmail(email: string, password: string) {
