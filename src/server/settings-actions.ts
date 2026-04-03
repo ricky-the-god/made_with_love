@@ -13,6 +13,11 @@ export interface UserPreferences {
   pref_notify_new_memory: boolean;
 }
 
+export interface ProfileSettingsInput {
+  full_name?: string | null;
+  avatar_url?: string | null;
+}
+
 const PREFERENCE_COLUMNS = [
   "pref_recipes_private_by_default",
   "pref_show_in_discover",
@@ -57,5 +62,43 @@ export async function saveUserPreferences(prefs: Partial<UserPreferences>) {
   if (error) return { error: error.message };
 
   revalidatePath("/dashboard/settings");
+  return { error: null };
+}
+
+export async function saveProfileSettings(input: ProfileSettingsInput) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  const fullName = input.full_name?.trim() ?? "";
+  const avatarUrl = input.avatar_url?.trim() ?? "";
+
+  if (avatarUrl.length > 0) {
+    try {
+      const parsed = new URL(avatarUrl);
+      if (!(parsed.protocol === "http:" || parsed.protocol === "https:")) {
+        return { error: "Profile picture must use an http or https URL." };
+      }
+    } catch {
+      return { error: "Enter a valid profile picture URL." };
+    }
+  }
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      full_name: fullName || null,
+      avatar_url: avatarUrl || null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", user.id);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/dashboard/profile");
+  revalidatePath("/dashboard");
   return { error: null };
 }

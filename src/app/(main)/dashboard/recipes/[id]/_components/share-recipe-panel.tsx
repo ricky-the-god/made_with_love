@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useOrigin } from "@/hooks/use-origin";
 import type { RecipeVisibility } from "@/lib/supabase/types";
 import { setRecipeVisibility } from "@/server/recipe-actions";
 
@@ -35,11 +36,11 @@ const visibilityMeta: Record<RecipeVisibility, { label: string; description: str
 
 export function ShareRecipePanel({ recipeId, initialVisibility }: ShareRecipePanelProps) {
   const router = useRouter();
+  const origin = useOrigin();
   const [visibility, setVisibility] = useState<RecipeVisibility>(initialVisibility);
   const [isPending, startTransition] = useTransition();
 
-  const publicUrl =
-    typeof window === "undefined" ? `/recipes/${recipeId}` : `${window.location.origin}/recipes/${recipeId}`;
+  const publicUrl = `${origin}/recipes/${recipeId}`;
   const isPublic = visibility === "public";
 
   const updateVisibility = (nextVisibility: RecipeVisibility) => {

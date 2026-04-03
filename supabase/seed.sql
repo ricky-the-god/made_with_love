@@ -4,7 +4,7 @@
 -- BEFORE RUNNING THIS FILE:
 --   1. Create a user in Supabase Auth with:
 --      Email: demo@madewithlo.ve
---      Password: demo123456
+--      Password: 123456
 --   2. Run the schema migrations first.
 --   3. Then run this file in the Supabase SQL Editor.
 --
