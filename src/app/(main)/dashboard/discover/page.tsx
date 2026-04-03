@@ -5,6 +5,7 @@ import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { getPublicFamilies } from "@/server/family-actions";
 import { getPublicRecipes } from "@/server/recipe-actions";
 
 import { RecipeCard } from "../recipes/_components/recipe-card";
@@ -143,6 +144,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
   const q = firstParamValue(resolvedParams.q);
   const recipes = firstParamValue(resolvedParams.recipes);
   const traditions = firstParamValue(resolvedParams.traditions);
+  const publicFamilies = await getPublicFamilies(20);
   const publicRecipes = (await getPublicRecipes(50)).map((recipe) => ({
     ...recipe,
     family_members: normalizeFamilyMember(recipe),
@@ -348,15 +350,31 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
       {/* Public family trees */}
       <div>
         <h2 className="mb-4 font-semibold text-lg">Public Family Trees</h2>
-        <div className="flex flex-col items-center justify-center rounded-xl border border-amber-200 border-dashed py-10 dark:border-amber-900/30">
-          <p className="max-w-xs text-center text-muted-foreground text-sm">
-            Public family trees are not live yet, but public recipes are. Start by sharing a recipe with the wider
-            community.
-          </p>
-          <a href="/dashboard/recipes" className="mt-4 text-amber-700 text-sm hover:underline dark:text-amber-400">
-            Go to my recipes →
-          </a>
-        </div>
+        {publicFamilies.length > 0 ? (
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {publicFamilies.map((family) => (
+              <Link
+                key={family.id}
+                href={`/dashboard/discover/family/${family.id}`}
+                className="group block rounded-xl border border-amber-100 bg-amber-50/30 p-5 transition-colors hover:border-amber-300 hover:bg-amber-50/60 dark:border-amber-900/20 dark:bg-amber-950/10 dark:hover:border-amber-800/40"
+              >
+                <div className="mb-2 flex size-10 items-center justify-center rounded-full bg-amber-100 text-xl dark:bg-amber-950/40">
+                  🌳
+                </div>
+                <p className="font-semibold group-hover:text-amber-800 dark:group-hover:text-amber-300">
+                  {family.family_name}
+                </p>
+                <p className="mt-1 text-muted-foreground text-xs">Public family cookbook</p>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center rounded-xl border border-amber-200 border-dashed py-10 dark:border-amber-900/30">
+            <p className="max-w-xs text-center text-muted-foreground text-sm">
+              No public family trees yet. Make your family public from Profile → Family Settings.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
