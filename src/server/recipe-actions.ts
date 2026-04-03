@@ -212,6 +212,7 @@ export async function rateRecipe(recipeId: string, rating: number) {
   if (error) return { error: error.message };
 
   revalidatePath(`/dashboard/recipes/${recipeId}`);
+  revalidatePath(`/recipes/${recipeId}`);
   return { success: true };
 }
 

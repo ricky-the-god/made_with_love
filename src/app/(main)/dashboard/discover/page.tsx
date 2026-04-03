@@ -144,8 +144,8 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
   const q = firstParamValue(resolvedParams.q);
   const recipes = firstParamValue(resolvedParams.recipes);
   const traditions = firstParamValue(resolvedParams.traditions);
-  const publicFamilies = await getPublicFamilies(20);
-  const publicRecipes = (await getPublicRecipes(50)).map((recipe) => ({
+  const [publicFamilies, rawRecipes] = await Promise.all([getPublicFamilies(20), getPublicRecipes(50)]);
+  const publicRecipes = rawRecipes.map((recipe) => ({
     ...recipe,
     family_members: normalizeFamilyMember(recipe),
   }));

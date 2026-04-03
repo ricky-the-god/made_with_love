@@ -120,14 +120,13 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
             </div>
           )}
 
-          <div className="mt-4">
-            <StarRating
-              recipeId={recipe.id}
-              myRating={ratingData.myRating}
-              average={ratingData.average}
-              count={ratingData.count}
-            />
-          </div>
+          <StarRating
+            className="mt-4"
+            recipeId={recipe.id}
+            myRating={ratingData.myRating}
+            average={ratingData.average}
+            count={ratingData.count}
+          />
         </div>
       </div>
 

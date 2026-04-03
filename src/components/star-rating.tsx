@@ -12,9 +12,10 @@ interface StarRatingProps {
   myRating: number | null;
   average: number | null;
   count: number;
+  className?: string;
 }
 
-export function StarRating({ recipeId, myRating: initialMyRating, average, count }: StarRatingProps) {
+export function StarRating({ recipeId, myRating: initialMyRating, average, count, className }: StarRatingProps) {
   const [myRating, setMyRating] = useState<number | null>(initialMyRating);
   const [hovered, setHovered] = useState<number | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -33,7 +34,7 @@ export function StarRating({ recipeId, myRating: initialMyRating, average, count
   }
 
   return (
-    <div className="flex items-center gap-3">
+    <div className={cn("flex items-center gap-3", className)}>
       <fieldset className="flex items-center gap-0.5 border-0 p-0 m-0" onMouseLeave={() => setHovered(null)}>
         <legend className="sr-only">Rate this recipe</legend>
         {[1, 2, 3, 4, 5].map((star) => (

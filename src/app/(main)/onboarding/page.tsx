@@ -61,7 +61,7 @@ export default function OnboardingPage() {
     });
   }
 
-  function handleAcceptInvite(token: string) {
+  function acceptInviteToken(token: string) {
     setError(null);
     startTransition(async () => {
       const result = await acceptFamilyInvitation(token);
@@ -92,16 +92,7 @@ export default function OnboardingPage() {
     } catch {
       // raw is not a URL, use as-is
     }
-    setError(null);
-    startTransition(async () => {
-      const result = await acceptFamilyInvitation(token);
-      if ("error" in result && result.error) {
-        setError(result.error);
-      } else {
-        router.refresh();
-        router.push("/dashboard/tree");
-      }
-    });
+    acceptInviteToken(token);
   }
 
   function handleCreateContinue() {
@@ -350,7 +341,7 @@ export default function OnboardingPage() {
                         </div>
                         <Button
                           size="sm"
-                          onClick={() => handleAcceptInvite(inv.token)}
+                          onClick={() => acceptInviteToken(inv.token)}
                           disabled={isPending}
                           className="shrink-0 bg-amber-700 text-white hover:bg-amber-800 dark:bg-amber-600 dark:hover:bg-amber-700"
                         >
