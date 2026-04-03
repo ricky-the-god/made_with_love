@@ -2,13 +2,13 @@
 
 import { Bell, Eye, Lock, Paintbrush, Trash2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useAppCopy } from "@/lib/i18n/use-app-copy";
 import type { UserPreferences } from "@/server/settings-actions";
 
 import { AppearanceSettings } from "./appearance-settings";
+import { DangerZoneSettings, SecuritySettings } from "./security-settings";
 import { UserPrefSettings } from "./user-pref-settings";
 
 export function SettingsPageContent({ prefs }: { prefs: UserPreferences }) {
@@ -69,14 +69,7 @@ export function SettingsPageContent({ prefs }: { prefs: UserPreferences }) {
           <CardDescription>{copy.securityDescription}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          <Button variant="outline" className="w-full justify-start" disabled>
-            {copy.changePassword}
-            <span className="ml-auto text-muted-foreground text-xs">{copy.comingSoon}</span>
-          </Button>
-          <Button variant="outline" className="w-full justify-start" disabled>
-            {copy.manageActiveSessions}
-            <span className="ml-auto text-muted-foreground text-xs">{copy.comingSoon}</span>
-          </Button>
+          <SecuritySettings />
         </CardContent>
       </Card>
 
@@ -91,10 +84,7 @@ export function SettingsPageContent({ prefs }: { prefs: UserPreferences }) {
           <CardDescription>{copy.dangerZoneDescription}</CardDescription>
         </CardHeader>
         <CardContent>
-          <Button variant="outline" className="w-full text-destructive hover:text-destructive" disabled>
-            {copy.deleteMyAccount}
-            <span className="ml-auto text-muted-foreground text-xs">{copy.comingSoon}</span>
-          </Button>
+          <DangerZoneSettings />
         </CardContent>
       </Card>
     </div>
