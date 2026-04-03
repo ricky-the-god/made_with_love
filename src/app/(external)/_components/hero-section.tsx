@@ -15,9 +15,14 @@ const GRAIN_SVG =
   "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")";
 
 const BOOKS = [
-  { id: "book-1", src: "/images/Frame1.jpeg", alt: "Family recipes", rotation: -12 },
-  { id: "book-2", src: "/images/Frame2.png", alt: "Recipe memories", rotation: 8 },
-  { id: "book-3", src: "/images/Frame3.png", alt: "Family stories", rotation: -4 },
+  { id: "book-1", src: "/images/Book1.png", alt: "Family recipes", rotation: -10 },
+  { id: "book-2", src: "/images/Book2.png", alt: "Recipe memories", rotation: -6 },
+  { id: "book-3", src: "/images/Book3.png", alt: "Family stories", rotation: -2 },
+  { id: "book-4", src: "/images/Book4.png", alt: "Family recipes", rotation: 2 },
+  { id: "book-5", src: "/images/Book5.png", alt: "Recipe memories", rotation: 5 },
+  { id: "book-6", src: "/images/Book6.png", alt: "Family stories", rotation: 8 },
+  { id: "book-7", src: "/images/Book7.png", alt: "Recipe memories", rotation: 4 },
+  { id: "book-8", src: "/images/Book8.png", alt: "Family stories", rotation: -3 },
 ] as const;
 
 export function HeroSection() {
