@@ -210,6 +210,24 @@ html {
   overscroll-behavior: none;
 }
 
+html[data-text-size="large"] {
+  font-size: 17px;
+}
+
+html[data-reduced-motion="reduce"] {
+  scroll-behavior: auto;
+}
+
+html[data-reduced-motion="reduce"] *,
+html[data-reduced-motion="reduce"] *::before,
+html[data-reduced-motion="reduce"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  transition-delay: 0ms !important;
+  scroll-behavior: auto !important;
+}
+
 .disable-transitions * {
   transition: none !important;
 }

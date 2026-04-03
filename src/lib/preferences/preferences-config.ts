@@ -12,7 +12,9 @@
  */
 
 import type { FontKey } from "@/lib/fonts/registry";
+import type { AppLanguage } from "@/lib/i18n/app-language";
 
+import type { ReducedMotionPreference, TextSizePreference } from "./accessibility";
 import type { ContentLayout, NavbarStyle, SidebarCollapsible, SidebarVariant } from "./layout";
 import type { ThemeMode, ThemePreset } from "./theme";
 
@@ -24,6 +26,9 @@ export type PreferencePersistence = "none" | "client-cookie" | "server-cookie" |
 export type PreferenceValueMap = {
   theme_mode: ThemeMode;
   theme_preset: ThemePreset;
+  reduced_motion: ReducedMotionPreference;
+  text_size: TextSizePreference;
+  app_language: AppLanguage;
   font: FontKey;
   content_layout: ContentLayout;
   navbar_style: NavbarStyle;
@@ -68,6 +73,9 @@ type PreferencePersistenceConfig = {
 export const PREFERENCE_DEFAULTS: PreferenceValueMap = {
   theme_mode: "light",
   theme_preset: "default",
+  reduced_motion: "no-preference",
+  text_size: "normal",
+  app_language: "en",
   font: "inter",
   content_layout: "centered",
   navbar_style: "sticky",
@@ -82,6 +90,9 @@ export const PREFERENCE_DEFAULTS: PreferenceValueMap = {
 export const PREFERENCE_PERSISTENCE: PreferencePersistenceConfig = {
   theme_mode: "client-cookie",
   theme_preset: "client-cookie",
+  reduced_motion: "client-cookie",
+  text_size: "client-cookie",
+  app_language: "client-cookie",
   font: "client-cookie",
   content_layout: "client-cookie",
   navbar_style: "client-cookie",

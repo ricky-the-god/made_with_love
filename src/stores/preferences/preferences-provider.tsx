@@ -5,6 +5,13 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { type StoreApi, useStore } from "zustand";
 
 import { type FontKey, fontRegistry } from "@/lib/fonts/registry";
+import { APP_LANGUAGE_VALUES, applyAppLanguagePreference } from "@/lib/i18n/app-language";
+import {
+  applyReducedMotionPreference,
+  applyTextSizePreference,
+  REDUCED_MOTION_VALUES,
+  TEXT_SIZE_VALUES,
+} from "@/lib/preferences/accessibility";
 import {
   CONTENT_LAYOUT_VALUES,
   NAVBAR_STYLE_VALUES,
@@ -35,6 +42,9 @@ function readDomState(): Partial<PreferencesState> {
     themeMode: themeModeAttr ?? resolvedMode,
     resolvedThemeMode: resolvedMode,
     themePreset: getSafeValue(root.getAttribute("data-theme-preset"), THEME_PRESET_VALUES),
+    reducedMotion: getSafeValue(root.getAttribute("data-reduced-motion"), REDUCED_MOTION_VALUES),
+    textSize: getSafeValue(root.getAttribute("data-text-size"), TEXT_SIZE_VALUES),
+    appLanguage: getSafeValue(root.getAttribute("data-app-language"), APP_LANGUAGE_VALUES),
     font: getSafeValue(root.getAttribute("data-font"), FONT_VALUES),
     contentLayout: getSafeValue(root.getAttribute("data-content-layout"), CONTENT_LAYOUT_VALUES),
     navbarStyle: getSafeValue(root.getAttribute("data-navbar-style"), NAVBAR_STYLE_VALUES),
@@ -47,6 +57,9 @@ export const PreferencesStoreProvider = ({
   children,
   themeMode,
   themePreset,
+  reducedMotion,
+  textSize,
+  appLanguage,
   font,
   contentLayout,
   navbarStyle,
@@ -54,6 +67,9 @@ export const PreferencesStoreProvider = ({
   children: React.ReactNode;
   themeMode: PreferencesState["themeMode"];
   themePreset: PreferencesState["themePreset"];
+  reducedMotion: PreferencesState["reducedMotion"];
+  textSize: PreferencesState["textSize"];
+  appLanguage: PreferencesState["appLanguage"];
   font: PreferencesState["font"];
   contentLayout: PreferencesState["contentLayout"];
   navbarStyle: PreferencesState["navbarStyle"];
@@ -62,6 +78,9 @@ export const PreferencesStoreProvider = ({
     createPreferencesStore({
       themeMode,
       themePreset,
+      reducedMotion,
+      textSize,
+      appLanguage,
       font,
       contentLayout,
       navbarStyle,
@@ -79,6 +98,45 @@ export const PreferencesStoreProvider = ({
       ...domState,
       isSynced: true,
     }));
+  }, [store]);
+
+  useEffect(() => {
+    const startValue = domSnapshotRef.current?.textSize ?? store.getState().textSize;
+    applyTextSizePreference(startValue);
+
+    const unsubscribeStore = store.subscribe((state, prev) => {
+      if (state.textSize !== prev.textSize) {
+        applyTextSizePreference(state.textSize);
+      }
+    });
+
+    return unsubscribeStore;
+  }, [store]);
+
+  useEffect(() => {
+    const startValue = domSnapshotRef.current?.appLanguage ?? store.getState().appLanguage;
+    applyAppLanguagePreference(startValue);
+
+    const unsubscribeStore = store.subscribe((state, prev) => {
+      if (state.appLanguage !== prev.appLanguage) {
+        applyAppLanguagePreference(state.appLanguage);
+      }
+    });
+
+    return unsubscribeStore;
+  }, [store]);
+
+  useEffect(() => {
+    const startValue = domSnapshotRef.current?.reducedMotion ?? store.getState().reducedMotion;
+    applyReducedMotionPreference(startValue);
+
+    const unsubscribeStore = store.subscribe((state, prev) => {
+      if (state.reducedMotion !== prev.reducedMotion) {
+        applyReducedMotionPreference(state.reducedMotion);
+      }
+    });
+
+    return unsubscribeStore;
   }, [store]);
 
   useEffect(() => {

@@ -5,21 +5,25 @@ import { usePathname } from "next/navigation";
 
 import { BookOpen, Compass, TreeDeciduous } from "lucide-react";
 
+import type { AppCopyKey } from "@/lib/i18n/copy";
+import { useAppCopy } from "@/lib/i18n/use-app-copy";
 import { cn } from "@/lib/utils";
 
 const tabs = [
-  { title: "Tree", url: "/dashboard/tree", icon: TreeDeciduous },
-  { title: "Recipes", url: "/dashboard/recipes", icon: BookOpen },
-  { title: "Discover", url: "/dashboard/discover", icon: Compass },
-];
+  { titleKey: "navTree", url: "/dashboard/tree", icon: TreeDeciduous },
+  { titleKey: "navRecipes", url: "/dashboard/recipes", icon: BookOpen },
+  { titleKey: "navDiscover", url: "/dashboard/discover", icon: Compass },
+] as const satisfies ReadonlyArray<{ titleKey: AppCopyKey; url: string; icon: typeof TreeDeciduous }>;
 
 export function AppBottomNav() {
   const pathname = usePathname();
+  const copy = useAppCopy();
 
   return (
     <nav className="fixed right-0 bottom-0 left-0 z-50 flex h-16 items-stretch border-t bg-background md:hidden">
-      {tabs.map(({ title, url, icon: Icon }) => {
+      {tabs.map(({ titleKey, url, icon: Icon }) => {
         const isActive = pathname.startsWith(url);
+        const title = copy[titleKey];
         return (
           <Link
             key={url}
