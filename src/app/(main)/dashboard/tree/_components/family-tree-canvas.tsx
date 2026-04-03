@@ -39,10 +39,17 @@ interface FamilyTreeCanvasProps {
   members: FamilyMember[];
   recipeCountByMember: Record<string, number>;
   recipesByMember: Record<string, { id: string; title: string; is_favorite: boolean }[]>;
+  readOnly?: boolean;
 }
 
 // ── Component ──────────────────────────────────────────────────────────────
-export function FamilyTreeCanvas({ rows, members, recipeCountByMember, recipesByMember }: FamilyTreeCanvasProps) {
+export function FamilyTreeCanvas({
+  rows,
+  members,
+  recipeCountByMember,
+  recipesByMember,
+  readOnly,
+}: FamilyTreeCanvasProps) {
   const outerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
@@ -278,6 +285,7 @@ export function FamilyTreeCanvas({ rows, members, recipeCountByMember, recipesBy
           recipes={recipesByMember[selected.id] ?? []}
           coverColors={coverColor(selected)}
           onClose={() => setSelected(null)}
+          readOnly={readOnly}
         />
       )}
 

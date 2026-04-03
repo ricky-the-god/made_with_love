@@ -310,3 +310,86 @@ export async function acceptFamilyInvitation(token: string) {
   revalidatePath("/dashboard");
   return { success: true };
 }
+
+// -------------------------------------------------------
+// GET PUBLIC FAMILY INFO (for friend/discover view)
+// -------------------------------------------------------
+export async function getPublicFamilyInfo(familyId: string) {
+  const admin = createAdminClient();
+  const { data } = await admin.from("families").select("*").eq("id", familyId).eq("privacy_setting", "public").single();
+  return data;
+}
+
+// -------------------------------------------------------
+// GET PUBLIC FAMILY MEMBERS
+// -------------------------------------------------------
+export async function getPublicFamilyMembers(familyId: string) {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("family_members")
+    .select("*")
+    .eq("family_id", familyId)
+    .order("generation", { ascending: true })
+    .order("name", { ascending: true });
+  return data ?? [];
+}
+
+// -------------------------------------------------------
+// GET CONNECTED FAMILIES
+// -------------------------------------------------------
+export async function getConnectedFamilies() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data } = await supabase
+    .from("family_connections")
+    .select("*, families(id, family_name, privacy_setting)")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
+  return data ?? [];
+}
+
+// -------------------------------------------------------
+// ADD FAMILY CONNECTION
+// -------------------------------------------------------
+export async function addFamilyConnection(familyId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
+  // Verify the target family is public
+  const info = await getPublicFamilyInfo(familyId);
+  if (!info) return { error: "This family is not found or is not public." };
+
+  const { error } = await supabase
+    .from("family_connections")
+    .upsert({ user_id: user.id, family_id: familyId }, { onConflict: "user_id,family_id" });
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/dashboard/friends");
+  return { success: true };
+}
+
+// -------------------------------------------------------
+// REMOVE FAMILY CONNECTION
+// -------------------------------------------------------
+export async function removeFamilyConnection(familyId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
+  const { error } = await supabase.from("family_connections").delete().eq("user_id", user.id).eq("family_id", familyId);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/dashboard/friends");
+  return { success: true };
+}

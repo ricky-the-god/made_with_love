@@ -261,6 +261,20 @@ export async function getPublicRecipes(limit = 20) {
 }
 
 // -------------------------------------------------------
+// GET PUBLIC RECIPES FOR A SPECIFIC FAMILY
+// -------------------------------------------------------
+export async function getPublicFamilyRecipes(familyId: string) {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("recipes")
+    .select("*")
+    .eq("family_id", familyId)
+    .eq("visibility", "public")
+    .order("title", { ascending: true });
+  return data ?? [];
+}
+
+// -------------------------------------------------------
 // ADD MEMORY TO RECIPE
 // -------------------------------------------------------
 export async function addMemory(recipeId: string, input: { text?: string; occasion?: string; meaning_note?: string }) {

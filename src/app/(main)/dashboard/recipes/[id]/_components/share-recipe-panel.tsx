@@ -117,7 +117,7 @@ export function ShareRecipePanel({ recipeId, initialVisibility }: ShareRecipePan
 
       {isPublic && !isPending && (
         <div className="mt-4 rounded-lg border border-amber-200 bg-white/80 p-3 dark:border-amber-900/30 dark:bg-stone-950/40">
-          <p className="mb-2 font-medium text-xs uppercase tracking-wide text-amber-700 dark:text-amber-300">
+          <p className="mb-2 font-medium text-amber-700 text-xs uppercase tracking-wide dark:text-amber-300">
             Public URL
           </p>
           <div className="flex flex-col gap-2 sm:flex-row">
