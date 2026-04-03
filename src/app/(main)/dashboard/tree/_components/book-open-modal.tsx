@@ -12,11 +12,12 @@ interface BookOpenModalProps {
   recipes: { id: string; title: string; is_favorite: boolean }[];
   coverColors: { bg: string; spine: string };
   onClose: () => void;
+  readOnly?: boolean;
 }
 
 const CLOSE_DURATION = 550;
 
-export function BookOpenModal({ member, recipes, coverColors, onClose }: BookOpenModalProps) {
+export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly }: BookOpenModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const isClosingRef = useRef(false);
 
@@ -105,20 +106,24 @@ export function BookOpenModal({ member, recipes, coverColors, onClose }: BookOpe
               )}
 
               <div className="mt-4 flex gap-2">
-                <a
-                  href={`/dashboard/tree/member/${member.id}`}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-amber-700 px-3 py-1.5 font-medium text-sm text-white transition-colors hover:bg-amber-800"
-                >
-                  <BookOpen className="size-3.5" />
-                  View profile
-                </a>
-                <a
-                  href={`/dashboard/tree/member/${member.id}/edit`}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-white px-3 py-1.5 font-medium text-amber-800 text-sm transition-colors hover:bg-amber-50"
-                >
-                  <Pencil className="size-3.5" />
-                  Edit / Link
-                </a>
+                {!readOnly && (
+                  <a
+                    href={`/dashboard/tree/member/${member.id}`}
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-amber-700 px-3 py-1.5 font-medium text-sm text-white transition-colors hover:bg-amber-800"
+                  >
+                    <BookOpen className="size-3.5" />
+                    View profile
+                  </a>
+                )}
+                {!readOnly && (
+                  <a
+                    href={`/dashboard/tree/member/${member.id}/edit`}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-white px-3 py-1.5 font-medium text-amber-800 text-sm transition-colors hover:bg-amber-50"
+                  >
+                    <Pencil className="size-3.5" />
+                    Edit / Link
+                  </a>
+                )}
               </div>
             </div>
           </div>

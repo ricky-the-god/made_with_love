@@ -212,7 +212,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
         <form action="/dashboard/discover" className="flex flex-col gap-3 sm:flex-row">
           {activeCollection && <input type="hidden" name="region" value={activeCollection.slug} />}
           <div className="relative flex-1">
-            <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Search className="-translate-y-1/2 pointer-events-none absolute top-1/2 left-3 size-4 text-muted-foreground" />
             <Input
               name="q"
               defaultValue={q ?? ""}

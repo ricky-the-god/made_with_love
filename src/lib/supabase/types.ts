@@ -107,6 +107,13 @@ export interface FamilyInvitation {
   created_at: string;
 }
 
+export interface FamilyConnection {
+  id: string;
+  user_id: string;
+  family_id: string;
+  created_at: string;
+}
+
 // -------------------------------------------------------
 // Joined / enriched types used in the UI
 // -------------------------------------------------------
