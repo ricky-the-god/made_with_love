@@ -91,7 +91,7 @@ export default async function PublicRecipePage({ params }: { params: Promise<{ i
               <h2 className="mb-4 font-semibold text-xl">Ingredients</h2>
               {ingredientLines.length > 0 ? (
                 <ul className="space-y-3 text-sm leading-relaxed">
-                  {ingredientLines.map((line, index) => (
+                  {ingredientLines.map((line: string, index: number) => (
                     <li key={`${recipe.id}-ingredient-${index}`} className="flex items-start gap-3">
                       <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-amber-400" />
                       <span>{line}</span>
@@ -107,7 +107,7 @@ export default async function PublicRecipePage({ params }: { params: Promise<{ i
               <h2 className="mb-4 font-semibold text-xl">Steps</h2>
               {stepLines.length > 0 ? (
                 <ol className="space-y-4 text-sm leading-relaxed">
-                  {stepLines.map((line, index) => (
+                  {stepLines.map((line: string, index: number) => (
                     <li key={`${recipe.id}-step-${index}`} className="flex items-start gap-3">
                       <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-amber-100 font-semibold text-amber-800 text-xs dark:bg-amber-900/30 dark:text-amber-300">
                         {index + 1}
