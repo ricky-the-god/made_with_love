@@ -43,6 +43,25 @@ interface FamilyTreeCanvasProps {
   readOnly?: boolean;
 }
 
+type FamilyMemberWithLegacyParent = FamilyMember & { parent_id?: string | null };
+
+function getLinkedParentIds(member: FamilyMemberWithLegacyParent) {
+  if (Array.isArray(member.parent_ids) && member.parent_ids.length > 0) return member.parent_ids;
+  if (member.parent_id) return [member.parent_id];
+  return [];
+}
+
+function inferAutomaticParentIds(member: FamilyMember, members: FamilyMember[]) {
+  if (!member.generation || member.generation <= 1) return [];
+
+  // Auto-link to up to two people in the immediately older generation.
+  return members
+    .filter((candidate) => candidate.id !== member.id && candidate.generation === member.generation! - 1)
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .slice(0, 2)
+    .map((candidate) => candidate.id);
+}
+
 // ── Component ──────────────────────────────────────────────────────────────
 export function FamilyTreeCanvas({
   rows,
@@ -87,13 +106,15 @@ export function FamilyTreeCanvas({
       });
     }
 
-    // Draw one bezier per member → each of their parents (ignores unlinked members)
-    for (const member of members) {
-      if (!member.parent_ids?.length) continue;
+    // Draw one bezier per member → each explicit parent link, or inferred generation link.
+    for (const member of members as FamilyMemberWithLegacyParent[]) {
+      const explicitParentIds = getLinkedParentIds(member);
+      const parentIds = explicitParentIds.length ? explicitParentIds : inferAutomaticParentIds(member, members);
+      if (!parentIds.length) continue;
       const child = nodePos.get(member.id);
       if (!child) continue;
 
-      for (const parentId of member.parent_ids) {
+      for (const parentId of parentIds) {
         const parent = nodePos.get(parentId);
         if (!parent) continue;
 
@@ -109,10 +130,16 @@ export function FamilyTreeCanvas({
   }, [members]);
 
   useEffect(() => {
-    computeConnectors();
+    // Wait one frame so offsets are measured after layout settles.
+    const frame = requestAnimationFrame(computeConnectors);
     const observer = new ResizeObserver(computeConnectors);
     if (contentRef.current) observer.observe(contentRef.current);
-    return () => observer.disconnect();
+    window.addEventListener("resize", computeConnectors);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("resize", computeConnectors);
+      observer.disconnect();
+    };
   }, [computeConnectors]);
 
   // ── Non-passive wheel zoom ────────────────────────────────────────────────
@@ -187,10 +214,10 @@ export function FamilyTreeCanvas({
                 key={i}
                 d={d}
                 fill="none"
-                strokeWidth={1.5}
+                strokeWidth={2}
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="stroke-amber-400/40 dark:stroke-amber-700/50"
+                className="stroke-amber-500/70 dark:stroke-amber-500/60"
               />
             ))}
           </svg>
