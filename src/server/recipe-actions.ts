@@ -74,6 +74,10 @@ export async function getRecipe(recipeId: string) {
 // GET SINGLE PUBLIC RECIPE
 // -------------------------------------------------------
 export async function getPublicRecipe(recipeId: string) {
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    return null;
+  }
+
   const supabase = createAdminClient();
 
   const { data } = await supabase
@@ -240,6 +244,10 @@ export async function getFavoriteRecipes() {
 // GET PUBLIC RECIPES (for Discover)
 // -------------------------------------------------------
 export async function getPublicRecipes(limit = 20) {
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    return [];
+  }
+
   const supabase = createAdminClient();
 
   const { data } = await supabase
