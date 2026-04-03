@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Minus, Plus, ScanLine } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { ButtonSoftGlow } from "@/components/ui/button-soft-glow";
 import type { FamilyMember } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils";
 
@@ -288,6 +289,16 @@ export function FamilyTreeCanvas({
           readOnly={readOnly}
         />
       )}
+
+      {/* ── Add Member button (bottom-right) ─────────────────────────── */}
+      <div className="absolute right-4 bottom-4">
+        <ButtonSoftGlow asChild>
+          <a href="/dashboard/tree/member/new">
+            <Plus className="size-4" />
+            Add Member
+          </a>
+        </ButtonSoftGlow>
+      </div>
 
       {/* ── Zoom controls (bottom-left) ────────────────────────────────── */}
       <div className="absolute bottom-4 left-4 flex flex-col gap-1.5">
