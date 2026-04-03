@@ -1,35 +1,62 @@
-{
-  "name": "ui-ux-pro-max-skill",
-  "id": "ui-ux-pro-max-skill",
-  "owner": {
-    "name": "nextlevelbuilder"
+[
+  {
+    "name": "ui-ux-pro-max-skill",
+    "id": "ui-ux-pro-max-skill",
+    "owner": {
+      "name": "nextlevelbuilder"
+    },
+    "metadata": {
+      "description": "UI/UX design intelligence skill with 67 styles, 161 palettes, 57 font pairings, 25 charts, and 15 stack guidelines",
+      "version": "2.5.0"
+    },
+    "plugins": [
+      {
+        "name": "ui-ux-pro-max",
+        "source": "./",
+        "description": "Professional UI/UX design intelligence for AI coding assistants. Includes searchable databases of styles, colors, typography, charts, and UX guidelines for React, Next.js, Astro, Vue, Nuxt.js, Nuxt UI, Svelte, SwiftUI, React Native, Flutter, Tailwind, shadcn/ui, and Jetpack Compose.",
+        "version": "2.5.0",
+        "author": {
+          "name": "nextlevelbuilder"
+        },
+        "keywords": [
+          "ui",
+          "ux",
+          "design",
+          "styles",
+          "typography",
+          "color-palette",
+          "accessibility",
+          "charts",
+          "components"
+        ],
+        "category": "design",
+        "strict": false
+      }
+    ]
   },
-  "metadata": {
-    "description": "UI/UX design intelligence skill with 67 styles, 96 palettes, 57 font pairings, 25 charts, and 13 stack guidelines",
-    "version": "2.2.1"
-  },
-  "plugins": [
-    {
-      "name": "ui-ux-pro-max",
-      "source": "./",
-      "description": "Professional UI/UX design intelligence for AI coding assistants. Includes searchable databases of styles, colors, typography, charts, and UX guidelines for React, Next.js, Astro, Vue, Nuxt.js, Nuxt UI, Svelte, SwiftUI, React Native, Flutter, Tailwind, shadcn/ui, and Jetpack Compose.",
-      "version": "2.2.1",
-      "author": {
-        "name": "nextlevelbuilder"
-      },
-      "keywords": [
-        "ui",
-        "ux",
-        "design",
-        "styles",
-        "typography",
-        "color-palette",
-        "accessibility",
-        "charts",
-        "components"
-      ],
-      "category": "design",
-      "strict": false
-    }
-  ]
-}
+  {
+    "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+    "name": "skill-codex",
+    "description": "Marketplace for the skill-codex plugin, enabling Claude Code to delegate tasks to OpenAI Codex CLI",
+    "owner": {
+      "name": "skills-directory",
+      "url": "https://github.com/skills-directory"
+    },
+    "plugins": [
+      {
+        "name": "skill-codex",
+        "source": "./plugins/skill-codex",
+        "description": "Delegate prompts to OpenAI Codex CLI for code analysis, refactoring, code review, and automated editing",
+        "version": "1.1.0",
+        "category": "development",
+        "homepage": "https://github.com/skills-directory/skill-codex",
+        "tags": [
+          "skill",
+          "codex",
+          "automation",
+          "code-review"
+        ]
+      }
+    ]
+  }
+]
