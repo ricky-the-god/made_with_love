@@ -1,4 +1,7 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { getPublicRecipes } from "@/server/recipe-actions";
+
+import { RecipeCard } from "../recipes/_components/recipe-card";
 
 const CULTURAL_COLLECTIONS = [
   {
@@ -41,7 +44,9 @@ function FeaturedStoryCard() {
   );
 }
 
-export default function DiscoverPage() {
+export default async function DiscoverPage() {
+  const publicRecipes = await getPublicRecipes(6);
+
   return (
     <div className="flex flex-col gap-8">
       <div>
@@ -53,6 +58,32 @@ export default function DiscoverPage() {
 
       {/* Featured editorial story */}
       <FeaturedStoryCard />
+
+      {/* Shared recipes */}
+      <div>
+        <div className="mb-4 flex items-end justify-between gap-4">
+          <div>
+            <h2 className="font-semibold text-lg">Shared Recipes</h2>
+            <p className="mt-1 text-muted-foreground text-sm">
+              Recipes families have chosen to open up to the wider community.
+            </p>
+          </div>
+        </div>
+
+        {publicRecipes.length > 0 ? (
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {publicRecipes.map((recipe) => (
+              <RecipeCard key={recipe.id} recipe={recipe} href={`/recipes/${recipe.id}`} />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center rounded-xl border border-amber-200 border-dashed py-10 dark:border-amber-900/30">
+            <p className="max-w-xs text-center text-muted-foreground text-sm">
+              No public recipes yet. Share one from a recipe page and it will appear here.
+            </p>
+          </div>
+        )}
+      </div>
 
       {/* Food traditions grid */}
       <div>
@@ -80,13 +111,11 @@ export default function DiscoverPage() {
         <h2 className="mb-4 font-semibold text-lg">Public Family Trees</h2>
         <div className="flex flex-col items-center justify-center rounded-xl border border-amber-200 border-dashed py-10 dark:border-amber-900/30">
           <p className="max-w-xs text-center text-muted-foreground text-sm">
-            No public family trees yet. When families choose to share their stories, they'll appear here.
+            Public family trees are not live yet, but public recipes are. Start by sharing a recipe with the wider
+            community.
           </p>
-          <a
-            href="/dashboard/profile/family"
-            className="mt-4 text-amber-700 text-sm hover:underline dark:text-amber-400"
-          >
-            Share my family's recipes →
+          <a href="/dashboard/recipes" className="mt-4 text-amber-700 text-sm hover:underline dark:text-amber-400">
+            Go to my recipes →
           </a>
         </div>
       </div>

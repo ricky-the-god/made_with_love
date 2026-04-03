@@ -34,7 +34,27 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isAuthRoute = pathname.startsWith("/auth");
   const isOnboardingRoute = pathname.startsWith("/onboarding");
-  const isPublicRoute = isAuthRoute || isOnboardingRoute || pathname.startsWith("/api") || pathname === "/";
+  const isPublicRecipeRoute = pathname.startsWith("/recipes/");
+  const isPublicRoute =
+    isAuthRoute || isOnboardingRoute || isPublicRecipeRoute || pathname.startsWith("/api") || pathname === "/";
+
+  const sharedDashboardRecipeMatch = pathname.match(/^\/dashboard\/recipes\/([0-9a-f-]+)$/i);
+
+  if (!user && sharedDashboardRecipeMatch) {
+    const recipeId = sharedDashboardRecipeMatch[1];
+    const { data: publicRecipe } = await supabase
+      .from("recipes")
+      .select("id")
+      .eq("id", recipeId)
+      .eq("visibility", "public")
+      .maybeSingle();
+
+    if (publicRecipe) {
+      const publicRecipeUrl = request.nextUrl.clone();
+      publicRecipeUrl.pathname = `/recipes/${recipeId}`;
+      return NextResponse.redirect(publicRecipeUrl);
+    }
+  }
 
   // Redirect unauthenticated users trying to access protected routes
   if (!user && !isPublicRoute) {
