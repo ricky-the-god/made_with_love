@@ -5,8 +5,9 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, ChevronsUpDown, ImageUp, PenLine } from "lucide-react";
+import { Check, ChevronsUpDown, ImageUp, PenLine, Sparkles } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { COUNTRY_OPTIONS, RECIPE_CATEGORY_OPTIONS } from "@/data/recipe-options";
@@ -49,6 +51,14 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [isCountryPickerOpen, setIsCountryPickerOpen] = useState(false);
+  const [isSuggesting, setIsSuggesting] = useState(false);
+  const [isEstimatingCalories, setIsEstimatingCalories] = useState(false);
+  const [calorieEstimate, setCalorieEstimate] = useState<{
+    calories_per_serving: number;
+    total_calories: number;
+    servings: number;
+    note: string;
+  } | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -66,6 +76,87 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
     setValue,
     formState: { errors },
   } = form;
+
+  async function handleSuggestRecipe() {
+    const title = form.getValues("title");
+    if (!title.trim()) {
+      toast.error("Enter a recipe title first.");
+      return;
+    }
+
+    setIsSuggesting(true);
+    setValue("ingredients", "", { shouldDirty: true });
+    setValue("steps", "", { shouldDirty: true });
+    setCalorieEstimate(null);
+
+    try {
+      const response = await fetch("/api/ai/suggest-recipe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: title.trim(), memberName: preselectedMemberName }),
+      });
+
+      if (!response.ok || !response.body) {
+        toast.error("AI suggestion failed. Please try again.");
+        return;
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        const splitIdx = buffer.indexOf("===STEPS===");
+        if (splitIdx === -1) {
+          const ingredientsText = buffer.replace("===INGREDIENTS===", "").trim();
+          setValue("ingredients", ingredientsText, { shouldDirty: true });
+        } else {
+          const ingredientsRaw = buffer.slice(0, splitIdx).replace("===INGREDIENTS===", "").trim();
+          const stepsRaw = buffer.slice(splitIdx + "===STEPS===".length).trim();
+          setValue("ingredients", ingredientsRaw, { shouldDirty: true });
+          setValue("steps", stepsRaw, { shouldDirty: true });
+        }
+      }
+    } catch {
+      toast.error("Network error. Please check your connection.");
+    } finally {
+      setIsSuggesting(false);
+    }
+  }
+
+  async function handleEstimateCalories() {
+    const ingredients = form.getValues("ingredients");
+    if (!ingredients?.trim()) {
+      toast.error("Add ingredients before estimating calories.");
+      return;
+    }
+
+    setIsEstimatingCalories(true);
+    setCalorieEstimate(null);
+
+    try {
+      const response = await fetch("/api/ai/calories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ingredients, servings: form.getValues("servings") }),
+      });
+
+      const data = await response.json();
+      if (data.error || !data.calories_per_serving) {
+        toast.error("Could not estimate calories for these ingredients.");
+        return;
+      }
+      setCalorieEstimate(data);
+    } catch {
+      toast.error("Network error. Please check your connection.");
+    } finally {
+      setIsEstimatingCalories(false);
+    }
+  }
 
   function onSubmit(values: FormValues) {
     startTransition(async () => {
@@ -122,6 +213,17 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
                   <Label htmlFor="title">Recipe title *</Label>
                   <Input id="title" placeholder="e.g. Grandma's Pho Bo" {...register("title")} />
                   {errors.title && <p className="text-destructive text-xs">{errors.title.message}</p>}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={isSuggesting}
+                    onClick={handleSuggestRecipe}
+                    className="mt-1 w-fit gap-1.5 text-amber-700 hover:border-amber-300 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-950/30"
+                  >
+                    {isSuggesting ? <Spinner className="size-3.5" /> : <Sparkles className="size-3.5" />}
+                    {isSuggesting ? "Suggesting..." : "Suggest with AI"}
+                  </Button>
                 </div>
 
                 <div className="grid gap-5 sm:grid-cols-2">
@@ -261,6 +363,25 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
                     placeholder={"2 kg beef bones\n1 cinnamon stick\n3 star anise\n..."}
                     {...register("ingredients")}
                   />
+                  <div className="flex items-center gap-3">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      disabled={isEstimatingCalories}
+                      onClick={handleEstimateCalories}
+                      className="gap-1.5 text-muted-foreground hover:text-amber-700"
+                    >
+                      {isEstimatingCalories ? <Spinner className="size-3.5" /> : <Sparkles className="size-3.5" />}
+                      {isEstimatingCalories ? "Estimating..." : "Estimate calories"}
+                    </Button>
+                    {calorieEstimate && (
+                      <p className="text-muted-foreground text-xs">
+                        ~{calorieEstimate.calories_per_serving} kcal / serving
+                        <span className="ml-1 opacity-60">· {calorieEstimate.note}</span>
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex flex-col gap-2">

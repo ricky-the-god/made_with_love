@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ArrowLeft, ArrowRight, CheckCircle, ChefHat, List, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Spinner } from "@/components/ui/spinner";
 
 interface CookingSessionProps {
   recipeId: string;
@@ -20,6 +21,8 @@ export function CookingSession({ recipeId, recipeTitle, steps, ingredients }: Co
   const hasSteps = steps.length > 0;
   const [currentStep, setCurrentStep] = useState(-1);
   const [completed, setCompleted] = useState(false);
+  const [grandmaTip, setGrandmaTip] = useState("");
+  const [isTipLoading, setIsTipLoading] = useState(false);
 
   const ingredientLines = hasIngredients ? ingredients.split("\n").filter((l) => l.trim()) : [];
 
@@ -30,6 +33,59 @@ export function CookingSession({ recipeId, recipeTitle, steps, ingredients }: Co
 
   const isOnIngredients = currentStep === -1;
   const isLastStep = !isOnIngredients && currentStep === steps.length - 1;
+
+  // Fetch Groq tip whenever the step changes
+  useEffect(() => {
+    if (isOnIngredients || steps.length === 0) {
+      setGrandmaTip("");
+      setIsTipLoading(false);
+      return;
+    }
+
+    const currentStepText = steps[currentStep];
+    if (!currentStepText) return;
+
+    let cancelled = false;
+    setGrandmaTip("");
+    setIsTipLoading(true);
+
+    async function fetchTip() {
+      try {
+        const response = await fetch("/api/ai/cooking-tip", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            step: currentStepText,
+            title: recipeTitle,
+            stepIndex: currentStep,
+            totalSteps: steps.length,
+          }),
+        });
+
+        if (!response.ok || !response.body) return;
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done || cancelled) break;
+          const chunk = decoder.decode(value, { stream: true });
+          setGrandmaTip((prev) => prev + chunk);
+        }
+      } catch {
+        // Silently fail — static fallback shown when grandmaTip is empty
+      } finally {
+        if (!cancelled) setIsTipLoading(false);
+      }
+    }
+
+    fetchTip();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [currentStep, isOnIngredients, steps, recipeTitle]);
 
   function goNext() {
     if (isLastStep) {
@@ -145,16 +201,24 @@ export function CookingSession({ recipeId, recipeTitle, steps, ingredients }: Co
         </div>
       )}
 
-      {/* Animated guide placeholder */}
-      <div className="flex items-center gap-3 rounded-xl border border-amber-200 border-dashed px-4 py-3 text-muted-foreground text-sm dark:border-amber-900/30">
+      {/* Grandmother guide with Groq tip */}
+      <div className="flex items-start gap-3 rounded-xl border border-amber-200 border-dashed px-4 py-3 text-muted-foreground text-sm dark:border-amber-900/30">
         <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-xl dark:bg-amber-900/30">
           👵
         </div>
-        <p className="italic">
-          {isOnIngredients
-            ? "Get everything ready before you start — it makes all the difference."
-            : "Take your time. This dish was made with love and patience."}
-        </p>
+        {isTipLoading && !grandmaTip ? (
+          <div className="flex items-center gap-2 text-muted-foreground text-sm">
+            <Spinner className="size-3.5" />
+            <span className="italic">Thinking of a tip...</span>
+          </div>
+        ) : (
+          <p className="italic">
+            {grandmaTip ||
+              (isOnIngredients
+                ? "Get everything ready before you start — it makes all the difference."
+                : "Take your time. This dish was made with love and patience.")}
+          </p>
+        )}
       </div>
 
       {/* Navigation */}

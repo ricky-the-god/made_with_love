@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "open-dyslexic/open-dyslexic-regular.css";
+@import "../../node_modules/open-dyslexic/open-dyslexic-regular.css";
 
 /* Theme preset styles: these override CSS variables based on the selected data-theme-preset */
 @import "../styles/presets/brutalist.css";
