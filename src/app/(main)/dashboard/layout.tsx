@@ -11,11 +11,13 @@ import { getProfile } from "@/server/family-actions";
 import { getPreference } from "@/server/server-actions";
 
 export default async function Layout({ children }: Readonly<{ children: ReactNode }>) {
-  const profile = await getProfile();
+  const [profile, cookieStore] = await Promise.all([getProfile(), cookies()]);
   if (!profile) redirect("/auth/v2/login");
-  if (!profile.family_id) redirect("/onboarding");
+  if (!profile.family_id) {
+    const skipped = cookieStore.get("onboarding_skipped")?.value;
+    if (!skipped) redirect("/onboarding");
+  }
 
-  const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value !== "false";
   const [variant, collapsible] = await Promise.all([
     getPreference("sidebar_variant", SIDEBAR_VARIANT_VALUES, "inset"),

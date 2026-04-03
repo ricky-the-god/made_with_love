@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { createAdminClient, createClient } from "@/lib/supabase/server";
@@ -309,6 +310,42 @@ export async function acceptFamilyInvitation(token: string) {
 
   revalidatePath("/dashboard");
   return { success: true };
+}
+
+// -------------------------------------------------------
+// SKIP ONBOARDING (let user into dashboard without a family)
+// -------------------------------------------------------
+export async function skipOnboarding() {
+  const cookieStore = await cookies();
+  cookieStore.set("onboarding_skipped", "1", {
+    path: "/",
+    maxAge: 60 * 60 * 24 * 365,
+    sameSite: "lax",
+  });
+}
+
+// -------------------------------------------------------
+// GET PENDING INVITATIONS FOR CURRENT USER'S EMAIL
+// -------------------------------------------------------
+export async function getMyPendingInvitations() {
+  const supabase = await createClient();
+  const admin = createAdminClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user?.email) return [];
+
+  const { data } = await admin
+    .from("family_invitations")
+    .select("id, token, role, expires_at, families(id, family_name)")
+    .eq("email", user.email.toLowerCase())
+    .is("accepted_at", null)
+    .gt("expires_at", new Date().toISOString())
+    .order("created_at", { ascending: false });
+
+  return data ?? [];
 }
 
 // -------------------------------------------------------

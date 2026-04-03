@@ -2,15 +2,16 @@ import { notFound } from "next/navigation";
 
 import { Clock, Globe, Heart, MapPin } from "lucide-react";
 
+import { StarRating } from "@/components/star-rating";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { APP_CONFIG } from "@/config/app-config";
 import type { Memory } from "@/lib/supabase/types";
-import { getPublicRecipe } from "@/server/recipe-actions";
+import { getPublicRecipe, getRecipeRating } from "@/server/recipe-actions";
 
 export default async function PublicRecipePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const recipe = await getPublicRecipe(id);
+  const [recipe, ratingData] = await Promise.all([getPublicRecipe(id), getRecipeRating(id)]);
 
   if (!recipe) {
     notFound();
@@ -74,6 +75,13 @@ export default async function PublicRecipePage({ params }: { params: Promise<{ i
               {recipe.servings && <span>{recipe.servings} servings</span>}
             </div>
           )}
+
+          <StarRating
+            recipeId={recipe.id}
+            myRating={ratingData.myRating}
+            average={ratingData.average}
+            count={ratingData.count}
+          />
 
           <div className="flex flex-wrap gap-3">
             <Button asChild className="bg-amber-700 text-white hover:bg-amber-800">

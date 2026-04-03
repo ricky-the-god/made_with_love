@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 
-export async function loginWithEmail(email: string, password: string) {
+export async function loginWithEmail(email: string, password: string, redirectTo?: string) {
   const supabase = await createClient();
 
   const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -13,7 +13,7 @@ export async function loginWithEmail(email: string, password: string) {
     return { error: error.message };
   }
 
-  redirect("/dashboard");
+  redirect(redirectTo ?? "/dashboard");
 }
 
 export async function registerWithEmail(email: string, password: string) {
