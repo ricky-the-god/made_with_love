@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Check, Share2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { useOrigin } from "@/hooks/use-origin";
 
 interface ShareFamilyLinkButtonProps {
   familyId: string;
@@ -12,8 +13,9 @@ interface ShareFamilyLinkButtonProps {
 
 export function ShareFamilyLinkButton({ familyId }: ShareFamilyLinkButtonProps) {
   const [copied, setCopied] = useState(false);
+  const origin = useOrigin();
 
-  const link = `${window.location.origin}/dashboard/discover/family/${familyId}`;
+  const link = `${origin}/dashboard/discover/family/${familyId}`;
 
   function handleCopy() {
     navigator.clipboard.writeText(link).then(() => {

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useOrigin } from "@/hooks/use-origin";
 import { sendFamilyInvitation } from "@/server/family-actions";
 
 export function InviteMemberButton() {
@@ -24,8 +25,9 @@ export function InviteMemberButton() {
   const [error, setError] = useState<string | null>(null);
   const [inviteToken, setInviteToken] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const origin = useOrigin();
 
-  const inviteLink = inviteToken ? `${window.location.origin}/invite/${inviteToken}` : "";
+  const inviteLink = inviteToken ? `${origin}/invite/${inviteToken}` : "";
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

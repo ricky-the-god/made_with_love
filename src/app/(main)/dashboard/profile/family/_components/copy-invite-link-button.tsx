@@ -6,6 +6,7 @@ import { Check, Copy, Link } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useOrigin } from "@/hooks/use-origin";
 
 interface CopyInviteLinkButtonProps {
   token: string;
@@ -13,8 +14,9 @@ interface CopyInviteLinkButtonProps {
 
 export function CopyInviteLinkButton({ token }: CopyInviteLinkButtonProps) {
   const [copied, setCopied] = useState(false);
+  const origin = useOrigin();
 
-  const link = `${typeof window !== "undefined" ? window.location.origin : ""}/invite/${token}`;
+  const link = `${origin}/invite/${token}`;
 
   function handleCopy() {
     navigator.clipboard.writeText(link).then(() => {

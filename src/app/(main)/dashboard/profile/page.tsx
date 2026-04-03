@@ -1,19 +1,26 @@
-import { ArrowRight, LogOut, Users } from "lucide-react";
+import { ArrowRight, Users } from "lucide-react";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { getUser, signOut } from "@/server/auth-actions";
+import { createClient } from "@/lib/supabase/server";
 
-import { ThemeSwitcher } from "../_components/sidebar/theme-switcher";
+import { ProfileDetailsForm } from "./_components/profile-details-form";
 
 export default async function ProfilePage() {
-  const user = await getUser();
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: profile } = user
+    ? await supabase.from("profiles").select("full_name, avatar_url").eq("id", user.id).maybeSingle()
+    : { data: null };
 
   const email = user?.email ?? null;
-  const displayName = email ? email.split("@")[0] : "My Account";
-  const initials = email ? email[0].toUpperCase() : "M";
+  const displayName = profile?.full_name?.trim() || (email ? email.split("@")[0] : "My Account");
+  const initials = displayName.charAt(0).toUpperCase() || "M";
+  const avatarUrl = profile?.avatar_url ?? null;
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6">
@@ -24,6 +31,7 @@ export default async function ProfilePage() {
         <CardContent className="pt-6">
           <div className="flex items-center gap-4">
             <Avatar className="size-16 rounded-xl">
+              <AvatarImage src={avatarUrl || undefined} alt={displayName} className="rounded-xl object-cover" />
               <AvatarFallback className="rounded-xl bg-amber-100 text-2xl text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
                 {initials}
               </AvatarFallback>
@@ -33,6 +41,16 @@ export default async function ProfilePage() {
               <p className="text-muted-foreground text-sm">{email ?? "My Account"}</p>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-amber-100 dark:border-amber-900/20">
+        <CardHeader>
+          <CardTitle className="text-base">Account details</CardTitle>
+          <CardDescription>Update your display name and profile picture.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ProfileDetailsForm initialName={profile?.full_name ?? ""} initialAvatarUrl={avatarUrl ?? ""} />
         </CardContent>
       </Card>
 
@@ -54,30 +72,6 @@ export default async function ProfilePage() {
           </Button>
         </CardContent>
       </Card>
-
-      {/* Appearance */}
-      <Card className="border-amber-100 dark:border-amber-900/20">
-        <CardHeader>
-          <CardTitle className="text-base">Appearance</CardTitle>
-          <CardDescription>Toggle light, dark, or system theme.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between">
-            <span className="text-sm">Theme</span>
-            <ThemeSwitcher />
-          </div>
-        </CardContent>
-      </Card>
-
-      <Separator />
-
-      {/* Sign out */}
-      <form action={signOut}>
-        <Button variant="outline" type="submit" className="w-full gap-2 text-destructive hover:text-destructive">
-          <LogOut className="size-4" />
-          Sign out
-        </Button>
-      </form>
     </div>
   );
 }
