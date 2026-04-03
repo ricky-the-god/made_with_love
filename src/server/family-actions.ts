@@ -294,14 +294,14 @@ export async function acceptFamilyInvitation(token: string) {
   if (profileError) return { error: profileError.message };
 
   // Atomically mark invitation accepted — check count to guard against race conditions
-  const { count, error: acceptError } = await admin
+  const { data: acceptedInvitationRows, error: acceptError } = await admin
     .from("family_invitations")
     .update({ accepted_at: new Date().toISOString() })
     .eq("id", invitation.id)
     .is("accepted_at", null) // only update if still unaccepted
-    .select("id", { count: "exact", head: true });
+    .select("id");
 
-  if (acceptError || count === 0) {
+  if (acceptError || !acceptedInvitationRows?.length) {
     // Another request already claimed this invite — roll back the profile update
     await supabase.from("profiles").update({ family_id: null, role: null }).eq("id", user.id);
     return { error: "This invite was already used. Please request a new one." };

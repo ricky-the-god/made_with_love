@@ -42,7 +42,7 @@ export default function OnboardingPage() {
     setError(null);
     startTransition(async () => {
       const result = await acceptFamilyInvitation(inviteCode.trim());
-      if ("error" in result) {
+      if ("error" in result && result.error) {
         setError(result.error);
       } else {
         router.refresh();
