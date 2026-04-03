@@ -1,11 +1,11 @@
 "use client";
 
-import { useRef } from "react";
+import type { MouseEvent } from "react";
+import { useEffect, useState } from "react";
 
 import Image from "next/image";
 import Link from "next/link";
 
-import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -14,133 +14,174 @@ import { usePreferencesStore } from "@/stores/preferences/preferences-provider";
 const GRAIN_SVG =
   "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")";
 
+const BOOKS = [
+  { id: "book-1", src: "/images/Frame1.jpeg", alt: "Family recipes", rotation: -12 },
+  { id: "book-2", src: "/images/Frame2.png", alt: "Recipe memories", rotation: 8 },
+  { id: "book-3", src: "/images/Frame3.png", alt: "Family stories", rotation: -4 },
+] as const;
+
 export function HeroSection() {
-  const sectionRef = useRef<HTMLElement>(null);
-
-  // Use the app's own preference system (data-attribute based), not the OS media query
   const reducedMotion = usePreferencesStore((s) => s.reducedMotion);
-  const resolvedThemeMode = usePreferencesStore((s) => s.resolvedThemeMode);
-
   const isReducedMotion = reducedMotion === "reduce";
-  // multiply: white image bg disappears on white page (white × white = white)
-  // luminosity: prevents darkening on dark backgrounds
-  const blendMode = resolvedThemeMode === "dark" ? "luminosity" : "multiply";
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end start"],
-  });
+  const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 });
+  const [bookAngles, setBookAngles] = useState<number[]>(BOOKS.map((_, i) => i * (360 / BOOKS.length)));
 
-  // Image zooms from 1× → 1.6× as user scrolls through the hero
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.6]);
-  // Text fades and drifts up in the first 45% of scroll
-  const textOpacity = useTransform(scrollYProgress, [0, 0.45], [1, 0]);
-  const textY = useTransform(scrollYProgress, [0, 0.45], [0, -50]);
+  useEffect(() => {
+    if (isReducedMotion) return;
+    const id = setInterval(() => {
+      setBookAngles((prev) => prev.map((a) => (a + 0.25) % 360));
+    }, 50);
+    return () => clearInterval(id);
+  }, [isReducedMotion]);
 
-  // Static layout for reduced-motion users — no scroll effects
-  if (isReducedMotion) {
-    return (
-      <section className="relative overflow-hidden bg-white px-6 pt-24 pb-20 dark:bg-stone-950">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.03] dark:opacity-[0.06]"
-          style={{ backgroundImage: GRAIN_SVG, backgroundRepeat: "repeat", backgroundSize: "128px" }}
-        />
-        <div className="relative mx-auto max-w-3xl text-center">
-          <HeroTextContent />
-        </div>
-      </section>
-    );
-  }
+  const handleMouseMove = (e: MouseEvent<HTMLElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    setMousePos({ x: (e.clientX - r.left) / r.width, y: (e.clientY - r.top) / r.height });
+  };
+
+  if (isReducedMotion) return <ReducedMotionHero />;
 
   return (
-    // 180vh outer section provides ~80vh of scroll distance for the animation
-    <section ref={sectionRef} className="relative" style={{ height: "180vh" }}>
-      {/* Sticky panel — stays pinned at viewport top while outer section scrolls */}
-      <div className="sticky top-0 z-0 h-screen overflow-hidden bg-white dark:bg-stone-950">
-        {/* ── Image layer — zooms with scroll ─────────────────────────────── */}
-        <motion.div aria-hidden className="absolute inset-0" style={{ scale, transformOrigin: "center center" }}>
-          <Image
-            src="/images/hero-branch.jpeg"
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-center"
-            style={{ mixBlendMode: blendMode }}
-          />
-        </motion.div>
+    <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-stone-950">
+      {/* Invisible cover captures mouse for 3D tilt — aria-hidden so it is decorative only */}
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: purely decorative mouse tracking */}
+      <div aria-hidden className="absolute inset-0" onMouseMove={handleMouseMove} />
+      {/* ── Grain ──────────────────────────────────────────────────────────── */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.04]"
+        style={{ backgroundImage: GRAIN_SVG, backgroundRepeat: "repeat", backgroundSize: "128px" }}
+      />
 
-        {/* ── Light mode gradient — fades image into white ─────────────────── */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 dark:hidden"
-          style={{
-            background:
-              "linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, transparent 30%, transparent 55%, rgba(255,255,255,0.97) 100%)",
-          }}
-        />
+      {/* ── Bottom text-lift gradient ──────────────────────────────────────── */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: "linear-gradient(to top, rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.20) 40%, transparent 70%)",
+        }}
+      />
 
-        {/* ── Dark mode gradient — fades image into black ──────────────────── */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 hidden dark:block"
-          style={{
-            background:
-              "linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 30%, transparent 55%, rgba(0,0,0,0.97) 100%)",
-          }}
-        />
+      {/* ── Floating books ─────────────────────────────────────────────────── */}
+      <div
+        aria-hidden
+        className="pointer-events-none relative flex h-[52vh] w-full items-center justify-center"
+        style={{ perspective: "1000px" }}
+      >
+        {BOOKS.map((book, i) => {
+          const rad = (bookAngles[i] ?? 0) * (Math.PI / 180);
+          const x = Math.cos(rad) * 200;
+          const y = Math.sin(rad) * 85;
+          const tiltX = (mousePos.y - 0.5) * 18;
+          const tiltY = (mousePos.x - 0.5) * 18;
 
-        {/* ── Grain texture — subtle paper feel ───────────────────────────── */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
-          style={{ backgroundImage: GRAIN_SVG, backgroundRepeat: "repeat", backgroundSize: "128px" }}
-        />
+          return (
+            <div
+              key={book.id}
+              className="absolute w-28 h-36 sm:w-36 sm:h-48 transition-transform duration-75"
+              style={{
+                transform: `translate(${x}px, ${y}px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) rotateZ(${book.rotation}deg)`,
+                transformStyle: "preserve-3d",
+                zIndex: Math.round(Math.sin(rad) * 10) + 10,
+              }}
+            >
+              <div className="relative w-full h-full rounded-xl overflow-hidden shadow-[0_8px_40px_rgba(0,0,0,0.7)] ring-1 ring-white/10">
+                <Image
+                  src={book.src}
+                  alt={book.alt}
+                  fill
+                  priority={i === 0}
+                  sizes="(max-width: 640px) 112px, 144px"
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-white/15 via-transparent to-black/30" />
+              </div>
+            </div>
+          );
+        })}
+      </div>
 
-        {/* ── Text layer — fades and drifts up on scroll ──────────────────── */}
-        <motion.div
-          className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center"
-          style={{ opacity: textOpacity, y: textY }}
+      {/* ── Text content ───────────────────────────────────────────────────── */}
+      <div className="relative z-10 w-full max-w-3xl px-6 pb-20 text-center sm:px-8">
+        <p
+          className="mb-5 text-[10px] font-medium uppercase tracking-[0.22em] text-amber-400"
+          style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
         >
-          <HeroTextContent />
-        </motion.div>
+          A living family archive
+        </p>
+
+        <h1
+          className="mb-6 font-normal text-5xl leading-[1.08] text-white sm:text-6xl lg:text-7xl"
+          style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
+        >
+          Every family
+          <br />
+          has a tree.
+        </h1>
+
+        <p
+          className="mx-auto mb-10 max-w-xl text-base text-stone-300 leading-relaxed sm:text-lg"
+          style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
+        >
+          The people who fed you, the recipes they carried, the stories that live in the food. All of it, kept safe.
+        </p>
+
+        <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <Button
+            asChild
+            size="lg"
+            className="rounded-full bg-amber-700 px-8 text-base text-white shadow-lg hover:bg-amber-600"
+          >
+            <Link href="/auth/v2/register">
+              Start preserving
+              <ArrowRight className="ml-1 size-4" />
+            </Link>
+          </Button>
+          <Button
+            asChild
+            variant="ghost"
+            size="lg"
+            className="rounded-full px-8 text-base text-white/70 hover:bg-white/10 hover:text-white"
+          >
+            <Link href="#how-it-works">See how it works</Link>
+          </Button>
+        </div>
       </div>
     </section>
   );
 }
 
-// Shared between animated and reduced-motion paths — strictly black and white
-function HeroTextContent() {
+// ── Reduced-motion fallback ───────────────────────────────────────────────────
+
+function ReducedMotionHero() {
   return (
-    <>
+    <section className="flex min-h-screen flex-col items-center justify-center bg-stone-950 px-6 pb-20 text-center sm:px-8">
       <p
-        className="mb-6 font-medium text-stone-400 text-xs uppercase tracking-widest dark:text-stone-500"
+        className="mb-5 text-[10px] font-medium uppercase tracking-[0.22em] text-amber-400"
         style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
       >
         A living family archive
       </p>
-
       <h1
-        className="mb-6 max-w-3xl font-normal text-5xl text-stone-900 leading-[1.1] sm:text-6xl lg:text-7xl dark:text-white"
+        className="mb-6 font-normal text-5xl leading-[1.08] text-white sm:text-6xl lg:text-7xl"
         style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
       >
-        Every family has recipes <em className="text-stone-500 not-italic dark:text-stone-400">worth remembering.</em>
+        Every family
+        <br />
+        has a tree.
       </h1>
-
       <p
-        className="mx-auto mb-10 max-w-xl text-lg text-stone-500 leading-relaxed dark:text-stone-400"
+        className="mx-auto mb-10 max-w-xl text-base text-stone-300 leading-relaxed sm:text-lg"
         style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
       >
-        Made with Love is for immigrant families, diaspora communities, and anyone who has lost someone and wants to
-        hold onto the food they made. Preserve the person, the story, and the memory behind every dish.
+        The people who fed you, the recipes they carried, the stories that live in the food. All of it, kept safe.
       </p>
-
-      <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+      <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
         <Button
           asChild
           size="lg"
-          className="rounded-full bg-stone-900 px-8 text-base text-white shadow-sm hover:bg-stone-700 dark:bg-white dark:text-stone-900 dark:hover:bg-stone-100"
+          className="rounded-full bg-amber-700 px-8 text-base text-white shadow-lg hover:bg-amber-600"
         >
           <Link href="/auth/v2/register">
             Start preserving
@@ -151,18 +192,11 @@ function HeroTextContent() {
           asChild
           variant="ghost"
           size="lg"
-          className="rounded-full px-8 text-base text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-stone-800/50"
+          className="rounded-full px-8 text-base text-white/70 hover:bg-white/10 hover:text-white"
         >
           <Link href="#how-it-works">See how it works</Link>
         </Button>
       </div>
-
-      <p
-        className="mt-8 text-sm text-stone-400 italic dark:text-stone-500"
-        style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
-      >
-        A tender, unhurried place for your family&apos;s culinary heritage
-      </p>
-    </>
+    </section>
   );
 }
