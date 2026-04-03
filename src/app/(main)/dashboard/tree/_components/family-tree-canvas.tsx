@@ -36,12 +36,13 @@ interface GenRow {
 
 interface FamilyTreeCanvasProps {
   rows: GenRow[];
+  members: FamilyMember[];
   recipeCountByMember: Record<string, number>;
   recipesByMember: Record<string, { id: string; title: string; is_favorite: boolean }[]>;
 }
 
 // ── Component ──────────────────────────────────────────────────────────────
-export function FamilyTreeCanvas({ rows, recipeCountByMember, recipesByMember }: FamilyTreeCanvasProps) {
+export function FamilyTreeCanvas({ rows, members, recipeCountByMember, recipesByMember }: FamilyTreeCanvasProps) {
   const outerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
@@ -61,67 +62,43 @@ export function FamilyTreeCanvas({ rows, recipeCountByMember, recipesByMember }:
     startTy: number;
   } | null>(null);
 
-  // ── Connector paths (layout-space coordinates via offsetLeft/offsetTop) ──
+  // ── Connector paths: one bezier per member → their specific parent ─────────
   const computeConnectors = useCallback(() => {
     const content = contentRef.current;
     if (!content) return;
 
     const paths: string[] = [];
 
-    for (let i = 0; i < rows.length - 1; i++) {
-      const parentRow = rows[i];
-      const childRow = rows[i + 1];
+    // Build position map from rendered node elements
+    const nodePos = new Map<string, { cx: number; yTop: number; yBottom: number }>();
+    for (const [id, el] of nodeRefs.current) {
+      nodePos.set(id, {
+        cx: el.offsetLeft + el.offsetWidth / 2,
+        yTop: el.offsetTop,
+        yBottom: el.offsetTop + el.offsetHeight,
+      });
+    }
 
-      const parentNodes = parentRow.members
-        .map((m) => {
-          const el = nodeRefs.current.get(m.id);
-          if (!el) return null;
-          return { x: el.offsetLeft + el.offsetWidth / 2, y: el.offsetTop + el.offsetHeight };
-        })
-        .filter(Boolean) as { x: number; y: number }[];
+    // Draw one bezier per member → each of their parents (ignores unlinked members)
+    for (const member of members) {
+      if (!member.parent_ids?.length) continue;
+      const child = nodePos.get(member.id);
+      if (!child) continue;
 
-      const childNodes = childRow.members
-        .map((m) => {
-          const el = nodeRefs.current.get(m.id);
-          if (!el) return null;
-          return { x: el.offsetLeft + el.offsetWidth / 2, y: el.offsetTop };
-        })
-        .filter(Boolean) as { x: number; y: number }[];
+      for (const parentId of member.parent_ids) {
+        const parent = nodePos.get(parentId);
+        if (!parent) continue;
 
-      if (parentNodes.length === 0 || childNodes.length === 0) continue;
-
-      const topOfGap = Math.max(...parentNodes.map((n) => n.y));
-      const bottomOfGap = Math.min(...childNodes.map((n) => n.y));
-      const midY = (topOfGap + bottomOfGap) / 2;
-
-      const parentMinX = Math.min(...parentNodes.map((n) => n.x));
-      const parentMaxX = Math.max(...parentNodes.map((n) => n.x));
-      const childMinX = Math.min(...childNodes.map((n) => n.x));
-      const childMaxX = Math.max(...childNodes.map((n) => n.x));
-      const trunkX = parentNodes.length === 1 ? parentNodes[0].x : (parentMinX + parentMaxX) / 2;
-      const childTrunkX = childNodes.length === 1 ? childNodes[0].x : (childMinX + childMaxX) / 2;
-      const upperBarY = topOfGap + (midY - topOfGap) * 0.4;
-      const lowerBarY = midY + (bottomOfGap - midY) * 0.6;
-
-      for (const pn of parentNodes) {
-        paths.push(`M ${pn.x} ${pn.y} L ${pn.x} ${upperBarY}`);
-      }
-      if (parentNodes.length > 1) {
-        paths.push(`M ${parentMinX} ${upperBarY} L ${parentMaxX} ${upperBarY}`);
-      }
-      // Cubic bezier for the organic trunk curve
-      paths.push(`M ${trunkX} ${upperBarY} C ${trunkX} ${midY} ${childTrunkX} ${midY} ${childTrunkX} ${lowerBarY}`);
-      if (childNodes.length > 1) {
-        paths.push(`M ${childMinX} ${lowerBarY} L ${childMaxX} ${lowerBarY}`);
-      }
-      for (const cn of childNodes) {
-        paths.push(`M ${cn.x} ${lowerBarY} L ${cn.x} ${cn.y}`);
+        const midY = (parent.yBottom + child.yTop) / 2;
+        paths.push(
+          `M ${parent.cx} ${parent.yBottom} C ${parent.cx} ${midY} ${child.cx} ${midY} ${child.cx} ${child.yTop}`,
+        );
       }
     }
 
     setSvgDims({ w: content.scrollWidth, h: content.scrollHeight });
     setConnectors(paths);
-  }, [rows]);
+  }, [members]);
 
   useEffect(() => {
     computeConnectors();
@@ -248,13 +225,13 @@ export function FamilyTreeCanvas({ rows, recipeCountByMember, recipesByMember }:
                       {/* ── Cookbook shape ──────────────────────────────── */}
                       <div
                         className={cn(
-                          "flex h-28 w-20 overflow-hidden rounded-lg shadow-md transition-shadow hover:shadow-xl",
+                          "flex h-40 w-24 overflow-hidden rounded-lg shadow-md transition-shadow hover:shadow-xl",
                           isSelected &&
                             "ring-2 ring-amber-400 ring-offset-2 ring-offset-[#f0ece3] dark:ring-offset-stone-950",
                         )}
                       >
                         {/* Spine */}
-                        <div className={cn("w-2.5 shrink-0", colors.spine)} />
+                        <div className={cn("w-3 shrink-0", colors.spine)} />
 
                         {/* Cover */}
                         <div className={cn("flex flex-1 flex-col justify-between p-2", colors.bg)}>
@@ -280,7 +257,7 @@ export function FamilyTreeCanvas({ rows, recipeCountByMember, recipesByMember }:
                       </div>
 
                       {/* Name label pill below cookbook */}
-                      <div className="max-w-[90px] rounded-full bg-white/80 px-2.5 py-0.5 shadow-sm dark:bg-stone-900/80">
+                      <div className="max-w-[100px] rounded-full bg-white/80 px-2.5 py-0.5 shadow-sm dark:bg-stone-900/80">
                         <p className="truncate text-center font-semibold text-[10px] text-stone-700 uppercase tracking-wide dark:text-stone-300">
                           {member.name}
                         </p>

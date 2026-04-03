@@ -131,6 +131,7 @@ export async function createFamilyMember(input: {
   name: string;
   relation?: string;
   generation?: number;
+  parent_ids?: string[];
   bio?: string;
   country_of_origin?: string;
   cultural_background?: string;
@@ -173,6 +174,7 @@ export async function updateFamilyMember(
     name?: string;
     relation?: string;
     generation?: number;
+    parent_ids?: string[];
     bio?: string;
     country_of_origin?: string;
     cultural_background?: string;

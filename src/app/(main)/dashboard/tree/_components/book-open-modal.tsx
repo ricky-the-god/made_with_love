@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { BookOpen, Heart, Star, X } from "lucide-react";
+import { BookOpen, Heart, Pencil, Star, X } from "lucide-react";
 
 import type { FamilyMember } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils";
@@ -47,9 +47,11 @@ export function BookOpenModal({ member, recipes, coverColors, onClose }: BookOpe
 
   return (
     /* Backdrop */
-    <button
-      type="button"
-      aria-label="Close modal"
+    // biome-ignore lint/a11y/useKeyWithClickEvents: Escape handled by window keydown listener above
+    // biome-ignore lint/a11y/noStaticElementInteractions: backdrop dismiss is a secondary affordance; dialog role handles a11y
+    // biome-ignore lint/a11y/useAriaPropsSupportedByRole: aria-label omitted intentionally on presentation element
+    <div
+      role="presentation"
       className={cn(
         "fixed inset-0 z-30 flex items-center justify-center bg-black/50 backdrop-blur-sm",
         "transition-opacity duration-300",
@@ -69,8 +71,11 @@ export function BookOpenModal({ member, recipes, coverColors, onClose }: BookOpe
           if (e.key === "Escape") handleClose();
         }}
       >
-        {/* Open book pages (always rendered, revealed when cover rotates away) */}
-        <div className="flex overflow-hidden rounded-r-2xl shadow-2xl" style={{ width: 600, height: 380 }}>
+        {/* Open book pages — fade in when open, fade out as cover swings back */}
+        <div
+          className="flex overflow-hidden rounded-r-2xl shadow-2xl transition-opacity duration-300"
+          style={{ width: 600, height: 380, opacity: isOpen ? 1 : 0 }}
+        >
           {/* ── Left page: member info ─────────────────────────────────────── */}
           <div className="relative flex w-1/2 flex-col gap-3 bg-[#f0ece3] p-6">
             {/* Spine strip */}
@@ -99,13 +104,22 @@ export function BookOpenModal({ member, recipes, coverColors, onClose }: BookOpe
                 <p className="mt-3 text-muted-foreground/60 text-sm italic">No story written yet.</p>
               )}
 
-              <a
-                href={`/dashboard/tree/member/${member.id}`}
-                className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-amber-700 px-3 py-1.5 font-medium text-sm text-white transition-colors hover:bg-amber-800"
-              >
-                <BookOpen className="size-3.5" />
-                View full profile
-              </a>
+              <div className="mt-4 flex gap-2">
+                <a
+                  href={`/dashboard/tree/member/${member.id}`}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-amber-700 px-3 py-1.5 font-medium text-sm text-white transition-colors hover:bg-amber-800"
+                >
+                  <BookOpen className="size-3.5" />
+                  View profile
+                </a>
+                <a
+                  href={`/dashboard/tree/member/${member.id}/edit`}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-white px-3 py-1.5 font-medium text-amber-800 text-sm transition-colors hover:bg-amber-50"
+                >
+                  <Pencil className="size-3.5" />
+                  Edit / Link
+                </a>
+              </div>
             </div>
           </div>
 
@@ -152,13 +166,7 @@ export function BookOpenModal({ member, recipes, coverColors, onClose }: BookOpe
 
             {/* Heart / favorite visual — bottom-right */}
             <div className="mt-auto flex justify-end pt-2">
-              <button
-                type="button"
-                className="rounded-full p-1 text-stone-400 transition-colors hover:text-rose-400"
-                aria-label="Favourite"
-              >
-                <Heart className="size-4" />
-              </button>
+              <Heart className="size-4 text-stone-300" aria-hidden="true" />
             </div>
           </div>
         </div>
@@ -203,6 +211,6 @@ export function BookOpenModal({ member, recipes, coverColors, onClose }: BookOpe
           <X className="size-3.5" />
         </button>
       </div>
-    </button>
+    </div>
   );
 }

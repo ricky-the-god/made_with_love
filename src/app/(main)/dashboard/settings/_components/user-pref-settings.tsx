@@ -26,7 +26,7 @@ function PrefSwitch({ label, description, checked, onChange, isPending }: PrefSw
   return (
     <div className="flex items-center justify-between">
       <div className="space-y-0.5">
-        <p className="text-sm font-medium">{label}</p>
+        <p className="font-medium text-sm">{label}</p>
         <p className="text-muted-foreground text-xs">{description}</p>
       </div>
       <Switch checked={checked} onCheckedChange={onChange} disabled={isPending} />

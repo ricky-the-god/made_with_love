@@ -15,9 +15,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { RELATIONS, RELATIONS_REQUIRING_PARENT } from "@/lib/family-constants";
+import { RELATIONS } from "@/lib/family-constants";
 import type { FamilyMember } from "@/lib/supabase/types";
-import { createFamilyMember } from "@/server/family-actions";
+import { updateFamilyMember } from "@/server/family-actions";
 
 const GENERATION_OPTIONS = [
   { value: "1", label: "1 — Great-grandparents" },
@@ -40,11 +40,12 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-interface NewMemberFormProps {
+interface EditMemberFormProps {
+  member: FamilyMember;
   members: FamilyMember[];
 }
 
-export function NewMemberForm({ members }: NewMemberFormProps) {
+export function EditMemberForm({ member, members }: EditMemberFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -56,13 +57,24 @@ export function NewMemberForm({ members }: NewMemberFormProps) {
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { is_memorial: false, parent_ids: [] },
+    defaultValues: {
+      name: member.name,
+      relation: member.relation ?? undefined,
+      country_of_origin: member.country_of_origin ?? undefined,
+      cultural_background: member.cultural_background ?? undefined,
+      bio: member.bio ?? undefined,
+      generation: member.generation ?? undefined,
+      is_memorial: member.is_memorial,
+      parent_ids: member.parent_ids ?? [],
+    },
   });
 
   const isMemorial = watch("is_memorial");
-  const selectedRelation = watch("relation");
+  const _selectedRelation = watch("relation");
   const selectedParentIds = watch("parent_ids") ?? [];
-  const showParentSelector = selectedRelation ? RELATIONS_REQUIRING_PARENT.has(selectedRelation) : false;
+
+  // Other members (exclude self from parent options)
+  const otherMembers = members.filter((m) => m.id !== member.id);
 
   function toggleParent(id: string, checked: boolean) {
     const current = selectedParentIds;
@@ -71,7 +83,7 @@ export function NewMemberForm({ members }: NewMemberFormProps) {
 
   function onSubmit(values: FormValues) {
     startTransition(async () => {
-      const result = await createFamilyMember({
+      const result = await updateFamilyMember(member.id, {
         name: values.name,
         relation: values.relation || undefined,
         country_of_origin: values.country_of_origin || undefined,
@@ -79,23 +91,23 @@ export function NewMemberForm({ members }: NewMemberFormProps) {
         bio: values.bio || undefined,
         generation: values.generation || undefined,
         is_memorial: values.is_memorial ?? false,
-        parent_ids: values.parent_ids?.length ? values.parent_ids : undefined,
+        parent_ids: values.parent_ids ?? [],
       });
 
-      if ("error" in result) {
+      if (result && "error" in result) {
         alert(result.error);
         return;
       }
 
-      router.push("/dashboard/tree");
+      router.push(`/dashboard/tree/member/${member.id}`);
     });
   }
 
   return (
     <Card className="border-amber-100 dark:border-amber-900/20">
       <CardHeader>
-        <CardTitle className="text-lg">About this person</CardTitle>
-        <CardDescription>These details help connect recipes and memories to the right person.</CardDescription>
+        <CardTitle className="text-lg">Profile details</CardTitle>
+        <CardDescription>Changes will be reflected across all their recipes and memories.</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
@@ -107,7 +119,7 @@ export function NewMemberForm({ members }: NewMemberFormProps) {
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="relation">Relation to you</Label>
-              <Select onValueChange={(v) => setValue("relation", v)}>
+              <Select defaultValue={member.relation ?? undefined} onValueChange={(v) => setValue("relation", v)}>
                 <SelectTrigger id="relation">
                   <SelectValue placeholder="Select relation" />
                 </SelectTrigger>
@@ -135,7 +147,10 @@ export function NewMemberForm({ members }: NewMemberFormProps) {
 
           <div className="flex flex-col gap-2">
             <Label htmlFor="generation">Generation</Label>
-            <Select onValueChange={(v) => setValue("generation", Number(v))}>
+            <Select
+              defaultValue={member.generation?.toString() ?? undefined}
+              onValueChange={(v) => setValue("generation", Number(v))}
+            >
               <SelectTrigger id="generation">
                 <SelectValue placeholder="Select generation" />
               </SelectTrigger>
@@ -147,14 +162,13 @@ export function NewMemberForm({ members }: NewMemberFormProps) {
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-muted-foreground text-xs">Helps organise the family tree by time period.</p>
           </div>
 
-          {showParentSelector && members.length > 0 && (
+          {otherMembers.length > 0 && (
             <div className="flex flex-col gap-2">
               <Label>Parents in family tree</Label>
               <div className="flex flex-col gap-2 rounded-lg border border-amber-100 bg-amber-50/50 p-3 dark:border-amber-900/20 dark:bg-amber-950/10">
-                {members.map((m) => (
+                {otherMembers.map((m) => (
                   <label key={m.id} htmlFor={`parent-${m.id}`} className="flex cursor-pointer items-center gap-2.5">
                     <Checkbox
                       id={`parent-${m.id}`}
@@ -208,10 +222,10 @@ export function NewMemberForm({ members }: NewMemberFormProps) {
               disabled={isPending}
               className="flex-1 bg-amber-700 text-white hover:bg-amber-800 dark:bg-amber-600 dark:hover:bg-amber-700"
             >
-              {isPending ? "Saving..." : "Add to family tree"}
+              {isPending ? "Saving..." : "Save changes"}
             </Button>
             <Button variant="outline" asChild>
-              <a href="/dashboard/tree">Cancel</a>
+              <a href={`/dashboard/tree/member/${member.id}`}>Cancel</a>
             </Button>
           </div>
         </form>

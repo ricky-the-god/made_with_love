@@ -88,7 +88,12 @@ export default async function TreePage() {
         </div>
       ) : (
         <div className="flex-1 overflow-hidden rounded-2xl border border-amber-100 bg-amber-50/20 dark:border-amber-900/20 dark:bg-amber-950/5">
-          <FamilyTreeCanvas rows={rows} recipeCountByMember={recipeCountByMember} recipesByMember={recipesByMember} />
+          <FamilyTreeCanvas
+            rows={rows}
+            members={members}
+            recipeCountByMember={recipeCountByMember}
+            recipesByMember={recipesByMember}
+          />
         </div>
       )}
     </div>

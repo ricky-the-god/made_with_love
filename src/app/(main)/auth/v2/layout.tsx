@@ -13,20 +13,20 @@ export default function Layout({ children }: Readonly<{ children: ReactNode }>) 
           <div className="absolute top-10 space-y-1 px-10 text-amber-50">
             <Heart className="size-10" />
             <h1 className="font-medium text-2xl">{APP_CONFIG.name}</h1>
-            <p className="text-sm text-amber-200">Preserve the recipes that hold your family together.</p>
+            <p className="text-amber-200 text-sm">Preserve the recipes that hold your family together.</p>
           </div>
 
           <div className="absolute bottom-10 flex w-full justify-between px-10">
             <div className="flex-1 space-y-1 text-amber-50">
               <h2 className="font-medium">Every recipe has a story.</h2>
-              <p className="text-sm text-amber-200">
+              <p className="text-amber-200 text-sm">
                 Attach memories, photos, and voice notes to keep the person behind the dish alive.
               </p>
             </div>
             <Separator orientation="vertical" className="mx-3 h-auto! bg-amber-600" />
             <div className="flex-1 space-y-1 text-amber-50">
               <h2 className="font-medium">Your family tree, full of flavor.</h2>
-              <p className="text-sm text-amber-200">
+              <p className="text-amber-200 text-sm">
                 Browse recipes by generation, explore cultural traditions, and cook together across distances.
               </p>
             </div>

@@ -31,6 +31,7 @@ export interface FamilyMember {
   name: string;
   relation: string | null;
   generation: number | null;
+  parent_ids: string[];
   photo_url: string | null;
   bio: string | null;
   country_of_origin: string | null;
