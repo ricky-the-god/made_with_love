@@ -1,19 +1,24 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { COUNTRY_OPTIONS } from "@/data/recipe-options";
+import { cn } from "@/lib/utils";
 import { createFamilyMember } from "@/server/family-actions";
 
 const RELATIONS = [
@@ -56,6 +61,7 @@ type FormValues = z.infer<typeof schema>;
 export function NewMemberForm() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [isCountryPickerOpen, setIsCountryPickerOpen] = useState(false);
 
   const {
     register,
@@ -126,7 +132,52 @@ export function NewMemberForm() {
           <div className="grid gap-5 sm:grid-cols-2">
             <div className="flex flex-col gap-2">
               <Label htmlFor="country">Country of origin</Label>
-              <Input id="country" placeholder="e.g. Vietnam, Italy, Mexico" {...register("country_of_origin")} />
+              <Popover open={isCountryPickerOpen} onOpenChange={setIsCountryPickerOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={isCountryPickerOpen}
+                    className={cn(
+                      "w-full justify-between font-normal",
+                      !watch("country_of_origin") && "text-muted-foreground",
+                    )}
+                  >
+                    {watch("country_of_origin") || "Search and select a country"}
+                    <ChevronsUpDown className="size-4 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search countries..." />
+                    <CommandList>
+                      <CommandEmpty>No country found.</CommandEmpty>
+                      <CommandGroup>
+                        {COUNTRY_OPTIONS.map((country) => (
+                          <CommandItem
+                            key={country}
+                            value={country}
+                            onSelect={() => {
+                              const nextCountry = country === watch("country_of_origin") ? "" : country;
+                              setValue("country_of_origin", nextCountry, { shouldDirty: true });
+                              setIsCountryPickerOpen(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "size-4",
+                                watch("country_of_origin") === country ? "opacity-100" : "opacity-0",
+                              )}
+                            />
+                            {country}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="culture">Cultural background</Label>

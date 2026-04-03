@@ -2,30 +2,17 @@ import { ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+import { getFamilyMember } from "@/server/family-actions";
 
-const RELATIONS = [
-  "Myself",
-  "Mother",
-  "Father",
-  "Grandmother",
-  "Grandfather",
-  "Aunt",
-  "Uncle",
-  "Sister",
-  "Brother",
-  "Cousin",
-  "Child",
-  "Family friend",
-  "Mentor",
-  "Other",
-];
+import { EditMemberForm } from "./_components/edit-member-form";
 
 export default async function EditMemberPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const member = await getFamilyMember(id);
+
+  if (!member) {
+    return null;
+  }
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -47,51 +34,7 @@ export default async function EditMemberPage({ params }: { params: Promise<{ id:
           <CardDescription>Changes will be reflected across all their recipes and memories.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="flex flex-col gap-5">
-            <div className="grid gap-5 sm:grid-cols-2">
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="name">Full name *</Label>
-                <Input id="name" defaultValue="Family Member" />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="relation">Relation</Label>
-                <Select defaultValue="grandmother">
-                  <SelectTrigger id="relation">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {RELATIONS.map((r) => (
-                      <SelectItem key={r} value={r.toLowerCase().replace(/\s+/g, "-")}>
-                        {r}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid gap-5 sm:grid-cols-2">
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="country">Country of origin</Label>
-                <Input id="country" placeholder="e.g. Vietnam" />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="culture">Cultural background</Label>
-                <Input id="culture" placeholder="e.g. Southern Vietnamese" />
-              </div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="bio">Biography</Label>
-              <Textarea id="bio" className="min-h-[100px] resize-none" placeholder="A few words about this person..." />
-            </div>
-            <div className="flex gap-3 pt-2">
-              <Button type="submit" className="flex-1 bg-amber-700 text-white hover:bg-amber-800">
-                Save changes
-              </Button>
-              <Button variant="outline" asChild>
-                <a href={`/dashboard/tree/member/${id}`}>Cancel</a>
-              </Button>
-            </div>
-          </form>
+          <EditMemberForm member={member} />
         </CardContent>
       </Card>
     </div>
