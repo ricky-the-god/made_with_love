@@ -95,7 +95,7 @@ export function ThemeBootScript() {
             : mode;
         var preset = rawPreset || DEFAULTS.theme_preset;
         var reducedMotion = rawReducedMotion === "reduce" ? "reduce" : DEFAULTS.reduced_motion;
-        var textSize = rawTextSize === "large" ? "large" : DEFAULTS.text_size;
+        var textSize = rawTextSize === "12" || rawTextSize === "14" || rawTextSize === "16" ? rawTextSize : DEFAULTS.text_size;
         var appLanguage =
           rawAppLanguage === "es" || rawAppLanguage === "fr" || rawAppLanguage === "zh-CN" || rawAppLanguage === "hi"
             ? rawAppLanguage

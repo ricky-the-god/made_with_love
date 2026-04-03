@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleUser, LogOut, Settings } from "lucide-react";
+import { Accessibility, CircleUser, LogOut, Settings } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -59,6 +59,12 @@ export function NavUser() {
               <a href="/dashboard/settings">
                 <Settings className="size-4" />
                 {copy.settings}
+              </a>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <a href="/dashboard/settings/accessibility">
+                <Accessibility className="size-4" />
+                {copy.accessibilityTitle}
               </a>
             </DropdownMenuItem>
             <DropdownMenuSeparator />

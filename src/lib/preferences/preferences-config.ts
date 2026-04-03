@@ -74,7 +74,7 @@ export const PREFERENCE_DEFAULTS: PreferenceValueMap = {
   theme_mode: "light",
   theme_preset: "default",
   reduced_motion: "no-preference",
-  text_size: "normal",
+  text_size: "16",
   app_language: "en",
   font: "inter",
   content_layout: "centered",
