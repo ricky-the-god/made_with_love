@@ -63,12 +63,16 @@ export function SearchDialog() {
               <CommandGroup heading={group} key={group}>
                 {searchItems
                   .filter((item) => item.group === group)
-                  .map((item) => (
-                    <CommandItem className="!py-1.5" key={item.label} onSelect={() => setOpen(false)}>
-                      {item.icon && <item.icon />}
-                      <span>{item.label}</span>
-                    </CommandItem>
-                  ))}
+                  .map((item) => {
+                    const Icon = item.icon;
+
+                    return (
+                      <CommandItem className="!py-1.5" key={item.label} onSelect={() => setOpen(false)}>
+                        {Icon ? <Icon /> : null}
+                        <span>{item.label}</span>
+                      </CommandItem>
+                    );
+                  })}
               </CommandGroup>
             </React.Fragment>
           ))}
