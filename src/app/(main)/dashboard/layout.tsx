@@ -30,8 +30,8 @@ export default async function Layout({ children }: Readonly<{ children: ReactNod
         collapsible={collapsible}
         user={{
           name: displayName,
-          email: profile.email,
-          avatarUrl: profile.avatar_url,
+          email: profile.email ?? "",
+          avatarUrl: profile.avatar_url ?? null,
         }}
       />
       <SidebarInset

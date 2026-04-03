@@ -19,6 +19,15 @@ interface ProfileDetailsFormProps {
   initialAvatarUrl: string;
 }
 
+type AvatarUploadResult =
+  | {
+      error: string;
+    }
+  | {
+      avatarUrl: string;
+      uploadedPath: string | null;
+    };
+
 export function ProfileDetailsForm({ initialName, initialAvatarUrl }: ProfileDetailsFormProps) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -64,7 +73,7 @@ export function ProfileDetailsForm({ initialName, initialAvatarUrl }: ProfileDet
     return url.slice(markerIndex + marker.length);
   }
 
-  async function uploadSelectedAvatar(currentAvatarUrl: string) {
+  async function uploadSelectedAvatar(currentAvatarUrl: string): Promise<AvatarUploadResult> {
     if (!selectedFile) {
       return { avatarUrl: currentAvatarUrl, uploadedPath: null as string | null };
     }
@@ -117,12 +126,12 @@ export function ProfileDetailsForm({ initialName, initialAvatarUrl }: ProfileDet
     try {
       const uploadResult = await uploadSelectedAvatar(previousAvatarUrl);
 
-      if (uploadResult.error) {
+      if ("error" in uploadResult) {
         toast.error(uploadResult.error);
         return;
       }
 
-      uploadedPath = uploadResult.uploadedPath;
+      uploadedPath = uploadResult.uploadedPath ?? null;
 
       const result = await saveProfileSettings({
         full_name: name,
