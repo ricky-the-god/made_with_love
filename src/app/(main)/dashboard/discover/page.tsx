@@ -18,6 +18,29 @@ type CulturalCollection = {
   iconClassName: string;
 };
 
+type DiscoverSearchParams = {
+  region?: string | string[];
+  q?: string | string[];
+  recipes?: string | string[];
+  traditions?: string | string[];
+};
+
+type PublicRecipe = Awaited<ReturnType<typeof getPublicRecipes>>[number];
+
+function firstParamValue(value?: string | string[]) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function normalizeFamilyMember(recipe: PublicRecipe) {
+  const relatedMember = recipe.family_members;
+
+  if (Array.isArray(relatedMember)) {
+    return relatedMember[0] ?? null;
+  }
+
+  return relatedMember ?? null;
+}
+
 const CULTURAL_COLLECTIONS: readonly CulturalCollection[] = [
   {
     slug: "southeast-asia",
@@ -114,13 +137,16 @@ function FeaturedStoryCard() {
   );
 }
 
-export default async function DiscoverPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ region?: string; q?: string; recipes?: string; traditions?: string }>;
-}) {
-  const { region, q, recipes, traditions } = await searchParams;
-  const publicRecipes = await getPublicRecipes(50);
+export default async function DiscoverPage({ searchParams }: { searchParams: Promise<DiscoverSearchParams> }) {
+  const resolvedParams = await searchParams;
+  const region = firstParamValue(resolvedParams.region);
+  const q = firstParamValue(resolvedParams.q);
+  const recipes = firstParamValue(resolvedParams.recipes);
+  const traditions = firstParamValue(resolvedParams.traditions);
+  const publicRecipes = (await getPublicRecipes(50)).map((recipe) => ({
+    ...recipe,
+    family_members: normalizeFamilyMember(recipe),
+  }));
   const query = q?.trim().toLowerCase() ?? "";
   const showAllRecipes = recipes === "all";
   const showAllTraditions = traditions === "all";
