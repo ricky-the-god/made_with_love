@@ -17,7 +17,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { COUNTRY_OPTIONS } from "@/data/recipe-options";
-import { getRelationLabel, RELATION_OPTIONS, RELATIONS_WITH_PARENTS } from "@/lib/family-constants";
+import {
+  getRelationLabel,
+  normalizeRelationValue,
+  RELATION_OPTIONS,
+  RELATIONS_WITH_PARENTS,
+} from "@/lib/family-constants";
 import type { FamilyMember } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils";
 import { updateFamilyMember } from "@/server/family-actions";
@@ -38,7 +43,7 @@ const schema = z.object({
   bio: z.string().optional(),
   generation: z.coerce.number().int().min(1).max(5).optional(),
   is_memorial: z.boolean().optional(),
-  parent_ids: z.array(z.string()).optional(),
+  parent_ids: z.array(z.string().uuid()).optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -64,7 +69,7 @@ export function EditMemberForm({ member, members }: EditMemberFormProps) {
     resolver: zodResolver(schema),
     defaultValues: {
       name: member.name,
-      relation: getRelationLabel(member.relation) ?? undefined,
+      relation: member.relation ? (normalizeRelationValue(member.relation) ?? undefined) : undefined,
       country_of_origin: member.country_of_origin ?? undefined,
       cultural_background: member.cultural_background ?? undefined,
       bio: member.bio ?? undefined,
@@ -89,7 +94,7 @@ export function EditMemberForm({ member, members }: EditMemberFormProps) {
   const showParentPicker =
     otherMembers.length > 0 &&
     !!watchedRelation &&
-    RELATIONS_WITH_PARENTS.has(watchedRelation.toLowerCase().replace(/[^a-z0-9]+/g, "-"));
+    RELATIONS_WITH_PARENTS.has(normalizeRelationValue(watchedRelation) ?? "");
 
   // Filter to the generation immediately above so only plausible parents appear.
   const parentCandidates = showParentPicker
@@ -109,7 +114,7 @@ export function EditMemberForm({ member, members }: EditMemberFormProps) {
         bio: values.bio || undefined,
         generation: values.generation || undefined,
         is_memorial: values.is_memorial ?? false,
-        parent_ids: selectedParentIds,
+        parent_ids: showParentPicker ? selectedParentIds : [],
       });
 
       if (result && "error" in result) {
@@ -133,15 +138,18 @@ export function EditMemberForm({ member, members }: EditMemberFormProps) {
         <div className="flex flex-col gap-2">
           <Label htmlFor="relation">Relation to you</Label>
           <Select
-            defaultValue={getRelationLabel(member.relation) ?? undefined}
-            onValueChange={(value) => setValue("relation", value, { shouldDirty: true })}
+            defaultValue={normalizeRelationValue(member.relation) ?? undefined}
+            onValueChange={(value) => {
+              setValue("relation", value, { shouldDirty: true });
+              setSelectedParentIds([]);
+            }}
           >
             <SelectTrigger id="relation">
               <SelectValue placeholder="Select relation" />
             </SelectTrigger>
             <SelectContent>
               {RELATION_OPTIONS.map((relation) => (
-                <SelectItem key={relation.value} value={relation.label}>
+                <SelectItem key={relation.value} value={relation.value}>
                   {relation.label}
                 </SelectItem>
               ))}

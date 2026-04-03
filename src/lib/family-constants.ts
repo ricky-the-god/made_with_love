@@ -8,6 +8,8 @@ export const RELATION_OPTIONS = [
   { value: "father", label: "Father" },
   { value: "grandmother", label: "Grandmother" },
   { value: "grandfather", label: "Grandfather" },
+  { value: "great-grandmother", label: "Great-Grandmother" },
+  { value: "great-grandfather", label: "Great-Grandfather" },
   { value: "great-aunt", label: "Great-Aunt" },
   { value: "great-uncle", label: "Great-Uncle" },
   { value: "aunt", label: "Aunt" },
@@ -69,7 +71,8 @@ export const RELATIONS_REQUIRING_PARENT = new Set<string>(["nephew", "niece", "c
 
 /**
  * All normalized relation values for which an explicit parent link makes sense
- * in the family tree (excludes the root node "myself" and couple/non-tree relations).
+ * in the family tree (excludes "myself", couple roles, and non-tree relations like
+ * "husband", "wife", "family-friend", "mentor", and "other").
  */
 export const RELATIONS_WITH_PARENTS = new Set<string>([
   "mother",
@@ -93,5 +96,4 @@ export const RELATIONS_WITH_PARENTS = new Set<string>([
   "granddaughter",
   "grandson",
   "grandchild",
-  "other",
 ]);

@@ -49,7 +49,7 @@ export default async function EditRecipePage({ params }: { params: Promise<{ id:
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="category">Category</Label>
-              <Input id="category" name="culture_tag" placeholder="e.g. Soup, Dessert, Noodle dish" />
+              <Input id="category" placeholder="e.g. Soup, Dessert, Noodle dish" />
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="ingredients">Ingredients</Label>

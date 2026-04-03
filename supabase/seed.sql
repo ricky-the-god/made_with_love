@@ -1,5 +1,5 @@
-﻿-- ============================================================
--- Made with Love ÔÇö Expanded Demo Seed Data
+-- ============================================================
+-- Made with Love — Expanded Demo Seed Data
 -- ============================================================
 -- BEFORE RUNNING THIS FILE:
 --   1. Create a user in Supabase Auth with:
@@ -505,7 +505,7 @@ E'1. Simmer pork with aromatics until tender.\n2. Chill uncovered until complete
       'Tita Elena''s Birthday Pancit Bihon',
       'Long noodles for long life, made in a tray big enough for cousins, neighbors, and whoever walks in hungry.',
 E'400g bihon noodles\n300g shredded chicken\n1/4 cabbage\n2 carrots\n1 cup snap peas\n1 stalk celery\n4 garlic cloves\n1 onion\n3 tbsp soy sauce\n2 cups chicken broth',
-E'1. Soak noodles briefly.\n2. Saut├® garlic and onion.\n3. Add chicken and vegetables.\n4. Add noodles, broth, and soy sauce.\n5. Toss until just tender.\n6. Serve with calamansi.',
+E'1. Soak noodles briefly.\n2. Sauté garlic and onion.\n3. Add chicken and vegetables.\n4. Add noodles, broth, and soy sauce.\n5. Toss until just tender.\n6. Serve with calamansi.',
       'Do not cut the noodles. That point gets made every single year.',
       '20 min',
       '20 min',
@@ -574,7 +574,7 @@ E'1. Simmer oxtail until tender.\n2. Stir in peanut butter and rice powder.\n3. 
       'Lili''s Late-Night Arroz Caldo',
       'Ginger rice porridge for sick days, late arrivals, and homesick evenings.',
 E'1 cup rice\n6 cups chicken stock\n2 chicken thighs\n1 onion\n6 cloves garlic\n2 inches ginger\nFish sauce\nGreen onions\nBoiled eggs\nCalamansi',
-E'1. Toast garlic separately for topping.\n2. Saut├® ginger and onion.\n3. Add chicken and rice.\n4. Pour in stock and simmer until creamy.\n5. Season.\n6. Top with garlic, egg, and green onion.',
+E'1. Toast garlic separately for topping.\n2. Sauté ginger and onion.\n3. Add chicken and rice.\n4. Pour in stock and simmer until creamy.\n5. Season.\n6. Top with garlic, egg, and green onion.',
       'This is the first dish I learned to make without calling anyone halfway through.',
       '10 min',
       '40 min',

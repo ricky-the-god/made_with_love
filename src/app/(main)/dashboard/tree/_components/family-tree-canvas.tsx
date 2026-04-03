@@ -127,22 +127,23 @@ function rankParentCandidate(child: FamilyMember, candidate: FamilyMember, expec
 // Never auto-infer parents for these.
 const NO_INFER_RELATIONS = new Set(["husband", "wife", "family-friend", "mentor", "other"]);
 
-function inferAutomaticParentIds(member: FamilyMember, members: FamilyMember[]) {
+function inferAutomaticParentIds(
+  member: FamilyMember,
+  membersByRelation: Map<string, FamilyMember[]>,
+  membersByGeneration: Map<number, FamilyMember[]>,
+) {
   const memberRelation = normalizeRelationValue(member.relation) ?? "";
 
   // Members who married in or are family friends have parents outside this tree.
   if (NO_INFER_RELATIONS.has(memberRelation)) return [];
 
-  const otherMembers = members.filter((candidate) => candidate.id !== member.id);
   const expectedParentRelations = CHILD_TO_PARENT_RELATIONS[memberRelation] ?? [];
 
   if (expectedParentRelations.length > 0) {
-    // Find candidates whose relation matches the expected parent roles.
-    const parentCandidates = otherMembers
-      .filter((candidate) => {
-        const rel = normalizeRelationValue(candidate.relation) ?? "";
-        return expectedParentRelations.includes(rel);
-      })
+    // Collect candidates from the precomputed relation buckets (O(1) lookups), excluding self.
+    const parentCandidates = expectedParentRelations
+      .flatMap((rel) => membersByRelation.get(rel) ?? [])
+      .filter((candidate) => candidate.id !== member.id)
       .sort((a, b) => {
         const scoreDiff =
           rankParentCandidate(member, a, expectedParentRelations) -
@@ -159,8 +160,8 @@ function inferAutomaticParentIds(member: FamilyMember, members: FamilyMember[]) 
   if (!member.generation || member.generation <= 1) return [];
 
   // Fallback: up to two people in the immediately older generation.
-  return otherMembers
-    .filter((candidate) => candidate.generation === member.generation! - 1)
+  return (membersByGeneration.get(member.generation - 1) ?? [])
+    .filter((candidate) => candidate.id !== member.id)
     .sort((a, b) => a.name.localeCompare(b.name))
     .slice(0, 2)
     .map((candidate) => candidate.id);
@@ -201,6 +202,20 @@ export function FamilyTreeCanvas({
     const paths: { d: string; type: "child" | "couple" }[] = [];
     const drawnCoupleLines = new Set<string>();
 
+    // Precompute lookup structures once so inferAutomaticParentIds runs in O(1) per lookup
+    // instead of re-filtering the full members array on every call (avoids O(n²) work).
+    const membersByRelation = new Map<string, FamilyMember[]>();
+    const membersByGeneration = new Map<number, FamilyMember[]>();
+    for (const m of members) {
+      const rel = normalizeRelationValue(m.relation) ?? "";
+      if (!membersByRelation.has(rel)) membersByRelation.set(rel, []);
+      membersByRelation.get(rel)?.push(m);
+      if (m.generation != null) {
+        if (!membersByGeneration.has(m.generation)) membersByGeneration.set(m.generation, []);
+        membersByGeneration.get(m.generation)?.push(m);
+      }
+    }
+
     // Build position map from rendered node elements
     const nodePos = new Map<string, { cx: number; yTop: number; yBottom: number }>();
     for (const [id, el] of nodeRefs.current) {
@@ -213,7 +228,9 @@ export function FamilyTreeCanvas({
 
     for (const member of members as FamilyMemberWithLegacyParent[]) {
       const explicitParentIds = getLinkedParentIds(member);
-      const parentIds = explicitParentIds.length ? explicitParentIds : inferAutomaticParentIds(member, members);
+      const parentIds = explicitParentIds.length
+        ? explicitParentIds
+        : inferAutomaticParentIds(member, membersByRelation, membersByGeneration);
       if (!parentIds.length) continue;
       const childPos = nodePos.get(member.id);
       if (!childPos) continue;
@@ -294,7 +311,7 @@ export function FamilyTreeCanvas({
 
   useEffect(() => {
     // Double-RAF ensures layout is fully settled after hydration before measuring offsets.
-    let frame2: number;
+    let frame2 = 0;
     const frame1 = requestAnimationFrame(() => {
       frame2 = requestAnimationFrame(computeConnectors);
     });
