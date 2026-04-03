@@ -9,7 +9,16 @@ import { getPublicRecipes } from "@/server/recipe-actions";
 
 import { RecipeCard } from "../recipes/_components/recipe-card";
 
-const CULTURAL_COLLECTIONS = [
+type CulturalCollection = {
+  slug: string;
+  region: string;
+  emoji: string;
+  description: string;
+  countries: readonly string[];
+  iconClassName: string;
+};
+
+const CULTURAL_COLLECTIONS: readonly CulturalCollection[] = [
   {
     slug: "southeast-asia",
     region: "Southeast Asia",
@@ -82,7 +91,7 @@ const CULTURAL_COLLECTIONS = [
     countries: ["Poland", "Ukraine", "Romania", "Hungary", "Croatia", "Serbia", "Georgia"],
     iconClassName: "bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-200",
   },
-] as const;
+];
 
 const DEFAULT_RECIPE_COUNT = 6;
 const DEFAULT_TRADITION_COUNT = 2;
