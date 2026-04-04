@@ -1,0 +1,147 @@
+export type IngredientCategory =
+  | "Vegetables"
+  | "Proteins"
+  | "Grains"
+  | "Dairy & Eggs"
+  | "Spices & Herbs"
+  | "Fruits"
+  | "Oils & Sauces"
+  | "Legumes & Nuts";
+
+export interface CatalogIngredient {
+  id: string;
+  name: string;
+  emoji: string;
+  category: IngredientCategory;
+  imageUrl?: string;
+}
+
+// Placeholder image URL for ingredients without specific images
+export const DEFAULT_INGREDIENT_IMAGE =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23f3e8ff' width='100' height='100'/%3E%3Ctext x='50' y='50' font-size='50' text-anchor='middle' dy='.3em' fill='%23d8b4fe'%3E%F0%9F%8D%BD%3C/text%3E%3C/svg%3E";
+
+export const INGREDIENT_CATEGORIES: readonly string[] = [
+  "All",
+  "Vegetables",
+  "Proteins",
+  "Grains",
+  "Dairy & Eggs",
+  "Spices & Herbs",
+  "Fruits",
+  "Oils & Sauces",
+  "Legumes & Nuts",
+];
+
+export const INGREDIENT_CATALOG: CatalogIngredient[] = [
+  // Vegetables
+  { id: "garlic", name: "Garlic", emoji: "🧄", category: "Vegetables", imageUrl: "https://images.unsplash.com/photo-1599599810694-e5f57a7c76fb?w=200&h=200&fit=crop" },
+  { id: "onion", name: "Onion", emoji: "🧅", category: "Vegetables", imageUrl: "https://images.unsplash.com/photo-1587049352431-8fea766d053d?w=200&h=200&fit=crop" },
+  { id: "tomato", name: "Tomato", emoji: "🍅", category: "Vegetables", imageUrl: "https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=200&h=200&fit=crop" },
+  { id: "potato", name: "Potato", emoji: "🥔", category: "Vegetables", imageUrl: "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=200&h=200&fit=crop" },
+  { id: "carrot", name: "Carrot", emoji: "🥕", category: "Vegetables", imageUrl: "https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=200&h=200&fit=crop" },
+  { id: "broccoli", name: "Broccoli", emoji: "🥦", category: "Vegetables", imageUrl: "https://images.unsplash.com/photo-1577003833162-21cce9fec34f?w=200&h=200&fit=crop" },
+  { id: "spinach", name: "Spinach", emoji: "🥬", category: "Vegetables", imageUrl: "https://images.unsplash.com/photo-1625246333195-78d9c38ad576?w=200&h=200&fit=crop" },
+  { id: "bell-pepper", name: "Bell Pepper", emoji: "🫑", category: "Vegetables", imageUrl: "https://images.unsplash.com/photo-1599599810694-3e4fb8f90e9e?w=200&h=200&fit=crop" },
+  { id: "cucumber", name: "Cucumber", emoji: "🥒", category: "Vegetables", imageUrl: "https://images.unsplash.com/photo-1604977527235-b76b66defaf6?w=200&h=200&fit=crop" },
+  { id: "eggplant", name: "Eggplant", emoji: "🍆", category: "Vegetables", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "corn", name: "Corn", emoji: "🌽", category: "Vegetables", imageUrl: "https://images.unsplash.com/photo-1599599810815-bbab43d45d94?w=200&h=200&fit=crop" },
+  { id: "mushroom", name: "Mushroom", emoji: "🍄", category: "Vegetables", imageUrl: "https://images.unsplash.com/photo-1599599810776-e1f9d2f7a2e3?w=200&h=200&fit=crop" },
+  { id: "cabbage", name: "Cabbage", emoji: "🥬", category: "Vegetables", imageUrl: "https://images.unsplash.com/photo-1599599810776-55eb2c1de0c0?w=200&h=200&fit=crop" },
+  { id: "chili-pepper", name: "Chili Pepper", emoji: "🌶️", category: "Vegetables", imageUrl: "https://images.unsplash.com/photo-1599599810776-55f0e5c0e9e0?w=200&h=200&fit=crop" },
+  { id: "ginger", name: "Ginger", emoji: "🫚", category: "Vegetables", imageUrl: "https://images.unsplash.com/photo-1599599810776-e0b9e9d7c0e0?w=200&h=200&fit=crop" },
+  { id: "green-onion", name: "Green Onion", emoji: "🌿", category: "Vegetables", imageUrl: "https://images.unsplash.com/photo-1599599810776-f0b9e9d7b0e0?w=200&h=200&fit=crop" },
+  { id: "celery", name: "Celery", emoji: "🌿", category: "Vegetables", imageUrl: "https://images.unsplash.com/photo-1599599810776-g1a9b0e9d7c0?w=200&h=200&fit=crop" },
+  { id: "zucchini", name: "Zucchini", emoji: "🥒", category: "Vegetables", imageUrl: "https://images.unsplash.com/photo-1599599810776-h0b9e9d7c0e0?w=200&h=200&fit=crop" },
+  { id: "sweet-potato", name: "Sweet Potato", emoji: "🍠", category: "Vegetables", imageUrl: "https://images.unsplash.com/photo-1599599810776-i0b9e9d7c0e0?w=200&h=200&fit=crop" },
+  { id: "peas", name: "Peas", emoji: "🟢", category: "Vegetables", imageUrl: "https://images.unsplash.com/photo-1599599810776-j1b9e9d7c0e0?w=200&h=200&fit=crop" },
+
+  // Proteins
+  { id: "chicken", name: "Chicken", emoji: "🍗", category: "Proteins", imageUrl: "https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=200&h=200&fit=crop" },
+  { id: "beef", name: "Beef", emoji: "🥩", category: "Proteins", imageUrl: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop" },
+  { id: "pork", name: "Pork", emoji: "🥩", category: "Proteins", imageUrl: "https://images.unsplash.com/photo-1529042410759-822a2b1f1ef7?w=200&h=200&fit=crop" },
+  { id: "bacon", name: "Bacon", emoji: "🥓", category: "Proteins", imageUrl: "https://images.unsplash.com/photo-1585237341710-4913dfaa3d8c?w=200&h=200&fit=crop" },
+  { id: "fish", name: "Fish", emoji: "🐟", category: "Proteins", imageUrl: "https://images.unsplash.com/photo-1580959375944-abd7e991ba5c?w=200&h=200&fit=crop" },
+  { id: "shrimp", name: "Shrimp", emoji: "🍤", category: "Proteins", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "salmon", name: "Salmon", emoji: "🐠", category: "Proteins", imageUrl: "https://images.unsplash.com/photo-1580959375944-abd7e991ba5c?w=200&h=200&fit=crop" },
+  { id: "tofu", name: "Tofu", emoji: "🫙", category: "Proteins", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "egg", name: "Egg", emoji: "🥚", category: "Proteins", imageUrl: "https://images.unsplash.com/photo-1585238341710-4913dfaa3d8c?w=200&h=200&fit=crop" },
+  { id: "lamb", name: "Lamb", emoji: "🥩", category: "Proteins", imageUrl: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop" },
+  { id: "turkey", name: "Turkey", emoji: "🦃", category: "Proteins", imageUrl: "https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=200&h=200&fit=crop" },
+  { id: "crab", name: "Crab", emoji: "🦀", category: "Proteins", imageUrl: "https://images.unsplash.com/photo-1580959375944-abd7e991ba5c?w=200&h=200&fit=crop" },
+
+  // Grains
+  { id: "rice", name: "Rice", emoji: "🍚", category: "Grains", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "flour", name: "Flour", emoji: "🌾", category: "Grains", imageUrl: "https://images.unsplash.com/photo-1585518419759-66e47d454beb?w=200&h=200&fit=crop" },
+  { id: "pasta", name: "Pasta", emoji: "🍝", category: "Grains", imageUrl: "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=200&h=200&fit=crop" },
+  { id: "bread", name: "Bread", emoji: "🍞", category: "Grains", imageUrl: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=200&h=200&fit=crop" },
+  { id: "oats", name: "Oats", emoji: "🌾", category: "Grains", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "noodles", name: "Noodles", emoji: "🍜", category: "Grains", imageUrl: "https://images.unsplash.com/photo-1585521537830-bba59e22bf06?w=200&h=200&fit=crop" },
+  { id: "breadcrumbs", name: "Breadcrumbs", emoji: "🍞", category: "Grains", imageUrl: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=200&h=200&fit=crop" },
+  { id: "cornstarch", name: "Cornstarch", emoji: "🌽", category: "Grains", imageUrl: "https://images.unsplash.com/photo-1585518419759-66e47d454beb?w=200&h=200&fit=crop" },
+
+  // Dairy & Eggs
+  { id: "butter", name: "Butter", emoji: "🧈", category: "Dairy & Eggs", imageUrl: "https://images.unsplash.com/photo-1585238341710-4913dfaa3d8c?w=200&h=200&fit=crop" },
+  { id: "milk", name: "Milk", emoji: "🥛", category: "Dairy & Eggs", imageUrl: "https://images.unsplash.com/photo-1553530666-ba2a8e36ba70?w=200&h=200&fit=crop" },
+  { id: "cheese", name: "Cheese", emoji: "🧀", category: "Dairy & Eggs", imageUrl: "https://images.unsplash.com/photo-1589985643862-69dbf0c7bcf6?w=200&h=200&fit=crop" },
+  { id: "heavy-cream", name: "Heavy Cream", emoji: "🥛", category: "Dairy & Eggs", imageUrl: "https://images.unsplash.com/photo-1553530666-ba2a8e36ba70?w=200&h=200&fit=crop" },
+  { id: "yogurt", name: "Yogurt", emoji: "🥛", category: "Dairy & Eggs", imageUrl: "https://images.unsplash.com/photo-1553530666-ba2a8e36ba70?w=200&h=200&fit=crop" },
+  { id: "parmesan", name: "Parmesan", emoji: "🧀", category: "Dairy & Eggs", imageUrl: "https://images.unsplash.com/photo-1589985643862-69dbf0c7bcf6?w=200&h=200&fit=crop" },
+  { id: "cream-cheese", name: "Cream Cheese", emoji: "🧀", category: "Dairy & Eggs", imageUrl: "https://images.unsplash.com/photo-1589985643862-69dbf0c7bcf6?w=200&h=200&fit=crop" },
+  { id: "condensed-milk", name: "Condensed Milk", emoji: "🥛", category: "Dairy & Eggs", imageUrl: "https://images.unsplash.com/photo-1553530666-ba2a8e36ba70?w=200&h=200&fit=crop" },
+
+  // Spices & Herbs
+  { id: "salt", name: "Salt", emoji: "🧂", category: "Spices & Herbs", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "black-pepper", name: "Black Pepper", emoji: "🫙", category: "Spices & Herbs", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "cumin", name: "Cumin", emoji: "🌿", category: "Spices & Herbs", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "turmeric", name: "Turmeric", emoji: "🟡", category: "Spices & Herbs", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "cinnamon", name: "Cinnamon", emoji: "🪵", category: "Spices & Herbs", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "basil", name: "Basil", emoji: "🌿", category: "Spices & Herbs", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "oregano", name: "Oregano", emoji: "🌿", category: "Spices & Herbs", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "thyme", name: "Thyme", emoji: "🌿", category: "Spices & Herbs", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "paprika", name: "Paprika", emoji: "🌶️", category: "Spices & Herbs", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "bay-leaf", name: "Bay Leaf", emoji: "🍃", category: "Spices & Herbs", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "cilantro", name: "Cilantro", emoji: "🌿", category: "Spices & Herbs", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "star-anise", name: "Star Anise", emoji: "⭐", category: "Spices & Herbs", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "cardamom", name: "Cardamom", emoji: "🌿", category: "Spices & Herbs", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "coriander", name: "Coriander", emoji: "🌿", category: "Spices & Herbs", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "chili-powder", name: "Chili Powder", emoji: "🌶️", category: "Spices & Herbs", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "five-spice", name: "Five Spice", emoji: "⭐", category: "Spices & Herbs", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+
+  // Fruits
+  { id: "lemon", name: "Lemon", emoji: "🍋", category: "Fruits", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "lime", name: "Lime", emoji: "🍋‍🟩", category: "Fruits", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "apple", name: "Apple", emoji: "🍎", category: "Fruits", imageUrl: "https://images.unsplash.com/photo-1560806e614371-faf4f46f322f?w=200&h=200&fit=crop" },
+  { id: "mango", name: "Mango", emoji: "🥭", category: "Fruits", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "coconut", name: "Coconut", emoji: "🥥", category: "Fruits", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "banana", name: "Banana", emoji: "🍌", category: "Fruits", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "orange", name: "Orange", emoji: "🍊", category: "Fruits", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "pineapple", name: "Pineapple", emoji: "🍍", category: "Fruits", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "strawberry", name: "Strawberry", emoji: "🍓", category: "Fruits", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "avocado", name: "Avocado", emoji: "🥑", category: "Fruits", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+
+  // Oils & Sauces
+  { id: "olive-oil", name: "Olive Oil", emoji: "🫙", category: "Oils & Sauces", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "vegetable-oil", name: "Vegetable Oil", emoji: "🫙", category: "Oils & Sauces", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "soy-sauce", name: "Soy Sauce", emoji: "🫙", category: "Oils & Sauces", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "fish-sauce", name: "Fish Sauce", emoji: "🫙", category: "Oils & Sauces", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "sesame-oil", name: "Sesame Oil", emoji: "🫙", category: "Oils & Sauces", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "vinegar", name: "Vinegar", emoji: "🫙", category: "Oils & Sauces", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "sugar", name: "Sugar", emoji: "🍬", category: "Oils & Sauces", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "honey", name: "Honey", emoji: "🍯", category: "Oils & Sauces", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "tomato-sauce", name: "Tomato Sauce", emoji: "🍅", category: "Oils & Sauces", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "oyster-sauce", name: "Oyster Sauce", emoji: "🫙", category: "Oils & Sauces", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "hoisin-sauce", name: "Hoisin Sauce", emoji: "🫙", category: "Oils & Sauces", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "coconut-milk", name: "Coconut Milk", emoji: "🥥", category: "Oils & Sauces", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "broth", name: "Broth", emoji: "🍲", category: "Oils & Sauces", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+
+  // Legumes & Nuts
+  { id: "chickpeas", name: "Chickpeas", emoji: "🫘", category: "Legumes & Nuts", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "lentils", name: "Lentils", emoji: "🫘", category: "Legumes & Nuts", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "black-beans", name: "Black Beans", emoji: "🫘", category: "Legumes & Nuts", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "kidney-beans", name: "Kidney Beans", emoji: "🫘", category: "Legumes & Nuts", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "peanuts", name: "Peanuts", emoji: "🥜", category: "Legumes & Nuts", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "almonds", name: "Almonds", emoji: "🌰", category: "Legumes & Nuts", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "cashews", name: "Cashews", emoji: "🌰", category: "Legumes & Nuts", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "sesame-seeds", name: "Sesame Seeds", emoji: "🌾", category: "Legumes & Nuts", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+  { id: "walnuts", name: "Walnuts", emoji: "🌰", category: "Legumes & Nuts", imageUrl: "https://images.unsplash.com/photo-1599599810694-3d92e1ca81e6?w=200&h=200&fit=crop" },
+];
