@@ -19,7 +19,12 @@
       "Bash(npx biome:*)",
       "Bash(git -C \"C:/Users/dquan/OneDrive/Desktop/made_with_love/.claude/worktrees/agent-ac22898b\" status)",
       "Bash(git -C \"C:/Users/dquan/OneDrive/Desktop/made_with_love/.claude/worktrees/agent-a32c6b01\" status)",
-      "Bash(node -e \"console.log\\(require\\('./package.json'\\).dependencies.next\\)\")"
+      "Bash(node -e \"console.log\\(require\\('./package.json'\\).dependencies.next\\)\")",
+      "Bash(git switch:*)",
+      "Bash(npm install:*)",
+      "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"family heritage cultural preservation emotional memorial\" --design-system -p \"Made with Love\" -f markdown)",
+      "Bash(npx tsc:*)",
+      "WebFetch(domain:motion.dev)"
     ]
   }
 }
