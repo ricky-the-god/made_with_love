@@ -26,6 +26,7 @@ export async function getFamilyRecipes() {
       `
       *,
       family_members ( id, name, photo_url, relation )
+      , recipe_ratings ( rating )
     `,
     )
     .eq("family_id", profile.family_id)
@@ -306,7 +307,7 @@ export async function getPublicRecipes(limit = 20) {
 
   const { data } = await supabase
     .from("recipes")
-    .select(`*, family_members ( id, name, photo_url, country_of_origin )`)
+    .select(`*, family_members ( id, name, photo_url, country_of_origin ), recipe_ratings ( rating )`)
     .eq("visibility", "public")
     .order("created_at", { ascending: false })
     .limit(limit);
