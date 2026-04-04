@@ -2,9 +2,15 @@ import { notFound } from "next/navigation";
 
 import { ArrowLeft, BookOpen } from "lucide-react";
 
+import LikeButton from "@/components/like-button";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { getConnectedFamilies, getPublicFamilyInfo, getPublicFamilyMembers } from "@/server/family-actions";
+import {
+  getConnectedFamilies,
+  getFamilyLikes,
+  getPublicFamilyInfo,
+  getPublicFamilyMembers,
+} from "@/server/family-actions";
 import { getPublicFamilyRecipes } from "@/server/recipe-actions";
 
 import { FamilyTreeCanvas } from "../../../tree/_components/family-tree-canvas";
@@ -21,11 +27,12 @@ const GENERATION_LABELS: Record<number, string> = {
 export default async function PublicFamilyTreePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  const [familyInfo, members, recipes, connections] = await Promise.all([
+  const [familyInfo, members, recipes, connections, likes] = await Promise.all([
     getPublicFamilyInfo(id),
     getPublicFamilyMembers(id),
     getPublicFamilyRecipes(id),
     getConnectedFamilies(),
+    getFamilyLikes(id),
   ]);
 
   if (!familyInfo) notFound();
@@ -76,7 +83,10 @@ export default async function PublicFamilyTreePage({ params }: { params: Promise
             <p className="mt-0.5 text-muted-foreground text-sm">Public family cookbook</p>
           </div>
         </div>
-        <FriendButton familyId={id} isConnected={isConnected} />
+        <div className="flex items-center gap-2">
+          <LikeButton familyId={id} initialCount={likes.count} initialLiked={likes.liked} />
+          <FriendButton familyId={id} isConnected={isConnected} />
+        </div>
       </div>
 
       {/* Read-only family tree */}

@@ -8,11 +8,8 @@ import Link from "next/link";
 
 import { ArrowRight } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { HoverButton } from "@/components/ui/hover-button";
 import { usePreferencesStore } from "@/stores/preferences/preferences-provider";
-
-const GRAIN_SVG =
-  "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")";
 
 const BOOKS = [
   { id: "book-1", src: "/images/Book1.png", alt: "Family recipes", rotation: -10 },
@@ -48,25 +45,9 @@ export function HeroSection() {
   if (isReducedMotion) return <ReducedMotionHero />;
 
   return (
-    <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-stone-950">
+    <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#322c2b] pt-20">
       {/* Invisible cover captures mouse for 3D tilt — aria-hidden so it is decorative only */}
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: purely decorative mouse tracking */}
       <div aria-hidden className="absolute inset-0" onMouseMove={handleMouseMove} />
-      {/* ── Grain ──────────────────────────────────────────────────────────── */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.04]"
-        style={{ backgroundImage: GRAIN_SVG, backgroundRepeat: "repeat", backgroundSize: "128px" }}
-      />
-
-      {/* ── Bottom text-lift gradient ──────────────────────────────────────── */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background: "linear-gradient(to top, rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.20) 40%, transparent 70%)",
-        }}
-      />
 
       {/* ── Floating books ─────────────────────────────────────────────────── */}
       <div
@@ -84,14 +65,14 @@ export function HeroSection() {
           return (
             <div
               key={book.id}
-              className="absolute w-28 h-36 sm:w-36 sm:h-48 transition-transform duration-75"
+              className="absolute h-36 w-28 transition-transform duration-75 sm:h-48 sm:w-36"
               style={{
                 transform: `translate(${x}px, ${y}px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) rotateZ(${book.rotation}deg)`,
                 transformStyle: "preserve-3d",
                 zIndex: Math.round(Math.sin(rad) * 10) + 10,
               }}
             >
-              <div className="relative w-full h-full rounded-xl overflow-hidden shadow-[0_8px_40px_rgba(0,0,0,0.7)] ring-1 ring-white/10">
+              <div className="relative h-full w-full overflow-hidden rounded-xl shadow-[0_8px_40px_rgba(0,0,0,0.7)] ring-1 ring-white/10">
                 <Image
                   src={book.src}
                   alt={book.alt}
@@ -110,47 +91,38 @@ export function HeroSection() {
       {/* ── Text content ───────────────────────────────────────────────────── */}
       <div className="relative z-10 w-full max-w-3xl px-6 pb-20 text-center sm:px-8">
         <p
-          className="mb-5 text-[10px] font-medium uppercase tracking-[0.22em] text-amber-400"
+          className="mb-5 font-medium text-[#e4c59e] text-[10px] uppercase tracking-[0.22em]"
           style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
         >
           A living family archive
         </p>
 
         <h1
-          className="mb-6 font-normal text-5xl leading-[1.08] text-white sm:text-6xl lg:text-7xl"
+          className="mb-6 font-normal text-5xl text-white leading-[1.08] sm:text-6xl lg:text-7xl"
           style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
         >
-          Every family
+          Preserve the Recipes.
           <br />
-          has a tree.
+          Remember the Love.
         </h1>
 
         <p
-          className="mx-auto mb-10 max-w-xl text-base text-stone-300 leading-relaxed sm:text-lg"
+          className="mx-auto mb-10 max-w-xl text-[#e4c59e]/85 text-base leading-relaxed sm:text-lg"
           style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
         >
           The people who fed you, the recipes they carried, the stories that live in the food. All of it, kept safe.
         </p>
 
         <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Button
-            asChild
-            size="lg"
-            className="rounded-full bg-amber-700 px-8 text-base text-white shadow-lg hover:bg-amber-600"
-          >
+          <HoverButton asChild variant="dark" size="lg">
             <Link href="/auth/v2/register">
               Start preserving
               <ArrowRight className="ml-1 size-4" />
             </Link>
-          </Button>
-          <Button
-            asChild
-            variant="ghost"
-            size="lg"
-            className="rounded-full px-8 text-base text-white/70 hover:bg-white/10 hover:text-white"
-          >
+          </HoverButton>
+          <HoverButton asChild variant="ghost" size="lg">
             <Link href="#how-it-works">See how it works</Link>
-          </Button>
+          </HoverButton>
         </div>
       </div>
     </section>
@@ -161,46 +133,37 @@ export function HeroSection() {
 
 function ReducedMotionHero() {
   return (
-    <section className="flex min-h-screen flex-col items-center justify-center bg-stone-950 px-6 pb-20 text-center sm:px-8">
+    <section className="flex min-h-screen flex-col items-center justify-center bg-[#322c2b] px-6 pt-20 pb-20 text-center sm:px-8">
       <p
-        className="mb-5 text-[10px] font-medium uppercase tracking-[0.22em] text-amber-400"
+        className="mb-5 font-medium text-[#e4c59e] text-[10px] uppercase tracking-[0.22em]"
         style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
       >
         A living family archive
       </p>
       <h1
-        className="mb-6 font-normal text-5xl leading-[1.08] text-white sm:text-6xl lg:text-7xl"
+        className="mb-6 font-normal text-5xl text-white leading-[1.08] sm:text-6xl lg:text-7xl"
         style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
       >
-        Every family
+        Preserve the Recipes.
         <br />
-        has a tree.
+        Remember the Love.
       </h1>
       <p
-        className="mx-auto mb-10 max-w-xl text-base text-stone-300 leading-relaxed sm:text-lg"
+        className="mx-auto mb-10 max-w-xl text-[#e4c59e]/85 text-base leading-relaxed sm:text-lg"
         style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
       >
         The people who fed you, the recipes they carried, the stories that live in the food. All of it, kept safe.
       </p>
       <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-        <Button
-          asChild
-          size="lg"
-          className="rounded-full bg-amber-700 px-8 text-base text-white shadow-lg hover:bg-amber-600"
-        >
+        <HoverButton asChild variant="dark" size="lg">
           <Link href="/auth/v2/register">
             Start preserving
             <ArrowRight className="ml-1 size-4" />
           </Link>
-        </Button>
-        <Button
-          asChild
-          variant="ghost"
-          size="lg"
-          className="rounded-full px-8 text-base text-white/70 hover:bg-white/10 hover:text-white"
-        >
+        </HoverButton>
+        <HoverButton asChild variant="ghost" size="lg">
           <Link href="#how-it-works">See how it works</Link>
-        </Button>
+        </HoverButton>
       </div>
     </section>
   );

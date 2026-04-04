@@ -24,7 +24,11 @@
       "Bash(npm install:*)",
       "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"family heritage cultural preservation emotional memorial\" --design-system -p \"Made with Love\" -f markdown)",
       "Bash(npx tsc:*)",
-      "WebFetch(domain:motion.dev)"
+      "WebFetch(domain:motion.dev)",
+      "WebFetch(domain:21st.dev)",
+      "mcp__playwright__browser_take_screenshot",
+      "WebFetch(domain:ui.shadcn.com)",
+      "WebSearch"
     ]
   }
 }

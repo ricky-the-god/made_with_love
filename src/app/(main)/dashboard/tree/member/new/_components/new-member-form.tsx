@@ -38,11 +38,11 @@ const GENERATION_OPTIONS = [
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
-  relation: z.string().optional(),
-  country_of_origin: z.string().optional(),
-  cultural_background: z.string().optional(),
+  relation: z.string().min(1, "Relation is required"),
+  country_of_origin: z.string().min(1, "Country of origin is required"),
+  cultural_background: z.string().min(1, "Cultural background is required"),
   bio: z.string().optional(),
-  generation: z.coerce.number().int().min(1).max(5).optional(),
+  generation: z.coerce.number().int().min(1, "Generation is required").max(5, "Generation is required"),
   is_memorial: z.boolean().optional(),
   parent_ids: z.array(z.string().uuid()).optional(),
 });
@@ -62,6 +62,8 @@ export function NewMemberForm({ members }: NewMemberFormProps) {
   const {
     register,
     handleSubmit,
+    clearErrors,
+    setError,
     setValue,
     watch,
     formState: { errors },
@@ -72,7 +74,13 @@ export function NewMemberForm({ members }: NewMemberFormProps) {
 
   const isMemorial = watch("is_memorial");
 
+  function closeCountryPicker() {
+    setIsCountryPickerOpen(false);
+    requestAnimationFrame(() => setIsCountryPickerOpen(false));
+  }
+
   function toggleParent(id: string) {
+    clearErrors("parent_ids");
     setSelectedParentIds((prev) =>
       prev.includes(id) ? prev.filter((p) => p !== id) : prev.length < 2 ? [...prev, id] : prev,
     );
@@ -97,16 +105,44 @@ export function NewMemberForm({ members }: NewMemberFormProps) {
     : [];
 
   function onSubmit(values: FormValues) {
+    const parentCandidateIds = new Set(parentCandidates.map((candidate) => candidate.id));
+    const sanitizedParentIds = selectedParentIds.filter((id) => parentCandidateIds.has(id)).slice(0, 2);
+
+    if (showParentPicker && selectedParentIds.length !== sanitizedParentIds.length) {
+      setSelectedParentIds(sanitizedParentIds);
+      setError("parent_ids", {
+        type: "manual",
+        message: "Some selected parents are no longer valid. Please review your parent selection.",
+      });
+      return;
+    }
+
+    if (showParentPicker && sanitizedParentIds.length === 0) {
+      setError("parent_ids", {
+        type: "manual",
+        message: "Please select at least one parent or guardian.",
+      });
+      return;
+    }
+
+    if (sanitizedParentIds.length > 2) {
+      setError("parent_ids", {
+        type: "manual",
+        message: "You can select up to 2 parents or guardians.",
+      });
+      return;
+    }
+
     startTransition(async () => {
       const result = await createFamilyMember({
         name: values.name,
-        relation: values.relation || undefined,
-        country_of_origin: values.country_of_origin || undefined,
-        cultural_background: values.cultural_background || undefined,
+        relation: values.relation,
+        country_of_origin: values.country_of_origin,
+        cultural_background: values.cultural_background,
         bio: values.bio || undefined,
-        generation: values.generation || undefined,
+        generation: values.generation,
         is_memorial: values.is_memorial ?? false,
-        parent_ids: showParentPicker && selectedParentIds.length > 0 ? selectedParentIds : undefined,
+        parent_ids: showParentPicker && sanitizedParentIds.length > 0 ? sanitizedParentIds : undefined,
       });
 
       if ("error" in result) {
@@ -133,11 +169,12 @@ export function NewMemberForm({ members }: NewMemberFormProps) {
               {errors.name && <p className="text-destructive text-xs">{errors.name.message}</p>}
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="relation">Relation to you</Label>
+              <Label htmlFor="relation">Relation to you *</Label>
               <Select
                 onValueChange={(v) => {
-                  setValue("relation", v);
+                  setValue("relation", v, { shouldDirty: true, shouldValidate: true });
                   setSelectedParentIds([]);
+                  clearErrors("parent_ids");
                 }}
               >
                 <SelectTrigger id="relation">
@@ -151,12 +188,13 @@ export function NewMemberForm({ members }: NewMemberFormProps) {
                   ))}
                 </SelectContent>
               </Select>
+              {errors.relation && <p className="text-destructive text-xs">{errors.relation.message}</p>}
             </div>
           </div>
 
           <div className="grid gap-5 sm:grid-cols-2">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="country">Country of origin</Label>
+              <Label htmlFor="country">Country of origin *</Label>
               <Popover open={isCountryPickerOpen} onOpenChange={setIsCountryPickerOpen}>
                 <PopoverTrigger asChild>
                   <Button
@@ -185,8 +223,8 @@ export function NewMemberForm({ members }: NewMemberFormProps) {
                             value={country}
                             onSelect={() => {
                               const nextCountry = country === watch("country_of_origin") ? "" : country;
-                              setValue("country_of_origin", nextCountry, { shouldDirty: true });
-                              setIsCountryPickerOpen(false);
+                              setValue("country_of_origin", nextCountry, { shouldDirty: true, shouldValidate: true });
+                              closeCountryPicker();
                             }}
                           >
                             <Check
@@ -203,19 +241,26 @@ export function NewMemberForm({ members }: NewMemberFormProps) {
                   </Command>
                 </PopoverContent>
               </Popover>
+              {errors.country_of_origin && (
+                <p className="text-destructive text-xs">{errors.country_of_origin.message}</p>
+              )}
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="culture">Cultural background</Label>
+              <Label htmlFor="culture">Cultural background *</Label>
               <Input id="culture" placeholder="e.g. Southern Vietnamese" {...register("cultural_background")} />
+              {errors.cultural_background && (
+                <p className="text-destructive text-xs">{errors.cultural_background.message}</p>
+              )}
             </div>
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="generation">Generation</Label>
+            <Label htmlFor="generation">Generation *</Label>
             <Select
               onValueChange={(v) => {
-                setValue("generation", Number(v));
+                setValue("generation", Number(v), { shouldDirty: true, shouldValidate: true });
                 setSelectedParentIds([]);
+                clearErrors("parent_ids");
               }}
             >
               <SelectTrigger id="generation">
@@ -230,6 +275,7 @@ export function NewMemberForm({ members }: NewMemberFormProps) {
               </SelectContent>
             </Select>
             <p className="text-muted-foreground text-xs">Helps organise the family tree by time period.</p>
+            {errors.generation && <p className="text-destructive text-xs">{errors.generation.message}</p>}
           </div>
 
           {showParentPicker && (
@@ -261,6 +307,7 @@ export function NewMemberForm({ members }: NewMemberFormProps) {
                   </label>
                 ))}
               </div>
+              {errors.parent_ids && <p className="text-destructive text-xs">{errors.parent_ids.message}</p>}
             </div>
           )}
 

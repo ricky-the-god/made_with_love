@@ -1,12 +1,16 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 
 import { motion } from "framer-motion";
 import { ArrowRight, BookOpen, ChefHat, Heart, TreePine } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { HoverButton } from "@/components/ui/hover-button";
 import { Separator } from "@/components/ui/separator";
+
+import { ContainerScroll } from "./container-scroll";
+import { FeaturesShowcase } from "./features-showcase";
 
 const EASE_EXPO = [0.16, 1, 0.3, 1] as const;
 
@@ -56,6 +60,39 @@ const STEPS = [
 export function LandingSections() {
   return (
     <>
+      {/* ─── Scroll reveal image ───────────────────────────────────────────── */}
+      <ContainerScroll
+        titleComponent={
+          <div className="mb-6">
+            <p
+              className="mb-3 font-medium text-[10px] text-amber-700 uppercase tracking-[0.22em]"
+              style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
+            >
+              A living family archive
+            </p>
+            <h2
+              className="font-normal text-3xl text-[#322c2b] sm:text-4xl lg:text-5xl dark:text-[#e4c59e]"
+              style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
+            >
+              Where every branch
+              <br />
+              holds a story.
+            </h2>
+          </div>
+        }
+      >
+        <Image
+          src="/images/OpenedBook2.png"
+          alt="An opened recipe book filled with family memories"
+          fill
+          className="object-cover object-center"
+          sizes="(max-width: 768px) 100vw, 80vw"
+        />
+      </ContainerScroll>
+
+      {/* ─── Feature showcase (3 alternating sections) ────────────────────── */}
+      <FeaturesShowcase />
+
       {/* ─── Feature highlights ────────────────────────────────────────────── */}
       <section className="px-6 py-20">
         <div className="mx-auto max-w-6xl">
@@ -71,13 +108,13 @@ export function LandingSections() {
                 </div>
                 <div>
                   <h3
-                    className="mb-2 font-medium text-lg text-stone-800 dark:text-amber-100"
+                    className="mb-2 font-medium text-[#322c2b] text-lg dark:text-[#e4c59e]"
                     style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
                   >
                     {f.title}
                   </h3>
                   <p
-                    className="text-sm text-stone-500 leading-relaxed dark:text-stone-400"
+                    className="text-[#6e5750] text-sm leading-relaxed dark:text-[#ceb8a0]"
                     style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
                   >
                     {f.body}
@@ -90,7 +127,7 @@ export function LandingSections() {
       </section>
 
       <div className="mx-auto max-w-6xl px-6">
-        <Separator className="bg-amber-100 dark:bg-stone-800" />
+        <Separator className="bg-amber-100 dark:bg-[#4a3b39]" />
       </div>
 
       {/* ─── Who this is for ───────────────────────────────────────────────── */}
@@ -98,13 +135,13 @@ export function LandingSections() {
         <motion.div {...fadeUp()} className="mx-auto max-w-2xl text-center">
           <Heart className="mx-auto mb-6 size-6 text-amber-400 dark:text-amber-500" />
           <h2
-            className="mb-6 font-normal text-3xl text-stone-800 leading-snug sm:text-4xl dark:text-amber-50"
+            className="mb-6 font-normal text-3xl text-[#322c2b] leading-snug sm:text-4xl dark:text-[#e4c59e]"
             style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
           >
             For the families who carry their culture in their kitchens
           </h2>
           <p
-            className="text-base text-stone-500 leading-[1.85] dark:text-stone-400"
+            className="text-[#6e5750] text-base leading-[1.85] dark:text-[#ceb8a0]"
             style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
           >
             For the grandmother whose handwritten recipe card is held together with tape. For the family that crossed an
@@ -117,7 +154,7 @@ export function LandingSections() {
       </section>
 
       <div className="mx-auto max-w-6xl px-6">
-        <Separator className="bg-amber-100 dark:bg-stone-800" />
+        <Separator className="bg-amber-100 dark:bg-[#4a3b39]" />
       </div>
 
       {/* ─── How it works ──────────────────────────────────────────────────── */}
@@ -125,13 +162,13 @@ export function LandingSections() {
         <div className="mx-auto max-w-6xl">
           <motion.div {...fadeUp()} className="mb-14 text-center">
             <h2
-              className="font-normal text-3xl text-stone-800 sm:text-4xl dark:text-amber-50"
+              className="font-normal text-3xl text-[#322c2b] sm:text-4xl dark:text-[#e4c59e]"
               style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
             >
               Simple from the first day
             </h2>
             <p
-              className="mt-3 text-base text-stone-400 dark:text-stone-500"
+              className="mt-3 text-[#af8260]/80 text-base dark:text-[#af8260]/60"
               style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
             >
               Three gentle steps to begin your family archive
@@ -149,13 +186,13 @@ export function LandingSections() {
                   {step.num}
                 </div>
                 <h3
-                  className="font-medium text-lg text-stone-800 dark:text-amber-100"
+                  className="font-medium text-[#322c2b] text-lg dark:text-[#e4c59e]"
                   style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
                 >
                   {step.title}
                 </h3>
                 <p
-                  className="text-sm text-stone-500 leading-relaxed dark:text-stone-400"
+                  className="text-[#6e5750] text-sm leading-relaxed dark:text-[#ceb8a0]"
                   style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
                 >
                   {step.body}
@@ -177,27 +214,23 @@ export function LandingSections() {
             className="rounded-3xl border border-amber-100 bg-amber-50/60 px-8 py-16 text-center dark:border-amber-900/20 dark:bg-amber-950/10"
           >
             <h2
-              className="mb-4 font-normal text-3xl text-stone-800 sm:text-4xl dark:text-amber-50"
+              className="mb-4 font-normal text-3xl text-[#322c2b] sm:text-4xl dark:text-[#e4c59e]"
               style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
             >
               Start preserving your family&apos;s culinary heritage
             </h2>
             <p
-              className="mb-10 text-base text-stone-500 dark:text-stone-400"
+              className="mb-10 text-[#6e5750] text-base dark:text-[#ceb8a0]"
               style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
             >
               Free to start. A living archive that grows with your family.
             </p>
-            <Button
-              asChild
-              size="lg"
-              className="rounded-full bg-amber-700 px-10 text-base text-white shadow-md hover:bg-amber-800 dark:bg-amber-600 dark:hover:bg-amber-700"
-            >
+            <HoverButton asChild variant="light" size="lg">
               <Link href="/auth/v2/register">
                 Create your family archive
                 <ArrowRight className="ml-1 size-4" />
               </Link>
-            </Button>
+            </HoverButton>
           </motion.div>
         </div>
       </section>
