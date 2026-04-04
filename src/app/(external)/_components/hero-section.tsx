@@ -48,7 +48,7 @@ export function HeroSection() {
   if (isReducedMotion) return <ReducedMotionHero />;
 
   return (
-    <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-white">
+    <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-white pt-20">
       {/* Invisible cover captures mouse for 3D tilt — aria-hidden so it is decorative only */}
       {/* biome-ignore lint/a11y/noStaticElementInteractions: purely decorative mouse tracking */}
       <div aria-hidden className="absolute inset-0" onMouseMove={handleMouseMove} />
@@ -105,9 +105,9 @@ export function HeroSection() {
           className="mb-6 font-normal text-5xl leading-[1.08] text-stone-900 sm:text-6xl lg:text-7xl"
           style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
         >
-          Every family
+          Preserve the Recipes.
           <br />
-          has a tree.
+          Remember the Love.
         </h1>
 
         <p
@@ -146,7 +146,7 @@ export function HeroSection() {
 
 function ReducedMotionHero() {
   return (
-    <section className="flex min-h-screen flex-col items-center justify-center bg-white px-6 pb-20 text-center sm:px-8">
+    <section className="flex min-h-screen flex-col items-center justify-center bg-white px-6 pb-20 pt-20 text-center sm:px-8">
       <p
         className="mb-5 text-[10px] font-medium uppercase tracking-[0.22em] text-amber-700"
         style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
@@ -157,9 +157,9 @@ function ReducedMotionHero() {
         className="mb-6 font-normal text-5xl leading-[1.08] text-stone-900 sm:text-6xl lg:text-7xl"
         style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
       >
-        Every family
+        Preserve the Recipes.
         <br />
-        has a tree.
+        Remember the Love.
       </h1>
       <p
         className="mx-auto mb-10 max-w-xl text-base text-stone-600 leading-relaxed sm:text-lg"

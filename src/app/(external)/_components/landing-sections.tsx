@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 
 import { motion } from "framer-motion";
@@ -7,6 +8,8 @@ import { ArrowRight, BookOpen, ChefHat, Heart, TreePine } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+
+import { ContainerScroll } from "./container-scroll";
 
 const EASE_EXPO = [0.16, 1, 0.3, 1] as const;
 
@@ -56,6 +59,36 @@ const STEPS = [
 export function LandingSections() {
   return (
     <>
+      {/* ─── Scroll reveal image ───────────────────────────────────────────── */}
+      <ContainerScroll
+        titleComponent={
+          <div className="mb-6">
+            <p
+              className="mb-3 text-[10px] font-medium uppercase tracking-[0.22em] text-amber-700"
+              style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
+            >
+              A living family archive
+            </p>
+            <h2
+              className="font-normal text-3xl text-stone-800 sm:text-4xl lg:text-5xl dark:text-amber-50"
+              style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
+            >
+              Where every branch
+              <br />
+              holds a story.
+            </h2>
+          </div>
+        }
+      >
+        <Image
+          src="/images/OpenedBook2.png"
+          alt="An opened recipe book filled with family memories"
+          fill
+          className="object-cover object-center"
+          sizes="(max-width: 768px) 100vw, 80vw"
+        />
+      </ContainerScroll>
+
       {/* ─── Feature highlights ────────────────────────────────────────────── */}
       <section className="px-6 py-20">
         <div className="mx-auto max-w-6xl">
