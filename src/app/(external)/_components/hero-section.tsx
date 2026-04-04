@@ -8,11 +8,8 @@ import Link from "next/link";
 
 import { ArrowRight } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { HoverButton } from "@/components/ui/hover-button";
 import { usePreferencesStore } from "@/stores/preferences/preferences-provider";
-
-const GRAIN_SVG =
-  "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")";
 
 const BOOKS = [
   { id: "book-1", src: "/images/Book1.png", alt: "Family recipes", rotation: -10 },
@@ -50,7 +47,6 @@ export function HeroSection() {
   return (
     <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#322c2b] pt-20">
       {/* Invisible cover captures mouse for 3D tilt — aria-hidden so it is decorative only */}
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: purely decorative mouse tracking */}
       <div aria-hidden className="absolute inset-0" onMouseMove={handleMouseMove} />
 
       {/* ── Floating books ─────────────────────────────────────────────────── */}
@@ -118,24 +114,15 @@ export function HeroSection() {
         </p>
 
         <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Button
-            asChild
-            size="lg"
-            className="rounded-full bg-amber-700 px-8 text-base text-white shadow-lg hover:bg-amber-600"
-          >
+          <HoverButton asChild variant="dark" size="lg">
             <Link href="/auth/v2/register">
               Start preserving
               <ArrowRight className="ml-1 size-4" />
             </Link>
-          </Button>
-          <Button
-            asChild
-            variant="ghost"
-            size="lg"
-            className="rounded-full px-8 text-base text-stone-500 hover:bg-stone-100 hover:text-stone-900"
-          >
+          </HoverButton>
+          <HoverButton asChild variant="ghost" size="lg">
             <Link href="#how-it-works">See how it works</Link>
-          </Button>
+          </HoverButton>
         </div>
       </div>
     </section>
@@ -146,7 +133,7 @@ export function HeroSection() {
 
 function ReducedMotionHero() {
   return (
-    <section className="flex min-h-screen flex-col items-center justify-center bg-[#322c2b] px-6 pb-20 pt-20 text-center sm:px-8">
+    <section className="flex min-h-screen flex-col items-center justify-center bg-[#322c2b] px-6 pt-20 pb-20 text-center sm:px-8">
       <p
         className="mb-5 font-medium text-[#e4c59e] text-[10px] uppercase tracking-[0.22em]"
         style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
@@ -168,24 +155,15 @@ function ReducedMotionHero() {
         The people who fed you, the recipes they carried, the stories that live in the food. All of it, kept safe.
       </p>
       <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-        <Button
-          asChild
-          size="lg"
-          className="rounded-full bg-amber-700 px-8 text-base text-white shadow-lg hover:bg-amber-600"
-        >
+        <HoverButton asChild variant="dark" size="lg">
           <Link href="/auth/v2/register">
             Start preserving
             <ArrowRight className="ml-1 size-4" />
           </Link>
-        </Button>
-        <Button
-          asChild
-          variant="ghost"
-          size="lg"
-          className="rounded-full px-8 text-base text-stone-500 hover:bg-stone-100 hover:text-stone-900"
-        >
+        </HoverButton>
+        <HoverButton asChild variant="ghost" size="lg">
           <Link href="#how-it-works">See how it works</Link>
-        </Button>
+        </HoverButton>
       </div>
     </section>
   );

@@ -6,7 +6,7 @@ import Link from "next/link";
 
 import { Menu, X } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { HoverButton } from "@/components/ui/hover-button";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
@@ -113,38 +113,19 @@ export function LandingNav() {
               {/* Auth buttons */}
               <div className="flex w-full flex-col gap-2 sm:flex-row md:w-fit">
                 {/* Sign in — shown before scroll, hidden after */}
-                <Button
-                  asChild
-                  variant="ghost"
-                  size="sm"
-                  className={cn(
-                    "rounded-full text-white/70 hover:bg-white/10 hover:text-white",
-                    scrolled && "lg:hidden",
-                  )}
-                >
+                <HoverButton asChild variant="ghost" size="sm" className={cn(scrolled && "lg:hidden")}>
                   <Link href="/auth/v2/login">Sign in</Link>
-                </Button>
+                </HoverButton>
 
                 {/* Start for free — shown before scroll */}
-                <Button
-                  asChild
-                  size="sm"
-                  className={cn("rounded-full bg-amber-700 text-white hover:bg-amber-600", scrolled && "lg:hidden")}
-                >
+                <HoverButton asChild variant="dark" size="sm" className={cn(scrolled && "lg:hidden")}>
                   <Link href="/auth/v2/register">Start for free</Link>
-                </Button>
+                </HoverButton>
 
                 {/* Condensed CTA — shown after scroll on desktop */}
-                <Button
-                  asChild
-                  size="sm"
-                  className={cn(
-                    "rounded-full bg-amber-700 text-white hover:bg-amber-600",
-                    scrolled ? "lg:inline-flex" : "hidden",
-                  )}
-                >
+                <HoverButton asChild variant="dark" size="sm" className={cn(scrolled ? "lg:inline-flex" : "hidden")}>
                   <Link href="/auth/v2/register">Start preserving</Link>
-                </Button>
+                </HoverButton>
               </div>
             </div>
           </div>

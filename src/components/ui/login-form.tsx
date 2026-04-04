@@ -19,6 +19,7 @@ uniform vec2 iResolution;
 uniform float iTime;
 uniform vec2 iMouse;
 uniform vec3 u_color;
+uniform vec3 u_base_color;
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord){
     vec2 uv = fragCoord / iResolution;
@@ -41,9 +42,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord){
     float wave = abs(sin(distortion.x + distortion.y + time));
     float glow = smoothstep(0.9, 0.2, wave);
 
-    // Black base with bright wave highlights for a true black/white look.
-    vec3 base = vec3(0.0);
-    vec3 smoke = mix(base, u_color, glow);
+    // Use base color background with warm wave highlights
+    vec3 smoke = mix(u_base_color, u_color, glow);
     fragColor = vec4(smoke, 1.0);
 }
 
@@ -63,6 +63,7 @@ type BlurSize = "none" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";
 interface SmokeyBackgroundProps {
   backdropBlurAmount?: string;
   color?: string;
+  baseColor?: string;
   className?: string;
 }
 
@@ -85,8 +86,9 @@ const blurClassMap: Record<BlurSize, string> = {
 export function SmokeyBackground({
   backdropBlurAmount = "sm",
   color = "#ffffff", // Default white for monochrome theme
+  baseColor = "#000000",
   className = "",
-}: SmokeyBackgroundProps): JSX.Element {
+}: SmokeyBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
@@ -151,12 +153,17 @@ export function SmokeyBackground({
     const iTimeLocation = gl.getUniformLocation(program, "iTime");
     const iMouseLocation = gl.getUniformLocation(program, "iMouse");
     const uColorLocation = gl.getUniformLocation(program, "u_color");
+    const uBaseColorLocation = gl.getUniformLocation(program, "u_base_color");
 
     const startTime = Date.now();
     const [r, g, b] = hexToRgb(color);
+    const [br, bg2, bb] = hexToRgb(baseColor);
 
     if (uColorLocation) {
       gl.uniform3f(uColorLocation, r, g, b);
+    }
+    if (uBaseColorLocation) {
+      gl.uniform3f(uBaseColorLocation, br, bg2, bb);
     }
 
     let animationId = 0;
@@ -202,7 +209,7 @@ export function SmokeyBackground({
       canvas.removeEventListener("mouseenter", handleMouseEnter);
       canvas.removeEventListener("mouseleave", handleMouseLeave);
     };
-  }, [isHovering, mousePosition, color]);
+  }, [isHovering, mousePosition, color, baseColor]);
 
   const finalBlurClass = blurClassMap[backdropBlurAmount as BlurSize] || blurClassMap.sm;
 

@@ -30,13 +30,13 @@ export default async function EditRecipePage({ params }: { params: Promise<{ id:
 
     await updateRecipe(id, {
       title,
-      prep_time: String(formData.get("prep_time") ?? "").trim() || null,
-      cook_time: String(formData.get("cook_time") ?? "").trim() || null,
-      servings: String(formData.get("servings") ?? "").trim() || null,
-      culture_tag: String(formData.get("culture_tag") ?? "").trim() || null,
-      ingredients: String(formData.get("ingredients") ?? "").trim() || null,
-      steps: String(formData.get("steps") ?? "").trim() || null,
-      notes: String(formData.get("notes") ?? "").trim() || null,
+      prep_time: String(formData.get("prep_time") ?? "").trim() || undefined,
+      cook_time: String(formData.get("cook_time") ?? "").trim() || undefined,
+      servings: String(formData.get("servings") ?? "").trim() || undefined,
+      culture_tag: String(formData.get("culture_tag") ?? "").trim() || undefined,
+      ingredients: String(formData.get("ingredients") ?? "").trim() || undefined,
+      steps: String(formData.get("steps") ?? "").trim() || undefined,
+      notes: String(formData.get("notes") ?? "").trim() || undefined,
     });
 
     redirect(`/dashboard/recipes/${id}`);

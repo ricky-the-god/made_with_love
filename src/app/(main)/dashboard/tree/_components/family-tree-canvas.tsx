@@ -127,6 +127,9 @@ function rankParentCandidate(child: FamilyMember, candidate: FamilyMember, expec
 // Relations whose parents are outside the tree (different family origin).
 // Never auto-infer parents for these.
 const NO_INFER_RELATIONS = new Set(["husband", "wife", "family-friend", "mentor", "other"]);
+const MIN_ZOOM = 0.4;
+const MAX_ZOOM = 2;
+const DRAG_START_THRESHOLD_PX = 4;
 
 function inferAutomaticParentIds(
   member: FamilyMember,
@@ -195,7 +198,10 @@ export function FamilyTreeCanvas({
     startY: number;
     startTx: number;
     startTy: number;
+    moved: boolean;
   } | null>(null);
+
+  const viewportRef = useRef({ scale: 1, tx: 0, ty: 0 });
 
   // ── Connector paths: smooth bezier parent-child + dashed couple lines ──────
   const computeConnectors = useCallback(() => {
@@ -330,6 +336,24 @@ export function FamilyTreeCanvas({
     return () => window.clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    viewportRef.current = { scale, tx, ty };
+  }, [scale, tx, ty]);
+
+  const zoomToPoint = useCallback((rawScale: number, targetX: number, targetY: number) => {
+    const { scale: currentScale, tx: currentTx, ty: currentTy } = viewportRef.current;
+    const nextScale = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, rawScale));
+    if (nextScale === currentScale) return;
+
+    const ratio = nextScale / currentScale;
+    const nextTx = targetX - (targetX - currentTx) * ratio;
+    const nextTy = targetY - (targetY - currentTy) * ratio;
+
+    setScale(nextScale);
+    setTx(nextTx);
+    setTy(nextTy);
+  }, []);
+
   function dismissTutorial() {
     window.localStorage.setItem(TREE_NAV_TUTORIAL_SEEN_KEY, "1");
     setShowTutorial(false);
@@ -359,28 +383,59 @@ export function FamilyTreeCanvas({
   useEffect(() => {
     const el = outerRef.current;
     if (!el) return;
+
     const handler = (e: WheelEvent) => {
       e.preventDefault();
-      setScale((s) => Math.min(2, Math.max(0.4, s * (e.deltaY > 0 ? 0.92 : 1.08))));
+      const rect = el.getBoundingClientRect();
+      const targetX = e.clientX - rect.left;
+      const targetY = e.clientY - rect.top;
+      const factor = e.deltaY > 0 ? 0.92 : 1.08;
+      zoomToPoint(viewportRef.current.scale * factor, targetX, targetY);
     };
+
     el.addEventListener("wheel", handler, { passive: false });
     return () => el.removeEventListener("wheel", handler);
-  }, []);
+  }, [zoomToPoint]);
 
   // ── Pan ───────────────────────────────────────────────────────────────────
   function handleMouseDown(e: React.MouseEvent) {
     if ((e.target as HTMLElement).closest("[data-node]")) return;
-    dragRef.current = { startX: e.clientX, startY: e.clientY, startTx: tx, startTy: ty };
-    setIsDragging(true);
+    dragRef.current = { startX: e.clientX, startY: e.clientY, startTx: tx, startTy: ty, moved: false };
   }
+
   function handleMouseMove(e: React.MouseEvent) {
     if (!dragRef.current) return;
-    setTx(dragRef.current.startTx + e.clientX - dragRef.current.startX);
-    setTy(dragRef.current.startTy + e.clientY - dragRef.current.startY);
+
+    const dx = e.clientX - dragRef.current.startX;
+    const dy = e.clientY - dragRef.current.startY;
+
+    if (!dragRef.current.moved && Math.hypot(dx, dy) < DRAG_START_THRESHOLD_PX) {
+      return;
+    }
+
+    if (!dragRef.current.moved) {
+      dragRef.current.moved = true;
+      setIsDragging(true);
+    }
+
+    setTx(dragRef.current.startTx + dx);
+    setTy(dragRef.current.startTy + dy);
   }
+
   function stopDrag() {
     dragRef.current = null;
     setIsDragging(false);
+  }
+
+  function handleDoubleClick(e: React.MouseEvent) {
+    if ((e.target as HTMLElement).closest("[data-node]")) return;
+    const el = outerRef.current;
+    if (!el) return;
+
+    const rect = el.getBoundingClientRect();
+    const targetX = e.clientX - rect.left;
+    const targetY = e.clientY - rect.top;
+    zoomToPoint(viewportRef.current.scale * 1.15, targetX, targetY);
   }
 
   // ── Node click → book modal ────────────────────────────────────────────────
@@ -400,6 +455,7 @@ export function FamilyTreeCanvas({
       onMouseMove={handleMouseMove}
       onMouseUp={stopDrag}
       onMouseLeave={stopDrag}
+      onDoubleClick={handleDoubleClick}
       onClick={() => {
         // Clicks on the canvas (not on a node) don't need to dismiss — modal handles its own backdrop
       }}
@@ -411,7 +467,11 @@ export function FamilyTreeCanvas({
       <div
         ref={contentRef}
         className="relative min-w-max"
-        style={{ transform: `translate(${tx}px, ${ty}px) scale(${scale})`, transformOrigin: "0 0" }}
+        style={{
+          transform: `translate(${tx}px, ${ty}px) scale(${scale})`,
+          transformOrigin: "0 0",
+          transition: isDragging ? "none" : "transform 180ms cubic-bezier(0.22, 1, 0.36, 1)",
+        }}
       >
         {/* SVG connector lines (inside transform — scales with content) */}
         {connectors.length > 0 && (
@@ -593,7 +653,11 @@ export function FamilyTreeCanvas({
           variant="outline"
           size="icon"
           className="size-8 border-[#af8260]/70 bg-[#f4e5d2] text-[#803d3b] shadow-sm hover:bg-[#e4c59e] hover:text-[#322c2b] dark:border-[#af8260]/40 dark:bg-[#322c2b]/90 dark:text-[#e4c59e] dark:hover:bg-[#3a302f]"
-          onClick={() => setScale((s) => Math.min(2, +(s + 0.15).toFixed(2)))}
+          onClick={() => {
+            const el = outerRef.current;
+            if (!el) return;
+            zoomToPoint(viewportRef.current.scale + 0.15, el.clientWidth / 2, el.clientHeight / 2);
+          }}
         >
           <Plus className="size-3.5" />
         </Button>
@@ -601,7 +665,11 @@ export function FamilyTreeCanvas({
           variant="outline"
           size="icon"
           className="size-8 border-[#af8260]/70 bg-[#f4e5d2] text-[#803d3b] shadow-sm hover:bg-[#e4c59e] hover:text-[#322c2b] dark:border-[#af8260]/40 dark:bg-[#322c2b]/90 dark:text-[#e4c59e] dark:hover:bg-[#3a302f]"
-          onClick={() => setScale((s) => Math.max(0.4, +(s - 0.15).toFixed(2)))}
+          onClick={() => {
+            const el = outerRef.current;
+            if (!el) return;
+            zoomToPoint(viewportRef.current.scale - 0.15, el.clientWidth / 2, el.clientHeight / 2);
+          }}
         >
           <Minus className="size-3.5" />
         </Button>
