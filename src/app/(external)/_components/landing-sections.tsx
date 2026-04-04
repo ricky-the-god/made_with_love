@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 import { ContainerScroll } from "./container-scroll";
+import { FeaturesShowcase } from "./features-showcase";
 
 const EASE_EXPO = [0.16, 1, 0.3, 1] as const;
 
@@ -64,7 +65,7 @@ export function LandingSections() {
         titleComponent={
           <div className="mb-6">
             <p
-              className="mb-3 text-[10px] font-medium uppercase tracking-[0.22em] text-amber-700"
+              className="mb-3 font-medium text-[10px] text-amber-700 uppercase tracking-[0.22em]"
               style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
             >
               A living family archive
@@ -88,6 +89,9 @@ export function LandingSections() {
           sizes="(max-width: 768px) 100vw, 80vw"
         />
       </ContainerScroll>
+
+      {/* ─── Feature showcase (3 alternating sections) ────────────────────── */}
+      <FeaturesShowcase />
 
       {/* ─── Feature highlights ────────────────────────────────────────────── */}
       <section className="px-6 py-20">
