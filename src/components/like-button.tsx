@@ -1,28 +1,62 @@
 "use client";
 
+import { useOptimistic, useTransition } from "react";
+
 import styled from "styled-components";
 
-const Button = () => {
+import { toggleFamilyLike } from "@/server/family-actions";
+
+type Props = {
+  familyId: string;
+  initialCount: number;
+  initialLiked: boolean;
+};
+
+const LikeButton = ({ familyId, initialCount, initialLiked }: Props) => {
+  const [, startTransition] = useTransition();
+  const [optimistic, setOptimistic] = useOptimistic(
+    { count: initialCount, liked: initialLiked },
+    (_state, next: { count: number; liked: boolean }) => next,
+  );
+
+  function handleChange() {
+    const next = { count: optimistic.liked ? optimistic.count - 1 : optimistic.count + 1, liked: !optimistic.liked };
+    startTransition(async () => {
+      setOptimistic(next);
+      await toggleFamilyLike(familyId);
+    });
+  }
+
   return (
     <StyledWrapper>
       <div className="like-button">
-        <input className="on" id="heart" type="checkbox" />
-        <label className="like" htmlFor="heart">
+        <input
+          className="on"
+          id={`heart-${familyId}`}
+          type="checkbox"
+          checked={optimistic.liked}
+          onChange={handleChange}
+        />
+        <label className="like" htmlFor={`heart-${familyId}`}>
           <svg className="like-icon" fillRule="nonzero" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <title>Like</title>
             <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
           </svg>
           <span className="like-text">Likes</span>
         </label>
-        <span className="like-count one">68</span>
-        <span className="like-count two">69</span>
+        <span className="like-count one">{optimistic.liked ? optimistic.count - 1 : optimistic.count}</span>
+        <span className="like-count two">{optimistic.liked ? optimistic.count : optimistic.count + 1}</span>
       </div>
     </StyledWrapper>
   );
 };
 
 const StyledWrapper = styled.div`
-  #heart {
+  #heart-${(props: { id?: string }) => props.id ?? ""} {
+    display: none;
+  }
+
+  [id^="heart-"] {
     display: none;
   }
 
@@ -104,6 +138,7 @@ const StyledWrapper = styled.div`
     100% {
       transform: scale(1.2);
     }
-  }`;
+  }
+`;
 
-export default Button;
+export default LikeButton;

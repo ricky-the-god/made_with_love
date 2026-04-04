@@ -441,3 +441,60 @@ export async function removeFamilyConnection(familyId: string) {
   revalidatePath("/dashboard/friends");
   return { success: true };
 }
+
+// -------------------------------------------------------
+// GET FAMILY LIKE COUNT + WHETHER CURRENT USER HAS LIKED
+// -------------------------------------------------------
+export async function getFamilyLikes(familyId: string) {
+  const admin = createAdminClient();
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { count } = await admin
+    .from("family_likes")
+    .select("*", { count: "exact", head: true })
+    .eq("family_id", familyId);
+
+  let liked = false;
+  if (user) {
+    const { data } = await admin
+      .from("family_likes")
+      .select("id")
+      .eq("family_id", familyId)
+      .eq("user_id", user.id)
+      .single();
+    liked = !!data;
+  }
+
+  return { count: count ?? 0, liked };
+}
+
+// -------------------------------------------------------
+// TOGGLE FAMILY LIKE
+// -------------------------------------------------------
+export async function toggleFamilyLike(familyId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
+  const { data: existing } = await supabase
+    .from("family_likes")
+    .select("id")
+    .eq("family_id", familyId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (existing) {
+    await supabase.from("family_likes").delete().eq("id", existing.id);
+  } else {
+    await supabase.from("family_likes").insert({ family_id: familyId, user_id: user.id });
+  }
+
+  revalidatePath(`/dashboard/discover/family/${familyId}`);
+  return { liked: !existing };
+}
