@@ -13,7 +13,7 @@ export function ContainerScroll({
   children: React.ReactNode;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: containerRef });
+  const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start end", "end start"] });
   const [isMobile, setIsMobile] = React.useState(false);
 
   React.useEffect(() => {
@@ -56,6 +56,7 @@ function ScrollHeader({
 function ScrollCard({
   rotate,
   scale,
+  translate,
   children,
 }: {
   rotate: MotionValue<number>;
@@ -65,7 +66,7 @@ function ScrollCard({
 }) {
   return (
     <motion.div
-      style={{ rotateX: rotate, scale }}
+      style={{ rotateX: rotate, scale, translateY: translate }}
       className="-mt-12 mx-auto h-[30rem] w-full max-w-5xl overflow-hidden rounded-2xl md:h-[40rem]"
     >
       <div className="relative h-full w-full">{children}</div>
