@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { Clock, Globe, Heart, MapPin } from "lucide-react";
+import { ChefHat, Clock, Globe, Heart, MapPin } from "lucide-react";
 
 import { StarRating } from "@/components/star-rating";
 import { Badge } from "@/components/ui/badge";
@@ -84,7 +84,15 @@ export default async function PublicRecipePage({ params }: { params: Promise<{ i
           />
 
           <div className="flex flex-wrap gap-3">
-            <Button asChild className="bg-amber-700 text-white hover:bg-amber-800">
+            {stepLines.length > 0 && (
+              <Button asChild className="bg-amber-700 text-white hover:bg-amber-800">
+                <a href={`/recipes/${recipe.id}/cook`}>
+                  <ChefHat className="size-4" />
+                  Cook this recipe
+                </a>
+              </Button>
+            )}
+            <Button asChild variant="outline">
               <a href="/auth/v2/register">Start your own family cookbook</a>
             </Button>
             <Button variant="outline" asChild>
