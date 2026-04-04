@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import { ChefHat, Edit } from "lucide-react";
@@ -67,7 +68,9 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
       {/* Hero */}
       <div className="mb-6 overflow-hidden rounded-2xl border border-amber-100 bg-amber-50/30 dark:border-amber-900/20 dark:bg-amber-950/10">
         {recipe.image_url ? (
-          <img src={recipe.image_url} alt={recipe.title} className="aspect-[3/1] w-full object-cover" />
+          <div className="relative aspect-[3/1] w-full">
+            <Image src={recipe.image_url} alt={recipe.title} fill className="object-cover" priority unoptimized />
+          </div>
         ) : (
           <div className="aspect-[3/1] bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900/20 dark:to-amber-800/20" />
         )}
