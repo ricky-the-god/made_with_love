@@ -222,24 +222,6 @@ export function CookingSession({ recipeId, recipeTitle, steps, stepImages = [], 
         <div className="h-full bg-amber-500 transition-all duration-500 ease-out" style={{ width: `${progress}%` }} />
       </div>
 
-      {/* Step dots */}
-      {totalScreens >= 2 && totalScreens <= 14 && (
-        <div className="flex items-center justify-center gap-1.5">
-          {Array.from({ length: totalScreens }, (_, i) => (
-            <div
-              key={i}
-              className={`rounded-full transition-all duration-300 ${
-                i === currentScreenIndex
-                  ? "size-2.5 bg-amber-500"
-                  : i < currentScreenIndex
-                    ? "size-1.5 bg-amber-300 dark:bg-amber-700"
-                    : "size-1.5 bg-border"
-              }`}
-            />
-          ))}
-        </div>
-      )}
-
       {/* Content card */}
       {isOnIngredients ? (
         <div className="relative overflow-hidden rounded-2xl border border-amber-100 bg-amber-50/30 p-8 dark:border-amber-900/20 dark:bg-amber-950/10">
