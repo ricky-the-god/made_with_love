@@ -22,8 +22,9 @@ export default function LoginV2() {
         </div>
         <div className="space-y-4">
           <GoogleButton className="w-full border border-white/30 bg-white/95 text-stone-800 hover:bg-white" />
-          <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-border after:border-t">
-            <span className="relative z-10 bg-transparent px-2 text-gray-300">Or continue with</span>
+          <div className="pt-1">
+            <div className="border-white/35 border-t" />
+            <p className="pt-2 text-center text-gray-200 text-sm">Or continue with</p>
           </div>
           <Suspense fallback={<div className="h-44 rounded-md border border-border/60 bg-muted/30" />}>
             <LoginForm />
