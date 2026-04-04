@@ -15,6 +15,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { loginWithEmail } from "@/server/auth-actions";
 
+const AUTH_INPUT_CLASSNAME =
+  "h-12 border-white/55 bg-black/35 text-white placeholder:text-white/50 caret-white focus-visible:border-white focus-visible:ring-white/35";
+
 const FormSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
@@ -52,9 +55,16 @@ export function LoginForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email Address</FormLabel>
+              <FormLabel className="font-medium text-gray-100">Email Address</FormLabel>
               <FormControl>
-                <Input id="email" type="email" placeholder="you@example.com" autoComplete="email" {...field} />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                  className={AUTH_INPUT_CLASSNAME}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -65,13 +75,14 @@ export function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel className="font-medium text-gray-100">Password</FormLabel>
               <FormControl>
                 <Input
                   id="password"
                   type="password"
                   placeholder="••••••••"
                   autoComplete="current-password"
+                  className={AUTH_INPUT_CLASSNAME}
                   {...field}
                 />
               </FormControl>

@@ -35,7 +35,7 @@ export function StarRating({ recipeId, myRating: initialMyRating, average, count
 
   return (
     <div className={cn("flex items-center gap-3", className)}>
-      <fieldset className="flex items-center gap-0.5 border-0 p-0 m-0" onMouseLeave={() => setHovered(null)}>
+      <fieldset className="m-0 flex items-center gap-0.5 border-0 p-0" onMouseLeave={() => setHovered(null)}>
         <legend className="sr-only">Rate this recipe</legend>
         {[1, 2, 3, 4, 5].map((star) => (
           <button

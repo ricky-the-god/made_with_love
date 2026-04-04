@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import Link from "next/link";
+
 import { BookOpen, Heart, Pencil, Star, X } from "lucide-react";
 
 import { getRelationLabel } from "@/lib/family-constants";
@@ -20,18 +22,51 @@ const CLOSE_DURATION = 550;
 
 export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly }: BookOpenModalProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [swipeOffsetY, setSwipeOffsetY] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
   const isClosingRef = useRef(false);
+  const closeTimerRef = useRef<number | null>(null);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const shouldTrackSwipeRef = useRef(false);
+
+  const completeClose = useCallback(() => {
+    if (closeTimerRef.current) {
+      window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+    onClose();
+  }, [onClose]);
 
   const handleClose = useCallback(() => {
     if (isClosingRef.current) return;
     isClosingRef.current = true;
     setIsOpen(false);
-    setTimeout(onClose, CLOSE_DURATION);
-  }, [onClose]);
+    closeTimerRef.current = window.setTimeout(completeClose, CLOSE_DURATION + 80);
+  }, [completeClose]);
 
   // Trigger open animation on mount
   useEffect(() => {
     const raf = requestAnimationFrame(() => setIsOpen(true));
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  // Lock body scroll while modal is mounted to keep interactions stable.
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, []);
+
+  // Move keyboard focus into the dialog after mount.
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => {
+      closeButtonRef.current?.focus();
+      if (!closeButtonRef.current) dialogRef.current?.focus();
+    });
     return () => cancelAnimationFrame(raf);
   }, []);
 
@@ -44,15 +79,73 @@ export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly 
     return () => window.removeEventListener("keydown", onKey);
   }, [handleClose]);
 
+  useEffect(
+    () => () => {
+      if (closeTimerRef.current) {
+        window.clearTimeout(closeTimerRef.current);
+      }
+    },
+    [],
+  );
+
   const visibleRecipes = recipes.slice(0, 6);
   const hasMore = recipes.length > 6;
   const relationLabel = getRelationLabel(member.relation);
 
+  const SWIPE_DISMISS_THRESHOLD = 110;
+
+  function onTouchStart(event: React.TouchEvent<HTMLDivElement>) {
+    if (window.matchMedia("(min-width: 640px)").matches || isClosingRef.current) return;
+
+    const touch = event.touches[0];
+    if (!touch) return;
+
+    const rect = dialogRef.current?.getBoundingClientRect();
+    if (rect) {
+      const yFromTop = touch.clientY - rect.top;
+      shouldTrackSwipeRef.current = yFromTop <= 96;
+    } else {
+      shouldTrackSwipeRef.current = true;
+    }
+
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  }
+
+  function onTouchMove(event: React.TouchEvent<HTMLDivElement>) {
+    if (!shouldTrackSwipeRef.current || !touchStartRef.current || isClosingRef.current) return;
+
+    const touch = event.touches[0];
+    if (!touch) return;
+
+    const dx = touch.clientX - touchStartRef.current.x;
+    const dy = touch.clientY - touchStartRef.current.y;
+
+    if (dy <= 0 || Math.abs(dy) < Math.abs(dx)) return;
+
+    setIsSwiping(true);
+    setSwipeOffsetY(Math.min(dy, 180));
+  }
+
+  function onTouchEnd() {
+    if (!shouldTrackSwipeRef.current) {
+      touchStartRef.current = null;
+      shouldTrackSwipeRef.current = false;
+      return;
+    }
+
+    if (swipeOffsetY >= SWIPE_DISMISS_THRESHOLD) {
+      handleClose();
+    }
+
+    setIsSwiping(false);
+    setSwipeOffsetY(0);
+    touchStartRef.current = null;
+    shouldTrackSwipeRef.current = false;
+  }
+
   return (
     /* Backdrop */
-    // biome-ignore lint/a11y/useKeyWithClickEvents: Escape handled by window keydown listener above
     // biome-ignore lint/a11y/noStaticElementInteractions: backdrop dismiss is a secondary affordance; dialog role handles a11y
-    // biome-ignore lint/a11y/useAriaPropsSupportedByRole: aria-label omitted intentionally on presentation element
     <div
       role="presentation"
       className={cn(
@@ -60,27 +153,49 @@ export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly 
         "transition-opacity duration-300",
         isOpen ? "opacity-100" : "opacity-0",
       )}
-      onClick={handleClose}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) handleClose();
+      }}
     >
       {/* Book container — role="dialog" handles a11y; stops click propagation */}
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label={`${member.name}'s cookbook`}
-        className="relative"
-        style={{ perspective: "1200px" }}
+        tabIndex={-1}
+        className="relative w-[min(92vw,640px)]"
+        style={{
+          perspective: "1200px",
+          transform: `translateY(${swipeOffsetY}px)`,
+          transition: isSwiping ? "none" : "transform 220ms cubic-bezier(0.22, 1, 0.36, 1)",
+        }}
         onClick={(e) => e.stopPropagation()}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        onTouchCancel={onTouchEnd}
         onKeyDown={(e) => {
           if (e.key === "Escape") handleClose();
+        }}
+        onTransitionEnd={(e) => {
+          if (
+            e.target instanceof HTMLElement &&
+            isClosingRef.current &&
+            e.propertyName === "transform" &&
+            e.target.style.transformOrigin === "left center"
+          ) {
+            completeClose();
+          }
         }}
       >
         {/* Open book pages — fade in when open, fade out as cover swings back */}
         <div
           className="flex overflow-hidden rounded-r-2xl shadow-2xl transition-opacity duration-300"
-          style={{ width: 600, height: 380, opacity: isOpen ? 1 : 0 }}
+          style={{ width: "100%", height: "min(80dvh, 420px)", opacity: isOpen ? 1 : 0 }}
         >
           {/* ── Left page: member info ─────────────────────────────────────── */}
-          <div className="relative flex w-1/2 flex-col gap-3 bg-[#f0ece3] p-6">
+          <div className="relative flex w-1/2 min-w-0 flex-col gap-3 bg-[#f0ece3] p-6 max-sm:p-4">
             {/* Spine strip */}
             <div className={cn("absolute top-0 left-0 h-full w-3 shrink-0", coverColors.spine)} />
 
@@ -109,64 +224,64 @@ export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly 
 
               <div className="mt-4 flex gap-2">
                 {!readOnly && (
-                  <a
+                  <Link
                     href={`/dashboard/tree/member/${member.id}`}
                     className="inline-flex items-center gap-1.5 rounded-lg bg-amber-700 px-3 py-1.5 font-medium text-sm text-white transition-colors hover:bg-amber-800"
                   >
                     <BookOpen className="size-3.5" />
                     View profile
-                  </a>
+                  </Link>
                 )}
                 {!readOnly && (
-                  <a
+                  <Link
                     href={`/dashboard/tree/member/${member.id}/edit`}
                     className="inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-white px-3 py-1.5 font-medium text-amber-800 text-sm transition-colors hover:bg-amber-50"
                   >
                     <Pencil className="size-3.5" />
                     Edit / Link
-                  </a>
+                  </Link>
                 )}
               </div>
             </div>
           </div>
 
           {/* ── Right page: recipe list ────────────────────────────────────── */}
-          <div className="flex w-1/2 flex-col bg-stone-50 p-6 dark:bg-stone-100">
+          <div className="flex w-1/2 min-w-0 flex-col bg-stone-50 p-6 max-sm:p-4 dark:bg-stone-100">
             <p className="font-semibold text-[10px] text-stone-500 uppercase tracking-widest">Recipes</p>
 
             {recipes.length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
                 <p className="text-muted-foreground text-sm">No recipes yet.</p>
-                <a
+                <Link
                   href={`/dashboard/recipes/new?member=${member.id}`}
                   className="text-amber-700 text-xs hover:underline"
                 >
                   Add the first recipe
-                </a>
+                </Link>
               </div>
             ) : (
               <>
                 <ul className="mt-3 flex flex-1 flex-col gap-1 overflow-y-auto">
                   {visibleRecipes.map((recipe) => (
                     <li key={recipe.id}>
-                      <a
+                      <Link
                         href={`/dashboard/recipes/${recipe.id}`}
                         className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-stone-700 transition-colors hover:bg-amber-50 hover:text-amber-800"
                       >
                         {recipe.is_favorite && <Star className="size-3 shrink-0 fill-amber-400 text-amber-400" />}
                         <span className="line-clamp-1">{recipe.title}</span>
-                      </a>
+                      </Link>
                     </li>
                   ))}
                 </ul>
 
                 {hasMore && (
-                  <a
+                  <Link
                     href={`/dashboard/tree/member/${member.id}`}
                     className="mt-2 text-amber-700 text-xs hover:underline"
                   >
                     View all {recipes.length} recipes →
-                  </a>
+                  </Link>
                 )}
               </>
             )}
@@ -206,12 +321,15 @@ export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly 
 
         {/* ── Close button (top-right of open book) ─────────────────────── */}
         <button
+          ref={closeButtonRef}
           type="button"
           onClick={handleClose}
+          disabled={isClosingRef.current}
           className={cn(
             "absolute top-3 right-3 z-20 rounded-full bg-white/80 p-1 text-stone-500 shadow-sm transition-all hover:bg-white hover:text-stone-800",
             "opacity-0 transition-opacity delay-300 duration-300",
             isOpen && "opacity-100",
+            isClosingRef.current && "pointer-events-none",
           )}
           aria-label="Close"
         >

@@ -6,6 +6,7 @@ import { Minus, Plus, ScanLine } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { normalizeRelationValue } from "@/lib/family-constants";
+import { TREE_NAV_TUTORIAL_SEEN_KEY } from "@/lib/preferences/tutorial-keys";
 import type { FamilyMember } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils";
 
@@ -13,15 +14,15 @@ import { BookOpenModal } from "./book-open-modal";
 
 // ── Cover colour palette (deterministic from member id) ────────────────────
 const COVER_COLORS = [
-  { bg: "bg-amber-800", spine: "bg-amber-900" },
-  { bg: "bg-red-800", spine: "bg-red-900" },
-  { bg: "bg-stone-600", spine: "bg-stone-700" },
-  { bg: "bg-yellow-800", spine: "bg-yellow-900" },
-  { bg: "bg-rose-700", spine: "bg-rose-800" },
-  { bg: "bg-teal-800", spine: "bg-teal-900" },
+  { bg: "bg-[#af8260]", spine: "bg-[#803d3b]" },
+  { bg: "bg-[#803d3b]", spine: "bg-[#322c2b]" },
+  { bg: "bg-[#af8260]", spine: "bg-[#322c2b]" },
+  { bg: "bg-[#803d3b]", spine: "bg-[#322c2b]" },
+  { bg: "bg-[#af8260]", spine: "bg-[#803d3b]" },
+  { bg: "bg-[#803d3b]", spine: "bg-[#322c2b]" },
 ] as const;
 
-const MEMORIAL_COLOR = { bg: "bg-stone-400", spine: "bg-stone-500" } as const;
+const MEMORIAL_COLOR = { bg: "bg-[#e4c59e]", spine: "bg-[#af8260]" } as const;
 
 function coverColor(member: FamilyMember) {
   if (member.is_memorial) return MEMORIAL_COLOR;
@@ -186,6 +187,8 @@ export function FamilyTreeCanvas({
   const [selected, setSelected] = useState<FamilyMember | null>(null);
   const [connectors, setConnectors] = useState<{ d: string; type: "child" | "couple" }[]>([]);
   const [svgDims, setSvgDims] = useState({ w: 0, h: 0 });
+  const [isTreeEntered, setIsTreeEntered] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
 
   const dragRef = useRef<{
     startX: number;
@@ -310,6 +313,29 @@ export function FamilyTreeCanvas({
   }, [members]);
 
   useEffect(() => {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      setIsTreeEntered(true);
+      return;
+    }
+
+    const raf = requestAnimationFrame(() => setIsTreeEntered(true));
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  useEffect(() => {
+    if (window.localStorage.getItem(TREE_NAV_TUTORIAL_SEEN_KEY) === "1") return;
+
+    const timer = window.setTimeout(() => setShowTutorial(true), 500);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  function dismissTutorial() {
+    window.localStorage.setItem(TREE_NAV_TUTORIAL_SEEN_KEY, "1");
+    setShowTutorial(false);
+  }
+
+  useEffect(() => {
     // Double-RAF ensures layout is fully settled after hydration before measuring offsets.
     let frame2 = 0;
     const frame1 = requestAnimationFrame(() => {
@@ -367,7 +393,7 @@ export function FamilyTreeCanvas({
       ref={outerRef}
       aria-label="Family tree canvas"
       className={cn(
-        "relative h-full w-full overflow-hidden bg-[#f0ece3] dark:bg-stone-950",
+        "relative h-full w-full overflow-hidden bg-[#f4e5d2] dark:bg-[#322c2b]",
         isDragging ? "cursor-grabbing select-none" : "cursor-grab",
       )}
       onMouseDown={handleMouseDown}
@@ -406,7 +432,7 @@ export function FamilyTreeCanvas({
                   strokeWidth={2}
                   strokeLinecap="round"
                   strokeDasharray="5 4"
-                  className="stroke-rose-400/60 dark:stroke-rose-400/40"
+                  className="stroke-[#af8260]/60 dark:stroke-[#af8260]/55"
                 />
               ) : (
                 <path
@@ -416,7 +442,7 @@ export function FamilyTreeCanvas({
                   fill="none"
                   strokeWidth={1.5}
                   strokeLinecap="round"
-                  className="stroke-amber-600/50 dark:stroke-amber-400/40"
+                  className="stroke-[#803d3b]/60 dark:stroke-[#af8260]/50"
                 />
               ),
             )}
@@ -425,19 +451,20 @@ export function FamilyTreeCanvas({
 
         {/* Generation rows */}
         <div className="flex flex-col items-center gap-16 px-16 py-10">
-          {rows.map((row) => (
+          {rows.map((row, rowIndex) => (
             <div key={row.label} className="flex flex-col items-center gap-5">
               {/* Generation label pill */}
-              <span className="rounded-full border border-amber-200/70 bg-white/60 px-3 py-0.5 font-semibold text-[10px] text-amber-700 uppercase tracking-widest dark:border-amber-800/30 dark:bg-stone-900/60 dark:text-amber-400">
+              <span className="rounded-full border border-[#af8260]/60 bg-[#e4c59e]/35 px-3 py-0.5 font-semibold text-[#803d3b] text-[10px] uppercase tracking-widest dark:border-[#af8260]/40 dark:bg-[#322c2b]/70 dark:text-[#e4c59e]">
                 {row.label}
               </span>
 
               {/* Member cookbook nodes */}
               <div className="flex items-end gap-10">
-                {row.members.map((member) => {
+                {row.members.map((member, memberIndex) => {
                   const count = recipeCountByMember[member.id] ?? 0;
                   const colors = coverColor(member);
                   const isSelected = selected?.id === member.id;
+                  const transitionDelay = Math.min(rowIndex * 120 + memberIndex * 45, 720);
 
                   return (
                     <button
@@ -453,16 +480,23 @@ export function FamilyTreeCanvas({
                         handleNodeClick(member);
                       }}
                       className={cn(
-                        "flex flex-col items-center gap-2.5 transition-transform duration-150 focus:outline-none",
+                        "group relative flex cursor-pointer flex-col items-center gap-2.5 transition-[opacity,transform,filter] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform focus:outline-none",
+                        "md:hover:-translate-y-1 active:scale-[0.99] md:hover:scale-[1.03]",
+                        "focus-visible:ring-2 focus-visible:ring-[#803d3b] focus-visible:ring-offset-2 focus-visible:ring-offset-[#f4e5d2] dark:focus-visible:ring-offset-[#322c2b]",
+                        isTreeEntered
+                          ? "translate-y-0 scale-100 opacity-100 blur-0"
+                          : "translate-y-4 scale-[0.98] opacity-0 blur-[1px]",
                         isSelected && "scale-105",
                       )}
+                      style={{ transitionDelay: `${transitionDelay}ms` }}
                     >
                       {/* ── Cookbook shape ──────────────────────────────── */}
                       <div
                         className={cn(
-                          "flex h-40 w-24 overflow-hidden rounded-lg shadow-md transition-shadow hover:shadow-xl",
+                          "flex h-40 w-24 overflow-hidden rounded-lg shadow-md transition-[transform,box-shadow,filter] duration-250 ease-out",
+                          "md:group-hover:-translate-y-0.5 md:group-hover:shadow-2xl md:group-hover:brightness-105",
                           isSelected &&
-                            "ring-2 ring-amber-400 ring-offset-2 ring-offset-[#f0ece3] dark:ring-offset-stone-950",
+                            "ring-2 ring-[#803d3b] ring-offset-2 ring-offset-[#f4e5d2] dark:ring-offset-[#322c2b]",
                         )}
                       >
                         {/* Spine */}
@@ -492,8 +526,8 @@ export function FamilyTreeCanvas({
                       </div>
 
                       {/* Name label pill below cookbook */}
-                      <div className="max-w-[100px] rounded-full bg-white/80 px-2.5 py-0.5 shadow-sm dark:bg-stone-900/80">
-                        <p className="truncate text-center font-semibold text-[10px] text-stone-700 uppercase tracking-wide dark:text-stone-300">
+                      <div className="md:group-hover:-translate-y-0.5 max-w-[100px] rounded-full bg-white/80 px-2.5 py-0.5 shadow-sm transition-[background-color,box-shadow,transform] duration-200 ease-out md:group-hover:bg-white md:group-hover:shadow-md dark:bg-stone-900/80 dark:md:group-hover:bg-stone-900">
+                        <p className="truncate text-center font-semibold text-[#803d3b] text-[10px] uppercase tracking-wide transition-colors duration-200 md:group-hover:text-[#322c2b] dark:text-[#e4c59e] dark:md:group-hover:text-[#f4e5d2]">
                           {member.name}
                         </p>
                       </div>
@@ -517,12 +551,26 @@ export function FamilyTreeCanvas({
         />
       )}
 
-      {/* ── Zoom controls (bottom-left) ────────────────────────────────── */}
-      <div className="absolute bottom-4 left-4 flex flex-col gap-1.5">
+      {/* ── First-time navigation tutorial ─────────────────────────────── */}
+      {showTutorial && (
+        <div className="absolute bottom-4 left-16 z-20 max-w-72 rounded-xl border border-[#af8260]/70 bg-[#f4e5d2]/95 p-3 text-xs shadow-md backdrop-blur-sm dark:border-[#af8260]/40 dark:bg-[#322c2b]/90">
+          <p className="font-semibold text-[#803d3b] dark:text-[#e4c59e]">Navigate your family tree</p>
+          <p className="mt-1 text-muted-foreground">Drag empty space to move around.</p>
+          <p className="mt-1 text-muted-foreground">Use your scroll wheel or +/- buttons to zoom.</p>
+          <div className="mt-2 flex justify-end">
+            <Button size="sm" className="h-7 px-2.5 text-xs" onClick={dismissTutorial}>
+              Got it
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Zoom controls (side rail) ───────────────────────────────────── */}
+      <div className="absolute top-4 left-4 z-20 flex flex-col gap-1.5 rounded-xl border border-[#af8260]/75 bg-[#f4e5d2]/92 p-1.5 shadow-md backdrop-blur-sm dark:border-[#af8260]/45 dark:bg-[#322c2b]/85">
         <Button
           variant="outline"
           size="icon"
-          className="size-8 bg-white/90 shadow-sm hover:bg-white dark:bg-stone-900/90 dark:hover:bg-stone-800"
+          className="size-8 border-[#af8260]/70 bg-[#f4e5d2] text-[#803d3b] shadow-sm hover:bg-[#e4c59e] hover:text-[#322c2b] dark:border-[#af8260]/40 dark:bg-[#322c2b]/90 dark:text-[#e4c59e] dark:hover:bg-[#3a302f]"
           onClick={() => setScale((s) => Math.min(2, +(s + 0.15).toFixed(2)))}
         >
           <Plus className="size-3.5" />
@@ -530,7 +578,7 @@ export function FamilyTreeCanvas({
         <Button
           variant="outline"
           size="icon"
-          className="size-8 bg-white/90 shadow-sm hover:bg-white dark:bg-stone-900/90 dark:hover:bg-stone-800"
+          className="size-8 border-[#af8260]/70 bg-[#f4e5d2] text-[#803d3b] shadow-sm hover:bg-[#e4c59e] hover:text-[#322c2b] dark:border-[#af8260]/40 dark:bg-[#322c2b]/90 dark:text-[#e4c59e] dark:hover:bg-[#3a302f]"
           onClick={() => setScale((s) => Math.max(0.4, +(s - 0.15).toFixed(2)))}
         >
           <Minus className="size-3.5" />
@@ -538,7 +586,7 @@ export function FamilyTreeCanvas({
         <Button
           variant="outline"
           size="icon"
-          className="size-8 bg-white/90 shadow-sm hover:bg-white dark:bg-stone-900/90 dark:hover:bg-stone-800"
+          className="size-8 border-[#af8260]/70 bg-[#f4e5d2] text-[#803d3b] shadow-sm hover:bg-[#e4c59e] hover:text-[#322c2b] dark:border-[#af8260]/40 dark:bg-[#322c2b]/90 dark:text-[#e4c59e] dark:hover:bg-[#3a302f]"
           onClick={() => {
             setScale(1);
             setTx(0);

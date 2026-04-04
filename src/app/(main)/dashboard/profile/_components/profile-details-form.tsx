@@ -238,7 +238,7 @@ export function ProfileDetailsForm({ initialName, initialAvatarUrl }: ProfileDet
             disabled={isSaving}
             onChange={(event) => setSelectedFile(event.target.files?.[0] ?? null)}
           />
-          <div className="flex flex-col gap-3 rounded-xl border border-dashed border-amber-200 bg-amber-50/40 p-4 dark:border-amber-900/30 dark:bg-amber-950/10 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 rounded-xl border border-amber-200 border-dashed bg-amber-50/40 p-4 sm:flex-row sm:items-center sm:justify-between dark:border-amber-900/30 dark:bg-amber-950/10">
             <div className="space-y-1">
               <p className="font-medium text-sm">
                 {selectedFile ? selectedFile.name : avatarUrl ? "Current photo saved" : "No photo uploaded yet"}
