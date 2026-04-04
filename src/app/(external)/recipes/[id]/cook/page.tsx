@@ -27,7 +27,7 @@ export default async function PublicCookPage({ params }: { params: Promise<{ id:
     : [];
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-amber-50/70 to-white px-4 py-8 dark:from-stone-900/70 dark:to-stone-950 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-gradient-to-b from-amber-50/70 to-white px-4 py-8 sm:px-6 lg:px-8 dark:from-stone-900/70 dark:to-stone-950">
       <CookingSession
         recipeId={id}
         recipeTitle={recipe.title}

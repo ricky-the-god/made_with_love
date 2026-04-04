@@ -144,7 +144,7 @@ export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly 
     <div
       role="presentation"
       className={cn(
-        "fixed inset-0 z-30 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4",
+        "fixed inset-0 z-30 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm",
         "transition-opacity duration-300",
         isOpen ? "opacity-100" : "opacity-0",
       )}
@@ -238,7 +238,7 @@ export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly 
               )}
 
               {/* Recipe count pill */}
-              <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs text-white/80 backdrop-blur-sm">
+              <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-white/80 text-xs backdrop-blur-sm">
                 <UtensilsCrossed className="size-3" aria-hidden />
                 {recipes.length === 0
                   ? "No recipes yet"
@@ -300,7 +300,7 @@ export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly 
 
               {recipes.length === 0 ? (
                 /* Empty state */
-                <div className="rounded-xl border border-dashed border-[#c9a882]/60 bg-[#fdf8f1] px-5 py-8 text-center">
+                <div className="rounded-xl border border-[#c9a882]/60 border-dashed bg-[#fdf8f1] px-5 py-8 text-center">
                   <UtensilsCrossed className="mx-auto mb-3 size-8 text-[#c9a882]/60" aria-hidden />
                   <p className="font-serif text-[#7a5a3a] text-sm italic leading-relaxed">
                     No recipes yet — start this cookbook
@@ -387,15 +387,7 @@ export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly 
 
 // ── Recipe card ───────────────────────────────────────────────────────────────
 
-function RecipeCard({
-  recipe,
-  isFavorite,
-  memberId,
-}: {
-  recipe: { id: string; title: string };
-  isFavorite: boolean;
-  memberId: string;
-}) {
+function RecipeCard({ recipe, isFavorite }: { recipe: { id: string; title: string }; isFavorite: boolean }) {
   return (
     <Link
       href={`/dashboard/recipes/${recipe.id}`}

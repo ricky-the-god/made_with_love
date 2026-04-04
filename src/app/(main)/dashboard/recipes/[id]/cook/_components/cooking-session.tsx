@@ -159,8 +159,8 @@ export function CookingSession({
       <div className="flex min-h-[80vh] flex-col items-center justify-center gap-6 text-center">
         <div className="relative">
           <div className="text-8xl">🍽️</div>
-          <div className="absolute -top-2 -right-5 text-4xl">✨</div>
-          <div className="absolute -bottom-1 -left-5 text-3xl">🎉</div>
+          <div className="-top-2 -right-5 absolute text-4xl">✨</div>
+          <div className="-bottom-1 -left-5 absolute text-3xl">🎉</div>
         </div>
         <div>
           <h1 className="font-bold text-4xl tracking-tight">You did it!</h1>
@@ -277,7 +277,7 @@ export function CookingSession({
 
           {/* Watermark step number */}
           <div
-            className="pointer-events-none absolute -right-3 -bottom-5 select-none font-black text-[110px] leading-none text-amber-200/70 dark:text-amber-900/40"
+            className="-right-3 -bottom-5 pointer-events-none absolute select-none font-black text-[110px] text-amber-200/70 leading-none dark:text-amber-900/40"
             aria-hidden
           >
             {currentStep + 1}
@@ -286,7 +286,7 @@ export function CookingSession({
             <ChefHat className="size-4" />
             <span>Step {currentStep + 1}</span>
           </div>
-          <p className="text-foreground text-xl font-medium leading-relaxed">{steps[currentStep]}</p>
+          <p className="font-medium text-foreground text-xl leading-relaxed">{steps[currentStep]}</p>
         </div>
       )}
 
@@ -302,7 +302,7 @@ export function CookingSession({
               <span className="italic">Thinking of a tip...</span>
             </div>
           ) : (
-            <p className="[overflow-wrap:anywhere] whitespace-pre-wrap pr-1 italic leading-relaxed">
+            <p className="whitespace-pre-wrap pr-1 italic leading-relaxed [overflow-wrap:anywhere]">
               {grandmaTip ||
                 (isOnIngredients
                   ? "Get everything ready before you start — it makes all the difference."

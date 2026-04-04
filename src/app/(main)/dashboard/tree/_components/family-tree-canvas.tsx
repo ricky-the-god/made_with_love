@@ -555,7 +555,7 @@ export function FamilyTreeCanvas({
                         {/* Page 3 — opens furthest (like back pages of a real book) */}
                         <div
                           className={cn(
-                            "absolute inset-0 rounded-lg bg-[#d4c8ba] origin-left",
+                            "absolute inset-0 origin-left rounded-lg bg-[#d4c8ba]",
                             "transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
                             "md:group-hover:[transform:rotateY(-40deg)]",
                           )}
@@ -564,7 +564,7 @@ export function FamilyTreeCanvas({
                         {/* Page 2 — opens partway */}
                         <div
                           className={cn(
-                            "absolute inset-0 rounded-lg bg-[#e0d8ce] origin-left",
+                            "absolute inset-0 origin-left rounded-lg bg-[#e0d8ce]",
                             "transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
                             "md:group-hover:[transform:rotateY(-25deg)]",
                           )}

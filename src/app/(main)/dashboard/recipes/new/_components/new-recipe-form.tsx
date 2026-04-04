@@ -2,6 +2,7 @@
 
 import { type ChangeEvent, useEffect, useRef, useState, useTransition } from "react";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,13 +24,13 @@ import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { COUNTRY_OPTIONS, RECIPE_CATEGORY_OPTIONS } from "@/data/recipe-options";
-
-import { IngredientSelector } from "./ingredient-selector";
 import { getRelationLabel } from "@/lib/family-constants";
 import { createClient } from "@/lib/supabase/client";
 import type { FamilyMember } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils";
 import { createRecipe } from "@/server/recipe-actions";
+
+import { IngredientSelector } from "./ingredient-selector";
 
 const schema = z.object({
   title: z.string().min(1, "Recipe title is required"),
@@ -386,28 +387,22 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
           <CardContent>
             <Form {...form}>
               <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-
                 {/* ── AI Assistant panel ────────────────────────────────── */}
                 <div className="rounded-xl border border-amber-200/70 bg-gradient-to-br from-amber-50/80 to-amber-50/20 p-4 dark:border-amber-800/30 dark:from-amber-950/20 dark:to-transparent">
-                  <div className="flex items-start gap-3 mb-3">
+                  <div className="mb-3 flex items-start gap-3">
                     <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/40">
                       <Sparkles className="size-4 text-amber-700 dark:text-amber-400" />
                     </div>
                     <div>
-                      <p className="font-medium text-sm text-amber-800 dark:text-amber-300">AI Recipe Assistant</p>
-                      <p className="mt-0.5 text-xs text-muted-foreground">
+                      <p className="font-medium text-amber-800 text-sm dark:text-amber-300">AI Recipe Assistant</p>
+                      <p className="mt-0.5 text-muted-foreground text-xs">
                         Enter a title and let AI suggest ingredients and steps to get you started.
                       </p>
                     </div>
                   </div>
                   <div className="flex flex-col gap-2">
                     <div className="flex gap-2">
-                      <Input
-                        id="title"
-                        placeholder="e.g. Grandma's Pho Bo"
-                        className="flex-1"
-                        {...register("title")}
-                      />
+                      <Input id="title" placeholder="e.g. Grandma's Pho Bo" className="flex-1" {...register("title")} />
                       <Button
                         type="button"
                         variant="outline"
@@ -426,8 +421,8 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
 
                 {/* ── Who & What ────────────────────────────────────────── */}
                 <div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <p className="shrink-0 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  <div className="mb-4 flex items-center gap-3">
+                    <p className="shrink-0 font-semibold text-muted-foreground text-xs uppercase tracking-widest">
                       Who &amp; What
                     </p>
                     <Separator className="flex-1" />
@@ -555,8 +550,8 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
 
                 {/* ── Timing ────────────────────────────────────────────── */}
                 <div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <p className="shrink-0 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  <div className="mb-4 flex items-center gap-3">
+                    <p className="shrink-0 font-semibold text-muted-foreground text-xs uppercase tracking-widest">
                       Timing
                     </p>
                     <Separator className="flex-1" />
@@ -580,8 +575,8 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
 
                 {/* ── Ingredients ───────────────────────────────────────── */}
                 <div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <p className="shrink-0 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  <div className="mb-4 flex items-center gap-3">
+                    <p className="shrink-0 font-semibold text-muted-foreground text-xs uppercase tracking-widest">
                       Ingredients
                     </p>
                     <Separator className="flex-1" />
@@ -616,12 +611,10 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
                     {calorieEstimate && (
                       <div className="flex items-center gap-2 rounded-lg border border-amber-100 bg-amber-50/60 px-3 py-1.5 dark:border-amber-900/20 dark:bg-amber-950/10">
                         <Sparkles className="size-3 text-amber-600 dark:text-amber-400" />
-                        <span className="text-xs font-semibold text-amber-800 dark:text-amber-300">
+                        <span className="font-semibold text-amber-800 text-xs dark:text-amber-300">
                           ~{calorieEstimate.calories_per_serving} kcal
                         </span>
-                        <span className="text-xs text-muted-foreground">
-                          / serving · {calorieEstimate.note}
-                        </span>
+                        <span className="text-muted-foreground text-xs">/ serving · {calorieEstimate.note}</span>
                       </div>
                     )}
                   </div>
@@ -629,8 +622,8 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
 
                 {/* ── Steps ─────────────────────────────────────────────── */}
                 <div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <p className="shrink-0 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  <div className="mb-4 flex items-center gap-3">
+                    <p className="shrink-0 font-semibold text-muted-foreground text-xs uppercase tracking-widest">
                       Steps
                     </p>
                     <Separator className="flex-1" />
@@ -651,8 +644,8 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
 
                 {/* ── Memory & Story ────────────────────────────────────── */}
                 <div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <p className="shrink-0 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  <div className="mb-4 flex items-center gap-3">
+                    <p className="shrink-0 font-semibold text-muted-foreground text-xs uppercase tracking-widest">
                       Memory &amp; Story
                     </p>
                     <Separator className="flex-1" />
@@ -666,7 +659,7 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
                       placeholder="When did this dish matter? Who made it? What does it mean to your family?"
                       {...register("notes")}
                     />
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-muted-foreground text-xs">
                       Optional — this becomes the heart of the recipe. You can add more memories later.
                     </p>
                   </div>
@@ -716,10 +709,13 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
               {selectedImageFile && (
                 <div className="grid gap-3 rounded-lg border border-amber-100 bg-background p-3 sm:grid-cols-[120px_1fr] dark:border-amber-900/20">
                   {imagePreviewUrl ? (
-                    <img
+                    <Image
                       src={imagePreviewUrl}
                       alt="Recipe upload preview"
+                      width={120}
+                      height={112}
                       className="h-28 w-full rounded-md object-cover sm:h-full"
+                      unoptimized
                     />
                   ) : (
                     <div className="h-28 w-full rounded-md bg-muted sm:h-full" />

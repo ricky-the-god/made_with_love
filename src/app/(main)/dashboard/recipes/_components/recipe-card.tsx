@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 import { Clock, Heart, Star } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -76,7 +78,7 @@ export function RecipeCard({ recipe, href }: RecipeCardProps) {
   const displayBadge = recipe.culture_tag ?? recipe.country_of_origin;
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-amber-100 bg-amber-50/30 transition-all duration-200 hover:-translate-y-0.5 hover:border-amber-300 hover:bg-amber-50/60 hover:shadow-md dark:border-amber-900/20 dark:bg-amber-950/10 dark:hover:border-amber-800/40 dark:hover:bg-amber-950/20">
+    <div className="group hover:-translate-y-0.5 relative flex flex-col overflow-hidden rounded-2xl border border-amber-100 bg-amber-50/30 transition-all duration-200 hover:border-amber-300 hover:bg-amber-50/60 hover:shadow-md dark:border-amber-900/20 dark:bg-amber-950/10 dark:hover:border-amber-800/40 dark:hover:bg-amber-950/20">
       {/* Stretched link — covers the whole card, sits below interactive children */}
       <a
         href={href ?? `/dashboard/recipes/${recipe.id}`}
@@ -88,14 +90,16 @@ export function RecipeCard({ recipe, href }: RecipeCardProps) {
       {/* Image area */}
       <div className="relative aspect-[3/1] overflow-hidden">
         {recipe.image_url ? (
-          <img
+          <Image
             src={recipe.image_url}
             alt={recipe.title}
-            className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+            fill
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            unoptimized
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900/20 dark:to-amber-800/20">
-            <span className="text-4xl leading-none select-none" aria-hidden>
+            <span className="select-none text-4xl leading-none" aria-hidden>
               {getCategoryEmoji(recipe.culture_tag)}
             </span>
           </div>
@@ -117,12 +121,14 @@ export function RecipeCard({ recipe, href }: RecipeCardProps) {
         {member && (
           <div className="flex items-center gap-2 text-muted-foreground text-sm">
             {/* Member avatar */}
-            <div className="relative z-10 flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-full bg-amber-200 text-[9px] font-bold uppercase text-amber-800 dark:bg-amber-800/50 dark:text-amber-300">
+            <div className="relative z-10 flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-full bg-amber-200 font-bold text-[9px] text-amber-800 uppercase dark:bg-amber-800/50 dark:text-amber-300">
               {member.photo_url ? (
-                <img
+                <Image
                   src={member.photo_url}
                   alt={member.name}
+                  fill
                   className="h-full w-full object-cover"
+                  unoptimized
                 />
               ) : (
                 getMemberInitials(member.name)

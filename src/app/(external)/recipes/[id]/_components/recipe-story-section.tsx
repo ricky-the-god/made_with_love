@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 // ── Layout primitives (scoped to this file) ───────────────────────────────────
 
 const Section = ({ children, className }: { children: React.ReactNode; className?: string }) => (
-  <section className={cn("border-b border-amber-100 py-10 md:py-16 dark:border-amber-900/20", className)}>
+  <section className={cn("border-amber-100 border-b py-10 md:py-16 dark:border-amber-900/20", className)}>
     {children}
   </section>
 );
@@ -33,27 +33,35 @@ export function RecipeStorySection({ description, memories, memberName, countryO
 
   if (!hasDescription && !hasMemories) return null;
 
-  const storyItems = [
-    hasDescription && {
+  const storyItems: {
+    id: string;
+    icon: React.ReactNode;
+    title: string;
+    body: string;
+    note?: string;
+  }[] = [];
+
+  if (hasDescription && description) {
+    storyItems.push({
+      id: "description",
       icon: <BookOpen className="size-6 text-amber-700 dark:text-amber-400" aria-hidden="true" />,
       title: "About this dish",
-      body: description!,
-    },
+      body: description,
+    });
+  }
+
+  storyItems.push(
     ...memories
       .filter((m) => m.text || m.meaning_note)
       .slice(0, 2)
-      .map((m) => ({
+      .map((m, index) => ({
+        id: m.id || `memory-${index}`,
         icon: <Heart className="size-6 text-amber-700 dark:text-amber-400" aria-hidden="true" />,
         title: m.occasion ?? "A memory",
         body: m.text ?? m.meaning_note ?? "",
         note: m.text && m.meaning_note ? m.meaning_note : undefined,
       })),
-  ].filter(Boolean) as {
-    icon: React.ReactNode;
-    title: string;
-    body: string;
-    note?: string;
-  }[];
+  );
 
   const eyebrow = [memberName, countryOfOrigin].filter(Boolean).join(" · ");
 
@@ -86,13 +94,12 @@ export function RecipeStorySection({ description, memories, memberName, countryO
           <div
             className={cn(
               "mt-4 grid gap-6 md:mt-10",
-              storyItems.length === 1 ? "md:grid-cols-1 max-w-2xl" : "md:grid-cols-2 lg:grid-cols-3",
+              storyItems.length === 1 ? "max-w-2xl md:grid-cols-1" : "md:grid-cols-2 lg:grid-cols-3",
             )}
           >
-            {storyItems.map((item, index) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: static ordered list
+            {storyItems.map((item) => (
               <div
-                key={index}
+                key={item.id}
                 className="flex flex-col gap-4 rounded-2xl border border-amber-100 bg-amber-50/40 p-6 dark:border-amber-900/20 dark:bg-amber-950/10"
               >
                 {/* Icon */}
@@ -118,7 +125,7 @@ export function RecipeStorySection({ description, memories, memberName, countryO
 
                 {/* Meaning note */}
                 {item.note && (
-                  <blockquote className="mt-1 flex items-start gap-2 border-l-2 border-amber-300 pl-3 dark:border-amber-700">
+                  <blockquote className="mt-1 flex items-start gap-2 border-amber-300 border-l-2 pl-3 dark:border-amber-700">
                     <Quote className="mt-0.5 size-3.5 shrink-0 text-amber-400" aria-hidden="true" />
                     <p className="font-serif text-[#6e5750] text-sm italic dark:text-[#ceb8a0]">{item.note}</p>
                   </blockquote>

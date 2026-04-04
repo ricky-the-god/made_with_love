@@ -5,11 +5,7 @@ import { useMemo, useState } from "react";
 import { Check, Minus, Plus, Search, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  INGREDIENT_CATALOG,
-  INGREDIENT_CATEGORIES,
-  type CatalogIngredient,
-} from "@/data/ingredients";
+import { type CatalogIngredient, INGREDIENT_CATALOG, INGREDIENT_CATEGORIES } from "@/data/ingredients";
 import { cn } from "@/lib/utils";
 
 // ─── Units ────────────────────────────────────────────────────────────────────
@@ -135,9 +131,7 @@ function parseDefaultValue(raw: string | null | undefined): SelectedIngredient[]
         name = m[3]?.trim() || line;
       }
 
-      const catalogMatch = INGREDIENT_CATALOG.find(
-        (item) => item.name.toLowerCase() === name.toLowerCase(),
-      );
+      const catalogMatch = INGREDIENT_CATALOG.find((item) => item.name.toLowerCase() === name.toLowerCase());
 
       return {
         uid: `parsed-${index}`,
@@ -156,9 +150,7 @@ interface Props {
 }
 
 export function IngredientPicker({ defaultValue }: Props) {
-  const [selected, setSelected] = useState<SelectedIngredient[]>(() =>
-    parseDefaultValue(defaultValue),
-  );
+  const [selected, setSelected] = useState<SelectedIngredient[]>(() => parseDefaultValue(defaultValue));
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [customInput, setCustomInput] = useState("");
@@ -174,10 +166,7 @@ export function IngredientPicker({ defaultValue }: Props) {
     [search, activeCategory],
   );
 
-  const selectedNameSet = useMemo(
-    () => new Set(selected.map((s) => s.name.toLowerCase())),
-    [selected],
-  );
+  const selectedNameSet = useMemo(() => new Set(selected.map((s) => s.name.toLowerCase())), [selected]);
 
   // ── Handlers ───────────────────────────────────────────────────────────────
   function toggleCatalogItem(item: CatalogIngredient) {
@@ -186,10 +175,7 @@ export function IngredientPicker({ defaultValue }: Props) {
       if (already) {
         return prev.filter((s) => s.name.toLowerCase() !== item.name.toLowerCase());
       }
-      return [
-        ...prev,
-        { uid: `${item.id}-${Date.now()}`, name: item.name, emoji: item.emoji, qty: 1, unit: "" },
-      ];
+      return [...prev, { uid: `${item.id}-${Date.now()}`, name: item.name, emoji: item.emoji, qty: 1, unit: "" }];
     });
   }
 
@@ -208,10 +194,7 @@ export function IngredientPicker({ defaultValue }: Props) {
   function addCustom() {
     const trimmed = customInput.trim();
     if (!trimmed) return;
-    setSelected((prev) => [
-      ...prev,
-      { uid: `custom-${Date.now()}`, name: trimmed, emoji: "🍽️", qty: 0, unit: "" },
-    ]);
+    setSelected((prev) => [...prev, { uid: `custom-${Date.now()}`, name: trimmed, emoji: "🍽️", qty: 0, unit: "" }]);
     setCustomInput("");
   }
 
@@ -235,7 +218,7 @@ export function IngredientPicker({ defaultValue }: Props) {
       {/* ── Browse panel ────────────────────────────────────────────────────── */}
       <div className="overflow-hidden rounded-lg border border-input bg-background">
         {/* Search */}
-        <div className="flex items-center gap-2 border-b border-input px-3 py-2">
+        <div className="flex items-center gap-2 border-input border-b px-3 py-2">
           <Search className="size-4 shrink-0 text-muted-foreground" />
           <input
             type="text"
@@ -257,7 +240,7 @@ export function IngredientPicker({ defaultValue }: Props) {
         </div>
 
         {/* Category tabs */}
-        <div className="overflow-x-auto border-b border-input">
+        <div className="overflow-x-auto border-input border-b">
           <div className="flex min-w-max items-center gap-1 p-2">
             {INGREDIENT_CATEGORIES.map((cat) => (
               <button
@@ -265,7 +248,7 @@ export function IngredientPicker({ defaultValue }: Props) {
                 type="button"
                 onClick={() => setActiveCategory(cat)}
                 className={cn(
-                  "shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors",
+                  "shrink-0 rounded-full px-3 py-1 font-medium text-xs transition-colors",
                   activeCategory === cat
                     ? "bg-amber-700 text-white"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground",
@@ -287,7 +270,7 @@ export function IngredientPicker({ defaultValue }: Props) {
                 <button
                   type="button"
                   onClick={() => setSearch("")}
-                  className="text-xs text-amber-700 underline dark:text-amber-400"
+                  className="text-amber-700 text-xs underline dark:text-amber-400"
                 >
                   Clear search
                 </button>
@@ -317,7 +300,7 @@ export function IngredientPicker({ defaultValue }: Props) {
                       </span>
                     )}
                     <span className="text-2xl leading-none">{item.emoji}</span>
-                    <span className="line-clamp-2 w-full text-center text-[10px] leading-tight text-muted-foreground">
+                    <span className="line-clamp-2 w-full text-center text-[10px] text-muted-foreground leading-tight">
                       {item.name}
                     </span>
                   </button>
@@ -328,7 +311,7 @@ export function IngredientPicker({ defaultValue }: Props) {
         </div>
 
         {/* Custom ingredient */}
-        <div className="flex items-center gap-2 border-t border-input bg-muted/30 px-3 py-2">
+        <div className="flex items-center gap-2 border-input border-t bg-muted/30 px-3 py-2">
           <span className="text-base leading-none">🍽️</span>
           <input
             type="text"
@@ -359,9 +342,7 @@ export function IngredientPicker({ defaultValue }: Props) {
       {/* ── Selected list ────────────────────────────────────────────────────── */}
       {selected.length > 0 ? (
         <div className="flex flex-col gap-1">
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Added ({selected.length})
-          </p>
+          <p className="font-medium text-muted-foreground text-xs uppercase tracking-wide">Added ({selected.length})</p>
 
           {selected.map((item, index) => {
             const noQtyUnit = UNIT_NO_QTY.includes(item.unit as (typeof UNIT_NO_QTY)[number]);
@@ -372,13 +353,13 @@ export function IngredientPicker({ defaultValue }: Props) {
                 className="flex items-center gap-2 rounded-lg border border-input bg-muted/20 px-2 py-1.5"
               >
                 {/* Index */}
-                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-amber-100 text-[10px] font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">
+                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-amber-100 font-semibold text-[10px] text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">
                   {index + 1}
                 </span>
 
                 {/* Emoji + Name */}
                 <span className="text-base leading-none">{item.emoji}</span>
-                <span className="min-w-0 flex-1 truncate text-sm font-medium">{item.name}</span>
+                <span className="min-w-0 flex-1 truncate font-medium text-sm">{item.name}</span>
 
                 {/* Qty stepper — hidden for "to taste" / "as needed" */}
                 {!noQtyUnit && (
@@ -391,7 +372,7 @@ export function IngredientPicker({ defaultValue }: Props) {
                     >
                       <Minus className="size-3" />
                     </button>
-                    <span className="w-7 select-none text-center text-xs font-medium tabular-nums">
+                    <span className="w-7 select-none text-center font-medium text-xs tabular-nums">
                       {item.qty === 0 ? "—" : fmtQty(item.qty)}
                     </span>
                     <button
@@ -409,7 +390,7 @@ export function IngredientPicker({ defaultValue }: Props) {
                 <select
                   value={item.unit}
                   onChange={(e) => setUnit(item.uid, e.target.value as Unit)}
-                  className="h-7 shrink-0 cursor-pointer rounded-md border border-input bg-background px-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-amber-500"
+                  className="h-7 shrink-0 cursor-pointer rounded-md border border-input bg-background px-1.5 text-foreground text-xs focus:outline-none focus:ring-1 focus:ring-amber-500"
                   aria-label={`Unit for ${item.name}`}
                 >
                   {UNITS.map((u) => (
@@ -433,7 +414,7 @@ export function IngredientPicker({ defaultValue }: Props) {
           })}
         </div>
       ) : (
-        <div className="rounded-lg border border-dashed border-amber-200 py-5 text-center text-muted-foreground text-sm dark:border-amber-800/30">
+        <div className="rounded-lg border border-amber-200 border-dashed py-5 text-center text-muted-foreground text-sm dark:border-amber-800/30">
           Click any ingredient above to add it to your recipe.
         </div>
       )}

@@ -1,9 +1,10 @@
 "use client";
 
-import Image from "next/image";
-import { X } from "lucide-react";
 import { useState } from "react";
-import { DEFAULT_INGREDIENT_IMAGE } from "@/data/ingredients";
+
+import Image from "next/image";
+
+import { X } from "lucide-react";
 
 interface IngredientChipProps {
   emoji: string;
@@ -17,9 +18,9 @@ export function IngredientChip({ emoji, displayText, imageUrl, onRemove }: Ingre
   const shouldShowImage = imageUrl && !imageError;
 
   return (
-    <div className="group flex items-center gap-2 rounded-full border border-amber-200 bg-gradient-to-r from-amber-50 to-amber-50/50 py-1.5 pl-1.5 pr-1.5 shadow-sm transition-all hover:shadow-md hover:border-amber-300 dark:border-amber-700/40 dark:bg-gradient-to-r dark:from-amber-900/20 dark:to-amber-900/10 dark:hover:border-amber-600/60">
+    <div className="group flex items-center gap-2 rounded-full border border-amber-200 bg-gradient-to-r from-amber-50 to-amber-50/50 py-1.5 pr-1.5 pl-1.5 shadow-sm transition-all hover:border-amber-300 hover:shadow-md dark:border-amber-700/40 dark:bg-gradient-to-r dark:from-amber-900/20 dark:to-amber-900/10 dark:hover:border-amber-600/60">
       {/* Image or Emoji thumbnail */}
-      <div className="relative size-7 shrink-0 overflow-hidden rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center border border-amber-200/50 dark:border-amber-700/30">
+      <div className="relative flex size-7 shrink-0 items-center justify-center overflow-hidden rounded-full border border-amber-200/50 bg-amber-100 dark:border-amber-700/30 dark:bg-amber-900/40">
         {shouldShowImage ? (
           <Image
             src={imageUrl}
@@ -38,7 +39,7 @@ export function IngredientChip({ emoji, displayText, imageUrl, onRemove }: Ingre
       </div>
 
       {/* Name */}
-      <span className="max-w-[120px] truncate text-sm font-medium text-amber-900 dark:text-amber-100">
+      <span className="max-w-[120px] truncate font-medium text-amber-900 text-sm dark:text-amber-100">
         {displayText}
       </span>
 
