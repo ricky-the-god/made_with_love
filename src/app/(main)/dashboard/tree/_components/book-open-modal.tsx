@@ -22,10 +22,14 @@ const CLOSE_DURATION = 550;
 
 export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly }: BookOpenModalProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [swipeOffsetY, setSwipeOffsetY] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
   const isClosingRef = useRef(false);
   const closeTimerRef = useRef<number | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const shouldTrackSwipeRef = useRef(false);
 
   const completeClose = useCallback(() => {
     if (closeTimerRef.current) {
@@ -88,6 +92,57 @@ export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly 
   const hasMore = recipes.length > 6;
   const relationLabel = getRelationLabel(member.relation);
 
+  const SWIPE_DISMISS_THRESHOLD = 110;
+
+  function onTouchStart(event: React.TouchEvent<HTMLDivElement>) {
+    if (window.matchMedia("(min-width: 640px)").matches || isClosingRef.current) return;
+
+    const touch = event.touches[0];
+    if (!touch) return;
+
+    const rect = dialogRef.current?.getBoundingClientRect();
+    if (rect) {
+      const yFromTop = touch.clientY - rect.top;
+      shouldTrackSwipeRef.current = yFromTop <= 96;
+    } else {
+      shouldTrackSwipeRef.current = true;
+    }
+
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  }
+
+  function onTouchMove(event: React.TouchEvent<HTMLDivElement>) {
+    if (!shouldTrackSwipeRef.current || !touchStartRef.current || isClosingRef.current) return;
+
+    const touch = event.touches[0];
+    if (!touch) return;
+
+    const dx = touch.clientX - touchStartRef.current.x;
+    const dy = touch.clientY - touchStartRef.current.y;
+
+    if (dy <= 0 || Math.abs(dy) < Math.abs(dx)) return;
+
+    setIsSwiping(true);
+    setSwipeOffsetY(Math.min(dy, 180));
+  }
+
+  function onTouchEnd() {
+    if (!shouldTrackSwipeRef.current) {
+      touchStartRef.current = null;
+      shouldTrackSwipeRef.current = false;
+      return;
+    }
+
+    if (swipeOffsetY >= SWIPE_DISMISS_THRESHOLD) {
+      handleClose();
+    }
+
+    setIsSwiping(false);
+    setSwipeOffsetY(0);
+    touchStartRef.current = null;
+    shouldTrackSwipeRef.current = false;
+  }
+
   return (
     /* Backdrop */
     // biome-ignore lint/a11y/noStaticElementInteractions: backdrop dismiss is a secondary affordance; dialog role handles a11y
@@ -110,8 +165,16 @@ export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly 
         aria-label={`${member.name}'s cookbook`}
         tabIndex={-1}
         className="relative w-[min(92vw,640px)]"
-        style={{ perspective: "1200px" }}
+        style={{
+          perspective: "1200px",
+          transform: `translateY(${swipeOffsetY}px)`,
+          transition: isSwiping ? "none" : "transform 220ms cubic-bezier(0.22, 1, 0.36, 1)",
+        }}
         onClick={(e) => e.stopPropagation()}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        onTouchCancel={onTouchEnd}
         onKeyDown={(e) => {
           if (e.key === "Escape") handleClose();
         }}

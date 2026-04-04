@@ -6,6 +6,7 @@ import { Minus, Plus, ScanLine } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { normalizeRelationValue } from "@/lib/family-constants";
+import { TREE_NAV_TUTORIAL_SEEN_KEY } from "@/lib/preferences/tutorial-keys";
 import type { FamilyMember } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils";
 
@@ -187,6 +188,7 @@ export function FamilyTreeCanvas({
   const [connectors, setConnectors] = useState<{ d: string; type: "child" | "couple" }[]>([]);
   const [svgDims, setSvgDims] = useState({ w: 0, h: 0 });
   const [isTreeEntered, setIsTreeEntered] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
 
   const dragRef = useRef<{
     startX: number;
@@ -320,6 +322,18 @@ export function FamilyTreeCanvas({
     const raf = requestAnimationFrame(() => setIsTreeEntered(true));
     return () => cancelAnimationFrame(raf);
   }, []);
+
+  useEffect(() => {
+    if (window.localStorage.getItem(TREE_NAV_TUTORIAL_SEEN_KEY) === "1") return;
+
+    const timer = window.setTimeout(() => setShowTutorial(true), 500);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  function dismissTutorial() {
+    window.localStorage.setItem(TREE_NAV_TUTORIAL_SEEN_KEY, "1");
+    setShowTutorial(false);
+  }
 
   useEffect(() => {
     // Double-RAF ensures layout is fully settled after hydration before measuring offsets.
@@ -537,12 +551,19 @@ export function FamilyTreeCanvas({
         />
       )}
 
-      {/* ── Interaction hint ───────────────────────────────────────────── */}
-      <div className="pointer-events-none absolute bottom-32 left-4 z-20 max-w-56 rounded-xl border border-amber-200/80 bg-white/92 p-3 text-xs shadow-md backdrop-blur-sm dark:border-amber-800/40 dark:bg-stone-900/85">
-        <p className="font-semibold text-amber-800 dark:text-amber-300">Move and zoom</p>
-        <p className="mt-1 text-muted-foreground">Drag empty space to pan the tree.</p>
-        <p className="mt-1 text-muted-foreground">Scroll or use +/- to zoom in and out.</p>
-      </div>
+      {/* ── First-time navigation tutorial ─────────────────────────────── */}
+      {showTutorial && (
+        <div className="absolute bottom-4 left-16 z-20 max-w-72 rounded-xl border border-amber-200/80 bg-white/95 p-3 text-xs shadow-md backdrop-blur-sm dark:border-amber-800/40 dark:bg-stone-900/90">
+          <p className="font-semibold text-amber-800 dark:text-amber-300">Navigate your family tree</p>
+          <p className="mt-1 text-muted-foreground">Drag empty space to move around.</p>
+          <p className="mt-1 text-muted-foreground">Use your scroll wheel or +/- buttons to zoom.</p>
+          <div className="mt-2 flex justify-end">
+            <Button size="sm" className="h-7 px-2.5 text-xs" onClick={dismissTutorial}>
+              Got it
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* ── Zoom controls (side rail) ───────────────────────────────────── */}
       <div className="absolute top-4 left-4 z-20 flex flex-col gap-1.5 rounded-xl border border-amber-200/80 bg-white/92 p-1.5 shadow-md backdrop-blur-sm dark:border-amber-800/40 dark:bg-stone-900/85">
