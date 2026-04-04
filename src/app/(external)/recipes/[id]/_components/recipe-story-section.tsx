@@ -1,5 +1,4 @@
 import { BookOpen, Heart, Quote } from "lucide-react";
-import Balancer from "react-wrap-balancer";
 
 import type { Memory } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils";
@@ -77,16 +76,16 @@ export function RecipeStorySection({ description, memories, memberName, countryO
               </p>
             )}
             <h3
-              className="font-normal text-3xl text-[#322c2b] leading-snug sm:text-4xl dark:text-[#e4c59e]"
+              className="text-balance font-normal text-3xl text-[#322c2b] leading-snug sm:text-4xl dark:text-[#e4c59e]"
               style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
             >
-              <Balancer>The story behind this recipe</Balancer>
+              The story behind this recipe
             </h3>
             <p
-              className="max-w-xl font-light text-[#6e5750] text-lg opacity-80 dark:text-[#ceb8a0]"
+              className="max-w-xl text-balance font-light text-[#6e5750] text-lg opacity-80 dark:text-[#ceb8a0]"
               style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
             >
-              <Balancer>Every dish carries the person who first made it.</Balancer>
+              Every dish carries the person who first made it.
             </p>
           </div>
 
