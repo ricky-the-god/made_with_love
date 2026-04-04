@@ -1,8 +1,8 @@
 "use client";
 
-import { CircleUser, LogOut, Settings } from "lucide-react";
+import { Accessibility, CircleUser, LogOut, Settings } from "lucide-react";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,10 +12,22 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
+import { useAppCopy } from "@/lib/i18n/use-app-copy";
+import { getInitials } from "@/lib/utils";
 import { signOut } from "@/server/auth-actions";
 
-export function NavUser() {
+export function NavUser({
+  user,
+}: {
+  user: {
+    name: string;
+    email: string;
+    avatarUrl: string | null;
+  };
+}) {
   const { isMobile } = useSidebar();
+  const copy = useAppCopy();
+  const fallbackName = user.name.trim() || copy.myAccount;
 
   return (
     <SidebarMenu>
@@ -27,13 +39,13 @@ export function NavUser() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
+                <AvatarImage src={user.avatarUrl || undefined} alt={fallbackName} className="rounded-lg object-cover" />
                 <AvatarFallback className="rounded-lg bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
-                  Me
+                  {getInitials(fallbackName)}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">My Account</span>
-                <span className="truncate text-muted-foreground text-xs">Family member</span>
+                <span className="truncate font-medium">{fallbackName}</span>
               </div>
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -43,18 +55,27 @@ export function NavUser() {
             align="end"
             sideOffset={4}
           >
-            <DropdownMenuLabel className="font-normal text-muted-foreground text-xs">My Account</DropdownMenuLabel>
+            <DropdownMenuLabel className="grid gap-0.5 font-normal">
+              <span className="truncate font-medium text-foreground text-sm">{fallbackName}</span>
+              <span className="truncate text-muted-foreground text-xs">{user.email}</span>
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <a href="/dashboard/profile">
                 <CircleUser className="size-4" />
-                Profile
+                {copy.profile}
               </a>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <a href="/dashboard/settings">
                 <Settings className="size-4" />
-                Settings
+                {copy.settings}
+              </a>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <a href="/dashboard/settings/accessibility">
+                <Accessibility className="size-4" />
+                {copy.accessibilityTitle}
               </a>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -62,7 +83,7 @@ export function NavUser() {
               <form action={signOut}>
                 <button type="submit" className="flex w-full items-center gap-2">
                   <LogOut className="size-4" />
-                  Sign out
+                  {copy.signOut}
                 </button>
               </form>
             </DropdownMenuItem>

@@ -26,6 +26,7 @@ export async function getFamilyRecipes() {
       `
       *,
       family_members ( id, name, photo_url, relation )
+      , recipe_ratings ( rating )
     `,
     )
     .eq("family_id", profile.family_id)
@@ -104,7 +105,9 @@ export async function createRecipe(input: {
   description?: string;
   ingredients?: string;
   steps?: string;
+  step_images?: string;
   notes?: string;
+  image_url?: string;
   prep_time?: string;
   cook_time?: string;
   servings?: string;
@@ -149,6 +152,7 @@ export async function updateRecipe(
     description?: string;
     ingredients?: string;
     steps?: string;
+    step_images?: string;
     notes?: string;
     prep_time?: string;
     cook_time?: string;
@@ -188,6 +192,60 @@ export async function setRecipeVisibility(recipeId: string, visibility: "private
 // -------------------------------------------------------
 export async function toggleFavorite(recipeId: string, currentValue: boolean) {
   return updateRecipe(recipeId, { is_favorite: !currentValue });
+}
+
+// -------------------------------------------------------
+// RATE RECIPE (upsert per-user 1–5 star rating)
+// -------------------------------------------------------
+export async function rateRecipe(recipeId: string, rating: number) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+  if (rating < 1 || rating > 5) return { error: "Rating must be between 1 and 5." };
+
+  const { error } = await supabase
+    .from("recipe_ratings")
+    .upsert(
+      { recipe_id: recipeId, user_id: user.id, rating, updated_at: new Date().toISOString() },
+      { onConflict: "recipe_id,user_id" },
+    );
+
+  if (error) return { error: error.message };
+
+  revalidatePath(`/dashboard/recipes/${recipeId}`);
+  revalidatePath(`/recipes/${recipeId}`);
+  return { success: true };
+}
+
+// -------------------------------------------------------
+// GET RECIPE RATING SUMMARY + CURRENT USER'S RATING
+// -------------------------------------------------------
+export async function getRecipeRating(recipeId: string) {
+  const supabase = await createClient();
+  const admin = createAdminClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Use admin client for the aggregate so public recipes are always readable
+  const [summaryResult, myResult] = await Promise.all([
+    admin.from("recipe_ratings").select("rating").eq("recipe_id", recipeId),
+    user
+      ? supabase.from("recipe_ratings").select("rating").eq("recipe_id", recipeId).eq("user_id", user.id).single()
+      : Promise.resolve({ data: null }),
+  ]);
+
+  const ratings = summaryResult.data ?? [];
+  const average = ratings.length > 0 ? ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length : null;
+
+  return {
+    average,
+    count: ratings.length,
+    myRating: (myResult.data as { rating: number } | null)?.rating ?? null,
+  };
 }
 
 // -------------------------------------------------------
@@ -252,11 +310,25 @@ export async function getPublicRecipes(limit = 20) {
 
   const { data } = await supabase
     .from("recipes")
-    .select(`*, family_members ( id, name, photo_url, country_of_origin )`)
+    .select(`*, family_members ( id, name, photo_url, country_of_origin ), recipe_ratings ( rating )`)
     .eq("visibility", "public")
     .order("created_at", { ascending: false })
     .limit(limit);
 
+  return data ?? [];
+}
+
+// -------------------------------------------------------
+// GET PUBLIC RECIPES FOR A SPECIFIC FAMILY
+// -------------------------------------------------------
+export async function getPublicFamilyRecipes(familyId: string) {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("recipes")
+    .select("*")
+    .eq("family_id", familyId)
+    .eq("visibility", "public")
+    .order("title", { ascending: true });
   return data ?? [];
 }
 

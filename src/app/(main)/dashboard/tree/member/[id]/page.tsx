@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ArrowLeft, BookOpen, Clock, Edit, Plus } from "lucide-react";
@@ -6,9 +7,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { getRelationLabel } from "@/lib/family-constants";
 import { getInitials } from "@/lib/utils";
 import { getFamilyMember } from "@/server/family-actions";
 import { getMemberRecipes } from "@/server/recipe-actions";
+
+import { DeleteMemberButton } from "./_components/delete-member-button";
 
 export default async function MemberProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -21,14 +25,15 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
 
   const initials = getInitials(member.name);
   const firstName = member.name.split(" ")[0];
+  const relationLabel = getRelationLabel(member.relation);
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="member-profile-enter mx-auto max-w-3xl">
       <div className="mb-6 flex items-center gap-3">
         <Button variant="ghost" size="icon" asChild>
-          <a href="/dashboard/tree">
+          <Link href="/dashboard/tree">
             <ArrowLeft className="size-4" />
-          </a>
+          </Link>
         </Button>
         <h1 className="font-semibold text-foreground text-xl">{member.name}&apos;s Cookbook</h1>
       </div>
@@ -59,18 +64,21 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
                 )}
               </div>
               <p className="mt-0.5 text-muted-foreground">
-                {[member.relation, member.country_of_origin].filter(Boolean).join(" · ")}
+                {[relationLabel, member.country_of_origin].filter(Boolean).join(" · ")}
               </p>
               {member.cultural_background && (
                 <p className="text-muted-foreground text-sm">{member.cultural_background}</p>
               )}
             </div>
-            <Button variant="outline" size="sm" asChild>
-              <a href={`/dashboard/tree/member/${id}/edit`}>
-                <Edit className="size-3.5" />
-                Edit
-              </a>
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" asChild>
+                <Link href={`/dashboard/tree/member/${id}/edit`}>
+                  <Edit className="size-3.5" />
+                  Edit
+                </Link>
+              </Button>
+              <DeleteMemberButton memberId={id} memberName={member.name} />
+            </div>
           </div>
 
           {member.bio ? (
@@ -90,10 +98,10 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
           asChild
           className="bg-amber-700 text-white hover:bg-amber-800 dark:bg-amber-600 dark:hover:bg-amber-700"
         >
-          <a href={`/dashboard/recipes/new?member=${member.id}`}>
+          <Link href={`/dashboard/recipes/new?member=${member.id}`}>
             <Plus className="size-4" />
             Add recipe for {firstName}
-          </a>
+          </Link>
         </Button>
       </div>
 
@@ -125,7 +133,7 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
             {recipes.map((recipe) => (
-              <a
+              <Link
                 key={recipe.id}
                 href={`/dashboard/recipes/${recipe.id}`}
                 className="group rounded-xl border border-amber-100 bg-amber-50/30 p-4 transition-colors hover:border-amber-300 hover:bg-amber-50/60 dark:border-amber-900/20 dark:bg-amber-950/10 dark:hover:border-amber-800/40"
@@ -146,7 +154,7 @@ export default async function MemberProfilePage({ params }: { params: Promise<{ 
                     </span>
                   </div>
                 )}
-              </a>
+              </Link>
             ))}
           </div>
         )}

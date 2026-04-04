@@ -1,26 +1,8 @@
-import {
-  DM_Sans,
-  Gabriela,
-  Geist,
-  Geist_Mono,
-  Great_Vibes,
-  Inter,
-  Manrope,
-  Nunito,
-  Outfit,
-  Plus_Jakarta_Sans,
-  Poppins,
-  Roboto,
-} from "next/font/google";
+import { Inter, Manrope, Nunito, Roboto } from "next/font/google";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
-});
-
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  variable: "--font-jakarta",
 });
 
 const roboto = Roboto({
@@ -29,41 +11,9 @@ const roboto = Roboto({
   variable: "--font-roboto",
 });
 
-const geist = Geist({
-  subsets: ["latin"],
-  variable: "--font-geist",
-});
-
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-poppins",
-});
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  variable: "--font-outfit",
-});
-
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-geist-mono",
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-dm-sans",
-});
-
 const nunito = Nunito({
   subsets: ["latin"],
   variable: "--font-nunito",
-});
-
-const gabriela = Gabriela({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-gabriela",
 });
 
 const manrope = Manrope({
@@ -71,73 +21,45 @@ const manrope = Manrope({
   variable: "--font-manrope",
 });
 
-const greatVibes = Great_Vibes({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-great-vibes",
-});
+type RegisteredFont = {
+  label: string;
+  variable: string;
+};
 
 export const fontRegistry = {
   inter: {
     label: "Inter",
-    font: inter,
+    variable: inter.variable,
   },
   roboto: {
     label: "Roboto",
-    font: roboto,
-  },
-  poppins: {
-    label: "Poppins",
-    font: poppins,
-  },
-  geist: {
-    label: "Geist",
-    font: geist,
-  },
-  geistMono: {
-    label: "Geist Mono",
-    font: geistMono,
-  },
-  jakarta: {
-    label: "Plus Jakarta Sans",
-    font: jakarta,
+    variable: roboto.variable,
   },
   nunito: {
     label: "Nunito",
-    font: nunito,
-  },
-  gabriela: {
-    label: "Gabriela",
-    font: gabriela,
-  },
-  outfit: {
-    label: "Outfit",
-    font: outfit,
+    variable: nunito.variable,
   },
   manrope: {
     label: "Manrope",
-    font: manrope,
+    variable: manrope.variable,
   },
-  dmSans: {
-    label: "DM Sans",
-    font: dmSans,
+  openDyslexic: {
+    label: "OpenDyslexic",
+    variable: "",
   },
-  greatVibes: {
-    label: "Great Vibes",
-    font: greatVibes,
-  },
-} as const;
+} as const satisfies Record<string, RegisteredFont>;
 
 export type FontKey = keyof typeof fontRegistry;
 
 export const fontVars = (Object.values(fontRegistry) as Array<(typeof fontRegistry)[FontKey]>)
-  .map((f) => f.font.variable)
+  .map((f) => f.variable)
+  .filter(Boolean)
   .join(" ");
 
 export const fontOptions = (Object.entries(fontRegistry) as Array<[FontKey, (typeof fontRegistry)[FontKey]]>).map(
   ([key, f]) => ({
     key,
     label: f.label,
-    variable: f.font.variable,
+    variable: f.variable,
   }),
 );

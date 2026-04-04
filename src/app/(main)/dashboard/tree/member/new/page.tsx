@@ -1,10 +1,13 @@
 import { ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { getFamilyMembers } from "@/server/family-actions";
 
 import { NewMemberForm } from "./_components/new-member-form";
 
-export default function NewMemberPage() {
+export default async function NewMemberPage() {
+  const members = await getFamilyMembers();
+
   return (
     <div className="mx-auto max-w-2xl">
       <div className="mb-6 flex items-center gap-3">
@@ -19,7 +22,7 @@ export default function NewMemberPage() {
         </div>
       </div>
 
-      <NewMemberForm />
+      <NewMemberForm members={members} />
     </div>
   );
 }

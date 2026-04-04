@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useOrigin } from "@/hooks/use-origin";
 import type { RecipeVisibility } from "@/lib/supabase/types";
 import { setRecipeVisibility } from "@/server/recipe-actions";
 
@@ -35,11 +36,11 @@ const visibilityMeta: Record<RecipeVisibility, { label: string; description: str
 
 export function ShareRecipePanel({ recipeId, initialVisibility }: ShareRecipePanelProps) {
   const router = useRouter();
+  const origin = useOrigin();
   const [visibility, setVisibility] = useState<RecipeVisibility>(initialVisibility);
   const [isPending, startTransition] = useTransition();
 
-  const publicUrl =
-    typeof window === "undefined" ? `/recipes/${recipeId}` : `${window.location.origin}/recipes/${recipeId}`;
+  const publicUrl = `${origin}/recipes/${recipeId}`;
   const isPublic = visibility === "public";
 
   const updateVisibility = (nextVisibility: RecipeVisibility) => {
@@ -117,7 +118,7 @@ export function ShareRecipePanel({ recipeId, initialVisibility }: ShareRecipePan
 
       {isPublic && !isPending && (
         <div className="mt-4 rounded-lg border border-amber-200 bg-white/80 p-3 dark:border-amber-900/30 dark:bg-stone-950/40">
-          <p className="mb-2 font-medium text-xs uppercase tracking-wide text-amber-700 dark:text-amber-300">
+          <p className="mb-2 font-medium text-amber-700 text-xs uppercase tracking-wide dark:text-amber-300">
             Public URL
           </p>
           <div className="flex flex-col gap-2 sm:flex-row">

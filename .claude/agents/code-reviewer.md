@@ -19,16 +19,16 @@ For each review task, use a two-pass approach:
 
 ### Pass 1 — Codex automated analysis
 
-Use the Skill tool to invoke the `codex` skill for deep automated code analysis:
+Use the Skill tool to invoke the `skill-codex` skill for deep automated code analysis:
 
 ```
-Skill("codex", "<describe what to analyze>")
+Skill("skill-codex", "<describe what to analyze>")
 ```
 
 Example invocations:
-- `Skill("codex", "Review the Supabase server actions in src/server/ for security issues and RLS bypass risks")`
-- `Skill("codex", "Analyze the recipe extraction flow in src/server/ for error handling gaps and AI transparency violations")`
-- `Skill("codex", "Check all 'use client' components in src/app/ for unnecessary client-side rendering")`
+- `Skill("skill-codex", "Review the Supabase server actions in src/server/ for security issues and RLS bypass risks")`
+- `Skill("skill-codex", "Analyze the recipe extraction flow in src/server/ for error handling gaps and AI transparency violations")`
+- `Skill("skill-codex", "Check all 'use client' components in src/app/ for unnecessary client-side rendering")`
 
 Prefer **model: gpt-5.3-codex** with **reasoning: high** for security and architectural reviews.
 Use **reasoning: medium** for general quality reviews.

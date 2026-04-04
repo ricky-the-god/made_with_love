@@ -1,7 +1,9 @@
-import { BookOpen, Compass, type LucideIcon, TreeDeciduous } from "lucide-react";
+import { BookOpen, Compass, type LucideIcon, TreeDeciduous, Users } from "lucide-react";
+
+import type { AppCopyKey } from "@/lib/i18n/copy";
 
 export interface NavSubItem {
-  title: string;
+  titleKey: AppCopyKey;
   url: string;
   icon?: LucideIcon;
   comingSoon?: boolean;
@@ -10,7 +12,7 @@ export interface NavSubItem {
 }
 
 export interface NavMainItem {
-  title: string;
+  titleKey: AppCopyKey;
   url: string;
   icon?: LucideIcon;
   subItems?: NavSubItem[];
@@ -29,9 +31,10 @@ export const sidebarItems: NavGroup[] = [
   {
     id: 1,
     items: [
-      { title: "Tree", url: "/dashboard/tree", icon: TreeDeciduous },
-      { title: "Recipes", url: "/dashboard/recipes", icon: BookOpen },
-      { title: "Discover", url: "/dashboard/discover", icon: Compass },
+      { titleKey: "navTree", url: "/dashboard/tree", icon: TreeDeciduous },
+      { titleKey: "navRecipes", url: "/dashboard/recipes", icon: BookOpen },
+      { titleKey: "navDiscover", url: "/dashboard/discover", icon: Compass },
+      { titleKey: "navFriends", url: "/dashboard/friends", icon: Users },
     ],
   },
 ];

@@ -65,12 +65,15 @@ export default async function RecipesPage({ searchParams }: { searchParams?: Pro
                 cook_time: recipe.cook_time,
                 country_of_origin: recipe.country_of_origin,
                 member_id: recipe.member_id,
+                recipe_ratings: recipe.recipe_ratings as { rating: number }[] | null,
                 family_members: recipe.family_members as {
                   id: string;
                   name: string;
                   photo_url: string | null;
                   relation: string | null;
                 } | null,
+                culture_tag: ((recipe as Record<string, unknown>).culture_tag as string | null) ?? null,
+                image_url: ((recipe as Record<string, unknown>).image_url as string | null) ?? null,
               }}
             />
           ))}

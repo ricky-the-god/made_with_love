@@ -10,6 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useAppCopy } from "@/lib/i18n/use-app-copy";
 import type { NavGroup } from "@/navigation/sidebar/sidebar-items";
 
 interface NavMainProps {
@@ -18,6 +19,7 @@ interface NavMainProps {
 
 export function NavMain({ items }: NavMainProps) {
   const path = usePathname();
+  const copy = useAppCopy();
 
   return (
     <>
@@ -28,12 +30,13 @@ export function NavMain({ items }: NavMainProps) {
               {group.items.map((item) => {
                 const isActive = path.startsWith(item.url);
                 const Icon = item.icon;
+                const label = copy[item.titleKey];
                 return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={isActive} tooltip={item.title} size="lg">
+                  <SidebarMenuItem key={item.url}>
+                    <SidebarMenuButton asChild isActive={isActive} tooltip={label} size="lg">
                       <Link prefetch={false} href={item.url}>
                         {Icon ? <Icon /> : null}
-                        <span>{item.title}</span>
+                        <span>{label}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
