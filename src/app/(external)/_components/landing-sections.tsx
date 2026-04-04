@@ -6,7 +6,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, BookOpen, ChefHat, Heart, TreePine } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { HoverButton } from "@/components/ui/hover-button";
 import { Separator } from "@/components/ui/separator";
 
 import { ContainerScroll } from "./container-scroll";
@@ -225,16 +225,12 @@ export function LandingSections() {
             >
               Free to start. A living archive that grows with your family.
             </p>
-            <Button
-              asChild
-              size="lg"
-              className="rounded-full bg-[#803d3b] px-10 text-base text-white shadow-md hover:bg-[#5c3432]"
-            >
+            <HoverButton asChild variant="light" size="lg">
               <Link href="/auth/v2/register">
                 Create your family archive
                 <ArrowRight className="ml-1 size-4" />
               </Link>
-            </Button>
+            </HoverButton>
           </motion.div>
         </div>
       </section>

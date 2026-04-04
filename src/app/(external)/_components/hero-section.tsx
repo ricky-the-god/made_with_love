@@ -8,7 +8,7 @@ import Link from "next/link";
 
 import { ArrowRight } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { HoverButton } from "@/components/ui/hover-button";
 import { usePreferencesStore } from "@/stores/preferences/preferences-provider";
 
 const BOOKS = [
@@ -114,24 +114,15 @@ export function HeroSection() {
         </p>
 
         <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Button
-            asChild
-            size="lg"
-            className="rounded-full bg-[#e4c59e] px-8 text-base text-[#322c2b] shadow-lg hover:bg-[#d2ab84]"
-          >
+          <HoverButton asChild variant="dark" size="lg">
             <Link href="/auth/v2/register">
               Start preserving
               <ArrowRight className="ml-1 size-4" />
             </Link>
-          </Button>
-          <Button
-            asChild
-            variant="ghost"
-            size="lg"
-            className="rounded-full px-8 text-[#e4c59e]/70 text-base hover:bg-white/10 hover:text-[#e4c59e]"
-          >
+          </HoverButton>
+          <HoverButton asChild variant="ghost" size="lg">
             <Link href="#how-it-works">See how it works</Link>
-          </Button>
+          </HoverButton>
         </div>
       </div>
     </section>
@@ -142,7 +133,7 @@ export function HeroSection() {
 
 function ReducedMotionHero() {
   return (
-    <section className="flex min-h-screen flex-col items-center justify-center bg-[#322c2b] px-6 pb-20 pt-20 text-center sm:px-8">
+    <section className="flex min-h-screen flex-col items-center justify-center bg-[#322c2b] px-6 pt-20 pb-20 text-center sm:px-8">
       <p
         className="mb-5 font-medium text-[#e4c59e] text-[10px] uppercase tracking-[0.22em]"
         style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
@@ -164,24 +155,15 @@ function ReducedMotionHero() {
         The people who fed you, the recipes they carried, the stories that live in the food. All of it, kept safe.
       </p>
       <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-        <Button
-          asChild
-          size="lg"
-          className="rounded-full bg-[#e4c59e] px-8 text-base text-[#322c2b] shadow-lg hover:bg-[#d2ab84]"
-        >
+        <HoverButton asChild variant="dark" size="lg">
           <Link href="/auth/v2/register">
             Start preserving
             <ArrowRight className="ml-1 size-4" />
           </Link>
-        </Button>
-        <Button
-          asChild
-          variant="ghost"
-          size="lg"
-          className="rounded-full px-8 text-[#e4c59e]/70 text-base hover:bg-white/10 hover:text-[#e4c59e]"
-        >
+        </HoverButton>
+        <HoverButton asChild variant="ghost" size="lg">
           <Link href="#how-it-works">See how it works</Link>
-        </Button>
+        </HoverButton>
       </div>
     </section>
   );
