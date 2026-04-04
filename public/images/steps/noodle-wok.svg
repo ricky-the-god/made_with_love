@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">Noodle wok toss</title>
+  <desc id="desc">Wok with noodles being tossed.</desc>
+  <rect width="1200" height="800" fill="#f4e7d2"/>
+  <ellipse cx="560" cy="520" rx="290" ry="150" fill="#322c2b"/>
+  <path d="M380 500 C450 430 670 430 760 500" stroke="#e4c59e" stroke-width="12" fill="none"/>
+  <path d="M390 530 C470 460 650 470 730 530" stroke="#e4c59e" stroke-width="10" fill="none"/>
+  <rect x="760" y="500" width="260" height="30" rx="15" fill="#322c2b"/>
+  <circle cx="520" cy="510" r="18" fill="#7f9c5b"/>
+  <circle cx="610" cy="505" r="16" fill="#d96f54"/>
+  <text x="600" y="700" text-anchor="middle" font-size="56" fill="#322c2b" font-family="Georgia, serif">Step • Stir-fry</text>
+</svg>

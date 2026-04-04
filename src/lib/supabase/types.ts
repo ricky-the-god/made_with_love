@@ -59,6 +59,7 @@ export interface Recipe {
   description: string | null;
   ingredients: string | null;
   steps: string | null;
+  step_images: string | null;
   notes: string | null;
   prep_time: string | null;
   cook_time: string | null;

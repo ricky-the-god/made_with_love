@@ -38,6 +38,7 @@ const schema = z.object({
   servings: z.string().optional(),
   ingredients: z.string().optional(),
   steps: z.string().optional(),
+  step_images: z.string().optional(),
   notes: z.string().optional(),
 });
 
@@ -341,6 +342,7 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
         servings: values.servings || undefined,
         ingredients: values.ingredients || undefined,
         steps: values.steps || undefined,
+        step_images: values.step_images || undefined,
         notes: values.notes || undefined,
         image_url: imageUrl || undefined,
       });
@@ -566,6 +568,21 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
                     }
                     {...register("steps")}
                   />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="step_images">Step image URLs (optional)</Label>
+                  <Textarea
+                    id="step_images"
+                    className="min-h-[120px] resize-none text-sm"
+                    placeholder={
+                      "https://.../step-1.jpg\nhttps://.../step-2.jpg\n(One image URL per line, matching your step order)"
+                    }
+                    {...register("step_images")}
+                  />
+                  <p className="text-muted-foreground text-xs">
+                    Add one image URL per line. Line 1 maps to step 1, line 2 maps to step 2, and so on.
+                  </p>
                 </div>
 
                 <div className="flex flex-col gap-2">

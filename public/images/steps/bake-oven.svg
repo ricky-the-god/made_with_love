@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">Bake in oven</title>
+  <desc id="desc">Oven with tray baking inside.</desc>
+  <rect width="1200" height="800" fill="#f3e6d2"/>
+  <rect x="250" y="130" width="700" height="540" rx="26" fill="#5d5650"/>
+  <rect x="320" y="230" width="560" height="340" rx="20" fill="#2f2a29"/>
+  <rect x="360" y="350" width="480" height="140" rx="14" fill="#af8260"/>
+  <circle cx="390" cy="170" r="16" fill="#e4c59e"/>
+  <circle cx="460" cy="170" r="16" fill="#e4c59e"/>
+  <circle cx="530" cy="170" r="16" fill="#e4c59e"/>
+  <text x="600" y="700" text-anchor="middle" font-size="56" fill="#322c2b" font-family="Georgia, serif">Step • Bake</text>
+</svg>

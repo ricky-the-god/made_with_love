@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">Simmer in pot</title>
+  <desc id="desc">Cooking pot on warm stovetop with steam.</desc>
+  <rect width="1200" height="800" fill="#efe2cf"/>
+  <rect x="0" y="560" width="1200" height="240" fill="#d4b792"/>
+  <rect x="320" y="300" width="560" height="260" rx="40" fill="#322c2b"/>
+  <rect x="280" y="320" width="40" height="160" rx="20" fill="#322c2b"/>
+  <rect x="880" y="320" width="40" height="160" rx="20" fill="#322c2b"/>
+  <ellipse cx="600" cy="310" rx="240" ry="40" fill="#803d3b"/>
+  <path d="M480 240 C460 180 500 150 500 110" stroke="#af8260" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <path d="M600 230 C580 170 620 140 620 90" stroke="#af8260" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <path d="M720 240 C700 180 740 150 740 110" stroke="#af8260" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <text x="600" y="700" text-anchor="middle" font-size="56" fill="#322c2b" font-family="Georgia, serif">Step 2 • Simmer</text>
+</svg>

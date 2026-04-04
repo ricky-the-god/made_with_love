@@ -20,7 +20,20 @@ export default async function GuidedCookingPage({ params }: { params: Promise<{ 
         .map((l: string) => l.replace(/^\d+\.\s*/, ""))
     : [];
 
+  const stepImages: string[] = recipe.step_images
+    ? recipe.step_images
+        .split("\n")
+        .map((l: string) => l.trim())
+        .filter(Boolean)
+    : [];
+
   return (
-    <CookingSession recipeId={id} recipeTitle={recipe.title} steps={steps} ingredients={recipe.ingredients ?? ""} />
+    <CookingSession
+      recipeId={id}
+      recipeTitle={recipe.title}
+      steps={steps}
+      stepImages={stepImages}
+      ingredients={recipe.ingredients ?? ""}
+    />
   );
 }

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">Serve bowl</title>
+  <desc id="desc">Plated serving bowl ready to eat.</desc>
+  <rect width="1200" height="800" fill="#f6e9d6"/>
+  <ellipse cx="600" cy="610" rx="360" ry="90" fill="#d8c0a1"/>
+  <ellipse cx="600" cy="500" rx="290" ry="130" fill="#ffffff"/>
+  <ellipse cx="600" cy="490" rx="235" ry="92" fill="#803d3b"/>
+  <circle cx="520" cy="470" r="22" fill="#7f9c5b"/>
+  <circle cx="660" cy="510" r="18" fill="#e4c59e"/>
+  <circle cx="710" cy="470" r="14" fill="#7f9c5b"/>
+  <text x="600" y="700" text-anchor="middle" font-size="56" fill="#322c2b" font-family="Georgia, serif">Step • Serve</text>
+</svg>
