@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, Heart } from "lucide-react";
+import { Clock, Heart, Star } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { getRelationLabel } from "@/lib/family-constants";
@@ -14,6 +14,7 @@ interface RecipeCardProps {
     cook_time: string | null;
     country_of_origin: string | null;
     member_id: string | null;
+    recipe_ratings?: { rating: number }[] | null;
     family_members: {
       id: string;
       name: string;
@@ -27,6 +28,9 @@ interface RecipeCardProps {
 export function RecipeCard({ recipe, href }: RecipeCardProps) {
   const member = recipe.family_members;
   const relationLabel = getRelationLabel(member?.relation);
+  const ratingCount = Array.isArray(recipe.recipe_ratings) ? recipe.recipe_ratings.length : 0;
+  const averageRating =
+    ratingCount > 0 ? recipe.recipe_ratings!.reduce((sum, review) => sum + review.rating, 0) / ratingCount : null;
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-amber-100 bg-amber-50/30 transition-colors hover:border-amber-300 hover:bg-amber-50/60 dark:border-amber-900/20 dark:bg-amber-950/10 dark:hover:border-amber-800/40 dark:hover:bg-amber-950/20">
@@ -74,6 +78,12 @@ export function RecipeCard({ recipe, href }: RecipeCardProps) {
             >
               {recipe.country_of_origin}
             </Badge>
+          )}
+          {ratingCount > 0 && averageRating !== null && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-100/80 px-2 py-0.5 text-amber-700 text-xs dark:bg-amber-900/30 dark:text-amber-300">
+              <Star className="size-3 fill-current" />
+              {averageRating.toFixed(1)} ({ratingCount})
+            </span>
           )}
           {(recipe.prep_time || recipe.cook_time) && (
             <span className="flex items-center gap-1 text-muted-foreground text-xs">

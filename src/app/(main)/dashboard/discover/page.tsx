@@ -25,7 +25,18 @@ type DiscoverSearchParams = {
   q?: string | string[];
   recipes?: string | string[];
   traditions?: string | string[];
+  sort?: string | string[];
 };
+
+type DiscoverSort = "newest" | "oldest" | "title-asc" | "title-desc" | "most-reviewed";
+
+const SORT_OPTIONS: Array<{ value: DiscoverSort; label: string }> = [
+  { value: "newest", label: "Newest" },
+  { value: "oldest", label: "Oldest" },
+  { value: "title-asc", label: "Title (A-Z)" },
+  { value: "title-desc", label: "Title (Z-A)" },
+  { value: "most-reviewed", label: "Most reviewed" },
+];
 
 type PublicRecipe = Awaited<ReturnType<typeof getPublicRecipes>>[number];
 
@@ -145,8 +156,13 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
   const q = firstParamValue(resolvedParams.q);
   const recipes = firstParamValue(resolvedParams.recipes);
   const traditions = firstParamValue(resolvedParams.traditions);
-  const publicFamilies = await getPublicFamilies(20);
-  const publicRecipes = (await getPublicRecipes(50)).map((recipe) => ({
+  const sortParam = firstParamValue(resolvedParams.sort);
+  const sort: DiscoverSort = SORT_OPTIONS.some((option) => option.value === sortParam)
+    ? (sortParam as DiscoverSort)
+    : "newest";
+  const sortLabel = SORT_OPTIONS.find((option) => option.value === sort)?.label ?? "Newest";
+  const [publicFamilies, rawRecipes] = await Promise.all([getPublicFamilies(20), getPublicRecipes(50)]);
+  const publicRecipes = rawRecipes.map((recipe) => ({
     ...recipe,
     family_members: normalizeFamilyMember(recipe),
   }));
@@ -177,7 +193,30 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
         return haystack.includes(query);
       })
     : recipesByRegion;
-  const visibleRecipes = showAllRecipes ? filteredRecipes : filteredRecipes.slice(0, DEFAULT_RECIPE_COUNT);
+  const sortedRecipes = [...filteredRecipes].sort((a, b) => {
+    if (sort === "most-reviewed") {
+      const aReviewCount = Array.isArray(a.recipe_ratings) ? a.recipe_ratings.length : 0;
+      const bReviewCount = Array.isArray(b.recipe_ratings) ? b.recipe_ratings.length : 0;
+      if (bReviewCount !== aReviewCount) return bReviewCount - aReviewCount;
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    }
+
+    if (sort === "oldest") {
+      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+    }
+
+    if (sort === "title-asc") {
+      return a.title.localeCompare(b.title);
+    }
+
+    if (sort === "title-desc") {
+      return b.title.localeCompare(a.title);
+    }
+
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
+
+  const visibleRecipes = showAllRecipes ? sortedRecipes : sortedRecipes.slice(0, DEFAULT_RECIPE_COUNT);
   const visibleTraditions = showAllTraditions
     ? CULTURAL_COLLECTIONS
     : CULTURAL_COLLECTIONS.slice(0, DEFAULT_TRADITION_COUNT);
@@ -187,13 +226,16 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
     nextQuery?: string | null,
     nextRecipes?: string | null,
     nextTraditions?: string | null,
+    nextSort?: DiscoverSort | null,
   ) => {
     const params = new URLSearchParams();
+    const effectiveSort = nextSort ?? sort;
 
     if (nextRegion) params.set("region", nextRegion);
     if (nextQuery) params.set("q", nextQuery);
     if (nextRecipes) params.set("recipes", nextRecipes);
     if (nextTraditions) params.set("traditions", nextTraditions);
+    if (effectiveSort !== "newest") params.set("sort", effectiveSort);
 
     const queryString = params.toString();
     return queryString ? `/dashboard/discover?${queryString}` : "/dashboard/discover";
@@ -257,6 +299,18 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
               )}
             </PopoverContent>
           </Popover>
+          <select
+            name="sort"
+            defaultValue={sort}
+            className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+            aria-label="Sort recipes"
+          >
+            {SORT_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
           <Button type="submit" className="bg-amber-700 text-white hover:bg-amber-800">
             Search
           </Button>
@@ -280,6 +334,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
                 ? `Public recipes connected to ${activeCollection.region.toLowerCase()} food traditions.`
                 : "Recipes families have chosen to open up to the wider community."}
             </p>
+            <p className="mt-1 text-muted-foreground text-xs">Sorted by {sortLabel}.</p>
             {q && <p className="mt-1 text-muted-foreground text-sm">Search results for "{q}".</p>}
           </div>
           {activeCollection && (
@@ -300,7 +355,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
               ))}
             </div>
 
-            {filteredRecipes.length > DEFAULT_RECIPE_COUNT && (
+            {sortedRecipes.length > DEFAULT_RECIPE_COUNT && (
               <div className="mt-5 flex justify-center">
                 <Button variant="outline" asChild>
                   <Link
@@ -314,7 +369,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
                   >
                     {showAllRecipes
                       ? "Show less"
-                      : `See more recipes (${filteredRecipes.length - DEFAULT_RECIPE_COUNT} more)`}
+                      : `See more recipes (${sortedRecipes.length - DEFAULT_RECIPE_COUNT} more)`}
                   </Link>
                 </Button>
               </div>
