@@ -491,7 +491,7 @@ export function FamilyTreeCanvas({
                       style={{ transitionDelay: `${transitionDelay}ms` }}
                     >
                       {/* ── Cookbook shape — book-open fan from spine ────── */}
-                      <div className="relative" style={{ perspective: "600px", transformStyle: "preserve-3d" }}>
+                      <div className="relative" style={{ perspective: "600px" }}>
                         {/* Page 3 — opens furthest (like back pages of a real book) */}
                         <div
                           className={cn(
