@@ -44,7 +44,6 @@ function FamilyTreeVisual() {
   return (
     <div className="relative h-72 w-full sm:h-80">
       {/* Connector lines */}
-      {/* biome-ignore lint/a11y/noSvgWithoutTitle: decorative connector lines, hidden from assistive technology */}
       <svg className="absolute inset-0 h-full w-full" aria-hidden="true" role="presentation">
         {lines.map((l, i) => (
           <motion.line
@@ -54,7 +53,7 @@ function FamilyTreeVisual() {
             y1={l.y1}
             x2={l.x2}
             y2={l.y2}
-            stroke="#d97706"
+            stroke="#af8260"
             strokeWidth="1.5"
             strokeDasharray="4 3"
             initial={{ pathLength: 0, opacity: 0 }}
@@ -111,17 +110,17 @@ function RecipeCardVisual() {
           <Sparkles className="size-3" />
           AI extracted
         </span>
-        <span className="text-[10px] text-stone-400">from handwritten card</span>
+        <span className="text-[#af8260]/70 text-[10px]">from handwritten card</span>
       </motion.div>
 
       <motion.h4
         {...fadeUp(0.15)}
-        className="mb-1 font-semibold text-base text-stone-800"
+        className="mb-1 font-semibold text-[#322c2b] text-base"
         style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
       >
         Bà Nội&apos;s Phở Bò
       </motion.h4>
-      <motion.p {...fadeUp(0.2)} className="mb-4 text-[11px] text-stone-400">
+      <motion.p {...fadeUp(0.2)} className="mb-4 text-[#af8260]/70 text-[11px]">
         Passed down from Hanoi, Vietnam • Serves 4
       </motion.p>
 
@@ -131,7 +130,7 @@ function RecipeCardVisual() {
           <motion.li
             key={ing}
             {...fadeUp(0.25 + i * 0.05)}
-            className="flex items-center gap-2 text-[11px] text-stone-600"
+            className="flex items-center gap-2 text-[#6e5750] text-[11px]"
           >
             <span className="size-1.5 shrink-0 rounded-full bg-amber-400" />
             {ing}
@@ -148,8 +147,8 @@ function RecipeCardVisual() {
           {nutrients.map((n, i) => (
             <motion.div key={n.label} {...fadeUp(0.5 + i * 0.05)} className="flex flex-col items-center gap-1">
               <div className={`${n.color} h-1 w-full rounded-full`} />
-              <span className="font-bold text-sm text-stone-800">{n.value}</span>
-              <span className="text-[9px] text-stone-400">{n.label}</span>
+              <span className="font-bold text-[#322c2b] text-sm">{n.value}</span>
+              <span className="text-[#af8260]/70 text-[9px]">{n.label}</span>
             </motion.div>
           ))}
         </div>
@@ -173,7 +172,7 @@ function CookingStepsVisual() {
     <motion.div {...fadeIn(0, -40)} className="mx-auto w-full max-w-sm space-y-2.5">
       {/* Progress bar */}
       <motion.div {...fadeUp(0)} className="mb-5 flex items-center gap-3">
-        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-stone-100">
+        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#e4c59e]/40">
           <motion.div
             className="h-full rounded-full bg-amber-500"
             initial={{ width: 0 }}
@@ -182,7 +181,7 @@ function CookingStepsVisual() {
             transition={{ duration: 0.8, delay: 0.3, ease: EASE }}
           />
         </div>
-        <span className="shrink-0 font-medium text-stone-400 text-xs">Step 3 of 5</span>
+        <span className="shrink-0 font-medium text-[#af8260]/70 text-xs">Step 3 of 5</span>
       </motion.div>
 
       {steps.map((step, i) => (
@@ -190,7 +189,7 @@ function CookingStepsVisual() {
           key={step.num}
           {...fadeUp(0.1 + i * 0.08)}
           className={`flex items-start gap-3 rounded-xl p-3 transition-colors ${
-            step.active ? "border border-amber-200 bg-amber-50 shadow-sm" : step.done ? "opacity-50" : "bg-stone-50"
+            step.active ? "border border-amber-200 bg-amber-50 shadow-sm" : step.done ? "opacity-50" : "bg-[#fcf8f2]"
           }`}
         >
           <div
@@ -199,13 +198,13 @@ function CookingStepsVisual() {
                 ? "bg-amber-500 text-white"
                 : step.active
                   ? "border-2 border-amber-500 bg-white text-amber-600"
-                  : "bg-stone-200 text-stone-400"
+                  : "bg-[#e4c59e]/50 text-[#af8260]"
             }`}
           >
             {step.done ? "✓" : step.num}
           </div>
           <p
-            className={`pt-0.5 text-xs leading-relaxed ${step.active ? "font-medium text-stone-800" : "text-stone-500"}`}
+            className={`pt-0.5 text-xs leading-relaxed ${step.active ? "font-medium text-[#322c2b]" : "text-[#6e5750]"}`}
           >
             {step.text}
           </p>
@@ -252,7 +251,7 @@ function FeatureRow({
 
           <motion.h2
             {...fadeUp(0.08)}
-            className="mb-5 font-normal text-3xl text-stone-800 leading-snug sm:text-4xl lg:text-5xl dark:text-amber-50"
+            className="mb-5 font-normal text-3xl text-[#322c2b] leading-snug sm:text-4xl lg:text-5xl dark:text-[#e4c59e]"
             style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
           >
             {headline}
@@ -260,7 +259,7 @@ function FeatureRow({
 
           <motion.p
             {...fadeUp(0.16)}
-            className="max-w-lg text-base text-stone-500 leading-relaxed lg:mx-0 dark:text-stone-400"
+            className="max-w-lg text-[#6e5750] text-base leading-relaxed lg:mx-0 dark:text-[#ceb8a0]"
             style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
           >
             {body}
@@ -306,7 +305,7 @@ export function FeaturesShowcase() {
         headline={`Cook like you were\ntaught by someone you love.`}
         body="Step-by-step cooking instructions that hold your hand through every recipe. Follow along at your own pace, learn the story behind each step, and feel the presence of the person who first made it."
         visual={<CookingStepsVisual />}
-        bg="bg-stone-50/60"
+        bg="bg-[#fcf8f2]"
       />
     </>
   );

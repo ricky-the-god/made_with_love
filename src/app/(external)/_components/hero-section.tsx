@@ -11,9 +11,6 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePreferencesStore } from "@/stores/preferences/preferences-provider";
 
-const GRAIN_SVG =
-  "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")";
-
 const BOOKS = [
   { id: "book-1", src: "/images/Book1.png", alt: "Family recipes", rotation: -10 },
   { id: "book-2", src: "/images/Book2.png", alt: "Recipe memories", rotation: -6 },
@@ -50,7 +47,6 @@ export function HeroSection() {
   return (
     <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#322c2b] pt-20">
       {/* Invisible cover captures mouse for 3D tilt — aria-hidden so it is decorative only */}
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: purely decorative mouse tracking */}
       <div aria-hidden className="absolute inset-0" onMouseMove={handleMouseMove} />
 
       {/* ── Floating books ─────────────────────────────────────────────────── */}
@@ -121,7 +117,7 @@ export function HeroSection() {
           <Button
             asChild
             size="lg"
-            className="rounded-full bg-amber-700 px-8 text-base text-white shadow-lg hover:bg-amber-600"
+            className="rounded-full bg-[#e4c59e] px-8 text-base text-[#322c2b] shadow-lg hover:bg-[#d2ab84]"
           >
             <Link href="/auth/v2/register">
               Start preserving
@@ -132,7 +128,7 @@ export function HeroSection() {
             asChild
             variant="ghost"
             size="lg"
-            className="rounded-full px-8 text-base text-stone-500 hover:bg-stone-100 hover:text-stone-900"
+            className="rounded-full px-8 text-[#e4c59e]/70 text-base hover:bg-white/10 hover:text-[#e4c59e]"
           >
             <Link href="#how-it-works">See how it works</Link>
           </Button>
@@ -171,7 +167,7 @@ function ReducedMotionHero() {
         <Button
           asChild
           size="lg"
-          className="rounded-full bg-amber-700 px-8 text-base text-white shadow-lg hover:bg-amber-600"
+          className="rounded-full bg-[#e4c59e] px-8 text-base text-[#322c2b] shadow-lg hover:bg-[#d2ab84]"
         >
           <Link href="/auth/v2/register">
             Start preserving
@@ -182,7 +178,7 @@ function ReducedMotionHero() {
           asChild
           variant="ghost"
           size="lg"
-          className="rounded-full px-8 text-base text-stone-500 hover:bg-stone-100 hover:text-stone-900"
+          className="rounded-full px-8 text-[#e4c59e]/70 text-base hover:bg-white/10 hover:text-[#e4c59e]"
         >
           <Link href="#how-it-works">See how it works</Link>
         </Button>

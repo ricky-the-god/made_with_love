@@ -13,9 +13,9 @@ import { GoogleButton } from "../../_components/social-auth/google-button";
 export default function LoginV2() {
   return (
     <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-[#322c2b]">
-      <SmokeyBackground color="#ffffff" backdropBlurAmount="md" />
+      <SmokeyBackground color="#e4c59e" baseColor="#322c2b" backdropBlurAmount="md" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[430px] flex-col justify-center space-y-8 rounded-2xl border border-[#e4c59e]/45 bg-[#322c2b]/78 p-8 shadow-[0_20px_60px_rgba(30,20,20,0.45)] backdrop-blur-lg">
+      <div className="relative z-10 mx-auto flex w-full max-w-[430px] flex-col justify-center space-y-8 rounded-2xl border border-[#e4c59e]/45 bg-[#322c2b]/78 p-8 shadow-[0_20px_60px_rgba(174,130,96,0.25)] backdrop-blur-lg">
         <div className="space-y-2 text-center">
           <h1 className="font-medium text-3xl text-white">Welcome back</h1>
           <p className="text-[#e4c59e]/80 text-sm">Sign in to your family&apos;s recipe book.</p>

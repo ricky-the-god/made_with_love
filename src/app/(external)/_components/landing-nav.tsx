@@ -129,7 +129,7 @@ export function LandingNav() {
                 <Button
                   asChild
                   size="sm"
-                  className={cn("rounded-full bg-amber-700 text-white hover:bg-amber-600", scrolled && "lg:hidden")}
+                  className={cn("rounded-full bg-[#e4c59e] text-[#322c2b] hover:bg-[#d2ab84]", scrolled && "lg:hidden")}
                 >
                   <Link href="/auth/v2/register">Start for free</Link>
                 </Button>
@@ -139,7 +139,7 @@ export function LandingNav() {
                   asChild
                   size="sm"
                   className={cn(
-                    "rounded-full bg-amber-700 text-white hover:bg-amber-600",
+                    "rounded-full bg-[#e4c59e] text-[#322c2b] hover:bg-[#d2ab84]",
                     scrolled ? "lg:inline-flex" : "hidden",
                   )}
                 >
