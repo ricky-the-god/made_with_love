@@ -5,7 +5,7 @@ import { StickyFooter } from "./_components/sticky-footer";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-white dark:bg-stone-950">
+    <div className="min-h-screen bg-white">
       {/* ─── Nav ─────────────────────────────────────────────────────────── */}
       <LandingNav />
 
