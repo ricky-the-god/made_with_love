@@ -1,17 +1,26 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 
 import { useRouter } from "next/navigation";
 
-import { ArrowLeft, ArrowRight, Heart, TreeDeciduous, Users } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock, Heart, TreeDeciduous, Users } from "lucide-react";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { acceptFamilyInvitation, createFamily, createFamilyMember } from "@/server/family-actions";
+import {
+  acceptFamilyInvitation,
+  createFamily,
+  createFamilyMember,
+  getMyPendingInvitations,
+  skipOnboarding,
+} from "@/server/family-actions";
+
+type PendingInvitation = Awaited<ReturnType<typeof getMyPendingInvitations>>[number];
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -22,6 +31,17 @@ export default function OnboardingPage() {
   const [inviteCode, setInviteCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [pendingInvites, setPendingInvites] = useState<PendingInvitation[]>([]);
+  const [loadingInvites, setLoadingInvites] = useState(false);
+
+  useEffect(() => {
+    if (mode === "join") {
+      setLoadingInvites(true);
+      getMyPendingInvitations()
+        .then(setPendingInvites)
+        .finally(() => setLoadingInvites(false));
+    }
+  }, [mode]);
 
   // Progress calculation
   let progress = 0;
@@ -34,14 +54,17 @@ export default function OnboardingPage() {
     setError(null);
   }
 
-  function handleJoinSubmit() {
-    if (!inviteCode.trim()) {
-      setError("Please enter your invite code.");
-      return;
-    }
+  function handleSkip() {
+    startTransition(async () => {
+      await skipOnboarding();
+      router.push("/dashboard/tree");
+    });
+  }
+
+  function acceptInviteToken(token: string) {
     setError(null);
     startTransition(async () => {
-      const result = await acceptFamilyInvitation(inviteCode.trim());
+      const result = await acceptFamilyInvitation(token);
       if ("error" in result && result.error) {
         setError(result.error);
       } else {
@@ -49,6 +72,27 @@ export default function OnboardingPage() {
         router.push("/dashboard/tree");
       }
     });
+  }
+
+  function handleJoinSubmit() {
+    const raw = inviteCode.trim();
+    if (!raw) {
+      setError("Please enter your invite code.");
+      return;
+    }
+    // Support pasting a full invite URL — extract the token from the path
+    let token = raw;
+    try {
+      const url = new URL(raw);
+      const parts = url.pathname.split("/").filter(Boolean);
+      const inviteIdx = parts.indexOf("invite");
+      if (inviteIdx !== -1 && parts[inviteIdx + 1]) {
+        token = parts[inviteIdx + 1];
+      }
+    } catch {
+      // raw is not a URL, use as-is
+    }
+    acceptInviteToken(token);
   }
 
   function handleCreateContinue() {
@@ -130,6 +174,15 @@ export default function OnboardingPage() {
                   className="w-full border-amber-200 dark:border-amber-800"
                 >
                   Join an existing tree
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleSkip}
+                  disabled={isPending}
+                  className="text-muted-foreground"
+                >
+                  Skip for now, I'll join a family later
                 </Button>
               </div>
             </CardContent>
@@ -250,7 +303,7 @@ export default function OnboardingPage() {
           </Card>
         )}
 
-        {/* Join flow — Step 1: enter invite code */}
+        {/* Join flow — Step 1: pending invites + code entry */}
         {mode === "join" && step === 1 && (
           <Card className="border-amber-100 shadow-sm dark:border-amber-900/20">
             <CardContent className="flex flex-col items-center gap-6 pt-10 pb-8 text-center">
@@ -260,11 +313,51 @@ export default function OnboardingPage() {
               <div>
                 <h1 className="font-bold text-2xl">Join a family tree</h1>
                 <p className="mt-2 text-muted-foreground leading-relaxed">
-                  Ask the family owner to send you an invite link, then enter the code here.
+                  Accept a pending invitation or paste your invite code below.
                 </p>
               </div>
+
+              {/* Pending invitations for this user's email */}
+              {loadingInvites && <p className="text-muted-foreground text-sm">Checking for invitations…</p>}
+              {!loadingInvites && pendingInvites.length > 0 && (
+                <div className="flex w-full flex-col gap-2">
+                  <p className="text-left font-medium text-sm">Your invitations</p>
+                  {pendingInvites.map((inv) => {
+                    const family = Array.isArray(inv.families) ? inv.families[0] : inv.families;
+                    return (
+                      <div
+                        key={inv.id}
+                        className="flex items-center justify-between gap-3 rounded-lg border border-amber-100 bg-amber-50/40 p-3 text-left dark:border-amber-900/20 dark:bg-amber-950/10"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate font-medium text-sm">{family?.family_name ?? "Family invite"}</p>
+                          <div className="mt-0.5 flex items-center gap-1.5 text-muted-foreground text-xs">
+                            <Badge variant="secondary" className="h-4 px-1 text-xs capitalize">
+                              {inv.role}
+                            </Badge>
+                            <Clock className="size-3" />
+                            Expires {new Date(inv.expires_at).toLocaleDateString()}
+                          </div>
+                        </div>
+                        <Button
+                          size="sm"
+                          onClick={() => acceptInviteToken(inv.token)}
+                          disabled={isPending}
+                          className="shrink-0 bg-amber-700 text-white hover:bg-amber-800 dark:bg-amber-600 dark:hover:bg-amber-700"
+                        >
+                          Accept
+                        </Button>
+                      </div>
+                    );
+                  })}
+                  <div className="relative mt-2 text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-border after:border-t">
+                    <span className="relative z-10 bg-card px-2 text-muted-foreground text-xs">or enter a code</span>
+                  </div>
+                </div>
+              )}
+
               <div className="flex w-full flex-col gap-2 text-left">
-                <Label htmlFor="invite-code">Invite code</Label>
+                <Label htmlFor="invite-code">Invite code or link</Label>
                 <Input
                   id="invite-code"
                   placeholder="Paste your invite code"
@@ -272,7 +365,7 @@ export default function OnboardingPage() {
                   onChange={(e) => setInviteCode(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleJoinSubmit()}
                   disabled={isPending}
-                  autoFocus
+                  autoFocus={pendingInvites.length === 0}
                 />
                 {error && <p className="text-destructive text-sm">{error}</p>}
               </div>
@@ -282,7 +375,7 @@ export default function OnboardingPage() {
                   disabled={isPending}
                   className="w-full bg-amber-700 text-white hover:bg-amber-800 dark:bg-amber-600 dark:hover:bg-amber-700"
                 >
-                  {isPending ? "Joining…" : "Join family tree"}
+                  {isPending ? "Joining…" : "Join with code"}
                   {!isPending && <ArrowRight className="size-4" />}
                 </Button>
                 <Button variant="ghost" size="sm" onClick={resetToWelcome} className="text-muted-foreground">
