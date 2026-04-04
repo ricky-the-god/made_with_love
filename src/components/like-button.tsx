@@ -52,10 +52,6 @@ const LikeButton = ({ familyId, initialCount, initialLiked }: Props) => {
 };
 
 const StyledWrapper = styled.div`
-  #heart-${(props: { id?: string }) => props.id ?? ""} {
-    display: none;
-  }
-
   [id^="heart-"] {
     display: none;
   }
@@ -67,9 +63,20 @@ const StyledWrapper = styled.div`
     height: 48px;
     width: 136px;
     border-radius: 16px;
-    border: none;
-    background-color: #1d1d1d;
+    border: 1.5px solid var(--border);
+    background-color: var(--muted);
     overflow: hidden;
+    box-shadow:
+      inset -2px -2px 5px rgba(0, 0, 0, 0.05),
+      inset 2px 2px 5px rgba(0, 0, 0, 0.05),
+      4px 4px 10px rgba(0, 0, 0, 0.08),
+      -2px -2px 8px rgba(0, 0, 0, 0.04);
+    transition: background-color 0.2s, border-color 0.2s;
+  }
+
+  html.dark .like-button {
+    background-color: #1d1d1d;
+    border-color: #3a3a3a;
     box-shadow:
       inset -2px -2px 5px rgba(255, 255, 255, 0.2),
       inset 2px 2px 5px rgba(0, 0, 0, 0.1),
@@ -87,13 +94,14 @@ const StyledWrapper = styled.div`
   }
 
   .like-icon {
-    fill: #505050;
+    fill: var(--muted-foreground);
     height: 28px;
     width: 28px;
+    transition: fill 0.2s;
   }
 
   .like-text {
-    color: #fcfcfc;
+    color: var(--foreground);
     font-size: 16px;
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   }
@@ -106,10 +114,14 @@ const StyledWrapper = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #717070;
+    color: var(--muted-foreground);
     font-size: 16px;
-    border-left: 2px solid #4e4e4e;
+    border-left: 2px solid var(--border);
     transition: all 0.5s ease-out;
+  }
+
+  html.dark .like-count {
+    border-left-color: #4e4e4e;
   }
 
   .like-count.two {
@@ -124,7 +136,7 @@ const StyledWrapper = styled.div`
 
   .on:checked ~ .like-count.two {
     transform: translateX(0);
-    color: #fcfcfc;
+    color: var(--foreground);
   }
 
   .on:checked ~ .like-count.one {
