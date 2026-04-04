@@ -1,11 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
+
+import Image from "next/image";
 
 import { Search, X } from "lucide-react";
 
-import { INGREDIENT_CATALOG, type CatalogIngredient, DEFAULT_INGREDIENT_IMAGE } from "@/data/ingredients";
+import { type CatalogIngredient, INGREDIENT_CATALOG } from "@/data/ingredients";
 import { cn } from "@/lib/utils";
 
 import { IngredientChip } from "./ingredient-chip";
@@ -31,9 +32,9 @@ const POPULAR_IDS = [
   "mushroom",
 ];
 
-const POPULAR = POPULAR_IDS
-  .map((id) => INGREDIENT_CATALOG.find((item) => item.id === id))
-  .filter(Boolean) as CatalogIngredient[];
+const POPULAR = POPULAR_IDS.map((id) => INGREDIENT_CATALOG.find((item) => item.id === id)).filter(
+  Boolean,
+) as CatalogIngredient[];
 
 // ─── Data helpers ─────────────────────────────────────────────────────────────
 
@@ -101,6 +102,7 @@ export function IngredientSelector({ value = "", onChange }: IngredientSelectorP
   const syncingRef = useRef(false);
 
   // ── Sync external value changes (AI suggestion / image extraction) ──────────
+  // biome-ignore lint/correctness/useExhaustiveDependencies: selected intentionally omitted — syncingRef prevents infinite loop
   useEffect(() => {
     if (syncingRef.current) return;
     const current = serializeIngredients(selected);
@@ -108,7 +110,6 @@ export function IngredientSelector({ value = "", onChange }: IngredientSelectorP
     if (normalized !== current) {
       setSelected(parseIngredients(value));
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   // ── Close dropdown on outside click ────────────────────────────────────────
@@ -133,10 +134,7 @@ export function IngredientSelector({ value = "", onChange }: IngredientSelectorP
   }, [search, selected]);
 
   // Set of selected display texts for quick lookup (popular grid state)
-  const selectedLowerSet = useMemo(
-    () => new Set(selected.map((s) => s.displayText.toLowerCase())),
-    [selected],
-  );
+  const selectedLowerSet = useMemo(() => new Set(selected.map((s) => s.displayText.toLowerCase())), [selected]);
 
   // ── Mutators ────────────────────────────────────────────────────────────────
 
@@ -151,7 +149,10 @@ export function IngredientSelector({ value = "", onChange }: IngredientSelectorP
 
   function addFromCatalog(item: CatalogIngredient) {
     if (selectedLowerSet.has(item.name.toLowerCase())) return;
-    commit([...selected, { uid: `${item.id}-${Date.now()}`, displayText: item.name, emoji: item.emoji, imageUrl: item.imageUrl }]);
+    commit([
+      ...selected,
+      { uid: `${item.id}-${Date.now()}`, displayText: item.name, emoji: item.emoji, imageUrl: item.imageUrl },
+    ]);
     setSearch("");
     setDropdownOpen(false);
     inputRef.current?.focus();
@@ -245,7 +246,7 @@ export function IngredientSelector({ value = "", onChange }: IngredientSelectorP
 
         {/* Dropdown */}
         {dropdownOpen && (suggestions.length > 0 || search.trim()) && (
-          <div className="absolute top-full left-0 right-0 z-50 mt-1 overflow-hidden rounded-lg border border-input bg-background shadow-xl">
+          <div className="absolute top-full right-0 left-0 z-50 mt-1 overflow-hidden rounded-lg border border-input bg-background shadow-xl">
             {suggestions.map((item) => (
               <button
                 key={item.id}
@@ -276,36 +277,28 @@ export function IngredientSelector({ value = "", onChange }: IngredientSelectorP
             ))}
 
             {/* Add custom */}
-            {search.trim() &&
-              !INGREDIENT_CATALOG.some(
-                (i) => i.name.toLowerCase() === search.trim().toLowerCase(),
-              ) && (
-                <button
-                  type="button"
-                  onPointerDown={(e) => {
-                    e.preventDefault();
-                    addCustom(search);
-                  }}
-                  className="flex w-full items-center gap-3 border-t border-input px-3 py-2.5 text-left text-sm transition-colors hover:bg-amber-50 dark:hover:bg-amber-900/20"
-                >
-                  <span className="text-xl">🍽️</span>
-                  <span className="text-muted-foreground">
-                    Add{" "}
-                    <strong className="text-foreground">
-                      &ldquo;{search.trim()}&rdquo;
-                    </strong>
-                  </span>
-                </button>
-              )}
+            {search.trim() && !INGREDIENT_CATALOG.some((i) => i.name.toLowerCase() === search.trim().toLowerCase()) && (
+              <button
+                type="button"
+                onPointerDown={(e) => {
+                  e.preventDefault();
+                  addCustom(search);
+                }}
+                className="flex w-full items-center gap-3 border-input border-t px-3 py-2.5 text-left text-sm transition-colors hover:bg-amber-50 dark:hover:bg-amber-900/20"
+              >
+                <span className="text-xl">🍽️</span>
+                <span className="text-muted-foreground">
+                  Add <strong className="text-foreground">&ldquo;{search.trim()}&rdquo;</strong>
+                </span>
+              </button>
+            )}
           </div>
         )}
       </div>
 
       {/* Popular quick-picks */}
       <div>
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Popular Ingredients
-        </p>
+        <p className="mb-3 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Popular Ingredients</p>
         <div className="grid grid-cols-4 gap-2 sm:grid-cols-8">
           {POPULAR.map((item) => {
             const isSelected = selectedLowerSet.has(item.name.toLowerCase());
@@ -324,21 +317,10 @@ export function IngredientSelector({ value = "", onChange }: IngredientSelectorP
                     : "border-amber-100 hover:border-amber-300 hover:bg-amber-50 dark:border-amber-900/30 dark:hover:border-amber-700 dark:hover:bg-amber-900/15",
                 )}
               >
-                {item.imageUrl ? (
-                  <div className="relative size-10 overflow-hidden rounded-md bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center">
-                    <Image
-                      src={item.imageUrl}
-                      alt={item.name}
-                      width={40}
-                      height={40}
-                      className="size-full object-cover group-hover:scale-110 transition-transform"
-                      loading="lazy"
-                    />
-                  </div>
-                ) : (
-                  <span className="text-2xl leading-none">{item.emoji}</span>
-                )}
-                <span className="line-clamp-1 w-full text-center text-[11px] leading-tight font-medium text-foreground">
+                <span className="text-2xl leading-none" aria-hidden="true">
+                  {item.emoji}
+                </span>
+                <span className="line-clamp-1 w-full text-center font-medium text-[11px] text-foreground leading-tight">
                   {item.name}
                 </span>
               </button>
@@ -349,7 +331,7 @@ export function IngredientSelector({ value = "", onChange }: IngredientSelectorP
 
       {/* Empty nudge */}
       {selected.length === 0 && (
-        <p className="text-center text-xs text-muted-foreground">
+        <p className="text-center text-muted-foreground text-xs">
           Search above or tap a popular ingredient to get started.
         </p>
       )}
