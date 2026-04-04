@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { useSearchParams } from "next/navigation";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -21,6 +23,8 @@ const FormSchema = z.object({
 
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") ?? undefined;
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -33,7 +37,7 @@ export function LoginForm() {
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     setIsLoading(true);
-    const result = await loginWithEmail(data.email, data.password);
+    const result = await loginWithEmail(data.email, data.password, redirectTo);
     setIsLoading(false);
     if (result?.error) {
       toast.error(result.error);

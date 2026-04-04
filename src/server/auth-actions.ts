@@ -16,7 +16,7 @@ function validateNewPassword(newPassword: string, confirmPassword: string) {
   return null;
 }
 
-export async function loginWithEmail(email: string, password: string) {
+export async function loginWithEmail(email: string, password: string, redirectTo?: string) {
   const supabase = await createClient();
 
   const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -25,7 +25,9 @@ export async function loginWithEmail(email: string, password: string) {
     return { error: error.message };
   }
 
-  redirect("/dashboard");
+  // Only allow relative paths to prevent open redirect attacks
+  const safeRedirect = redirectTo?.startsWith("/") && !redirectTo.startsWith("//") ? redirectTo : "/dashboard";
+  redirect(safeRedirect);
 }
 
 export async function registerWithEmail(email: string, password: string) {

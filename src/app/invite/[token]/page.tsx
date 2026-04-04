@@ -16,7 +16,7 @@ export default async function InvitePage({ params }: { params: Promise<{ token: 
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/auth/v2/login");
+    redirect(`/auth/v2/login?redirect=/invite/${token}`);
   }
 
   const result = await acceptFamilyInvitation(token);
