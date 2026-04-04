@@ -2,8 +2,6 @@
 
 import { useOptimistic, useTransition } from "react";
 
-import styled from "styled-components";
-
 import { toggleFamilyLike } from "@/server/family-actions";
 
 type Props = {
@@ -28,7 +26,8 @@ const LikeButton = ({ familyId, initialCount, initialLiked }: Props) => {
   }
 
   return (
-    <StyledWrapper>
+    <div className="like-wrapper">
+      <style>{likeButtonStyles}</style>
       <div className="like-button">
         <input
           className="on"
@@ -47,16 +46,15 @@ const LikeButton = ({ familyId, initialCount, initialLiked }: Props) => {
         <span className="like-count one">{optimistic.liked ? optimistic.count - 1 : optimistic.count}</span>
         <span className="like-count two">{optimistic.liked ? optimistic.count : optimistic.count + 1}</span>
       </div>
-    </StyledWrapper>
+    </div>
   );
 };
 
-const StyledWrapper = styled.div`
-  [id^="heart-"] {
+const likeButtonStyles = `
+  .like-wrapper [id^="heart-"] {
     display: none;
   }
-
-  .like-button {
+  .like-wrapper .like-button {
     position: relative;
     cursor: pointer;
     display: flex;
@@ -73,8 +71,7 @@ const StyledWrapper = styled.div`
       -2px -2px 8px rgba(0, 0, 0, 0.04);
     transition: background-color 0.2s, border-color 0.2s;
   }
-
-  html.dark .like-button {
+  html.dark .like-wrapper .like-button {
     background-color: #1d1d1d;
     border-color: #3a3a3a;
     box-shadow:
@@ -83,8 +80,7 @@ const StyledWrapper = styled.div`
       4px 4px 10px rgba(0, 0, 0, 0.4),
       -2px -2px 8px rgba(255, 255, 255, 0.1);
   }
-
-  .like {
+  .like-wrapper .like {
     width: 70%;
     height: 100%;
     display: flex;
@@ -92,25 +88,23 @@ const StyledWrapper = styled.div`
     align-items: center;
     justify-content: space-evenly;
   }
-
-  .like-icon {
+  .like-wrapper .like-icon {
     fill: var(--muted-foreground);
     height: 28px;
     width: 28px;
     transition: fill 0.2s;
   }
-
-  .like-text {
+  .like-wrapper .like-text {
     color: var(--foreground);
     font-size: 16px;
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   }
-
-  .like-count {
+  .like-wrapper .like-count {
     position: absolute;
     right: 0;
-    width: 30%;
-    height: 100%;
+        <div className="like-wrapper">
+          <style>{likeButtonStyles}</style>
+          <div className="like-button">
     display: flex;
     justify-content: center;
     align-items: center;
@@ -119,37 +113,27 @@ const StyledWrapper = styled.div`
     border-left: 2px solid var(--border);
     transition: all 0.5s ease-out;
   }
-
-  html.dark .like-count {
+  html.dark .like-wrapper .like-count {
     border-left-color: #4e4e4e;
   }
-
-  .like-count.two {
+  .like-wrapper .like-count.two {
     transform: translateY(40px);
   }
-
-  .on:checked ~ .like .like-icon {
+  .like-wrapper .on:checked ~ .like .like-icon {
     fill: #fc4e4e;
-    animation: enlarge 0.2s ease-out 1;
+    animation: like-enlarge 0.2s ease-out 1;
     transition: all 0.2s ease-out;
   }
-
-  .on:checked ~ .like-count.two {
+  .like-wrapper .on:checked ~ .like-count.two {
     transform: translateX(0);
     color: var(--foreground);
   }
-
-  .on:checked ~ .like-count.one {
+  .like-wrapper .on:checked ~ .like-count.one {
     transform: translateY(-40px);
   }
-
-  @keyframes enlarge {
-    0% {
-      transform: scale(0.5);
-    }
-    100% {
-      transform: scale(1.2);
-    }
+  @keyframes like-enlarge {
+    0% { transform: scale(0.5); }
+    100% { transform: scale(1.2); }
   }
 `;
 
