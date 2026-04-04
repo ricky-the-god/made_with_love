@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 
 import { ArrowLeft, BookOpen } from "lucide-react";
 
+import LikeButton from "@/components/like-button";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { getConnectedFamilies, getPublicFamilyInfo, getPublicFamilyMembers } from "@/server/family-actions";
@@ -76,7 +77,10 @@ export default async function PublicFamilyTreePage({ params }: { params: Promise
             <p className="mt-0.5 text-muted-foreground text-sm">Public family cookbook</p>
           </div>
         </div>
-        <FriendButton familyId={id} isConnected={isConnected} />
+        <div className="flex items-center gap-2">
+          <LikeButton />
+          <FriendButton familyId={id} isConnected={isConnected} />
+        </div>
       </div>
 
       {/* Read-only family tree */}
