@@ -490,37 +490,59 @@ export function FamilyTreeCanvas({
                       )}
                       style={{ transitionDelay: `${transitionDelay}ms` }}
                     >
-                      {/* ── Cookbook shape ──────────────────────────────── */}
-                      <div
-                        className={cn(
-                          "flex h-40 w-24 overflow-hidden rounded-lg shadow-md transition-[transform,box-shadow,filter] duration-250 ease-out",
-                          "md:group-hover:-translate-y-0.5 md:group-hover:shadow-2xl md:group-hover:brightness-105",
-                          isSelected &&
-                            "ring-2 ring-[#803d3b] ring-offset-2 ring-offset-[#f4e5d2] dark:ring-offset-[#322c2b]",
-                        )}
-                      >
-                        {/* Spine */}
-                        <div className={cn("w-3 shrink-0", colors.spine)} />
+                      {/* ── Cookbook shape with folder-fan hover ────────── */}
+                      <div className="relative" style={{ perspective: "700px", transformStyle: "preserve-3d" }}>
+                        {/* Page 3 — deepest layer */}
+                        <div
+                          className={cn(
+                            "absolute inset-x-2 top-1 bottom-0 rounded-lg bg-[#d4c8ba] origin-bottom",
+                            "transition-transform duration-300 ease-out",
+                            "md:group-hover:[transform:rotateX(-38deg)]",
+                          )}
+                          aria-hidden
+                        />
+                        {/* Page 2 — middle layer */}
+                        <div
+                          className={cn(
+                            "absolute inset-x-1 top-0.5 bottom-0 rounded-lg bg-[#e0d8ce] origin-bottom",
+                            "transition-transform duration-300 ease-out",
+                            "md:group-hover:[transform:rotateX(-24deg)]",
+                          )}
+                          aria-hidden
+                        />
+                        {/* Cover — front layer */}
+                        <div
+                          className={cn(
+                            "relative flex h-40 w-24 overflow-hidden rounded-lg shadow-md origin-bottom",
+                            "transition-[transform,box-shadow] duration-300 ease-out",
+                            "md:group-hover:[transform:rotateX(-12deg)] md:group-hover:shadow-2xl",
+                            isSelected &&
+                              "ring-2 ring-[#803d3b] ring-offset-2 ring-offset-[#f4e5d2] dark:ring-offset-[#322c2b]",
+                          )}
+                        >
+                          {/* Spine */}
+                          <div className={cn("w-3 shrink-0", colors.spine)} />
 
-                        {/* Cover */}
-                        <div className={cn("flex flex-1 flex-col justify-between p-2", colors.bg)}>
-                          <p className="text-[7px] text-white/40 uppercase leading-none tracking-widest">
-                            Made with Love
-                          </p>
-                          <p className="line-clamp-3 font-semibold text-[11px] text-white leading-tight">
-                            {member.name}
-                          </p>
-                          <div className="flex flex-wrap gap-1">
-                            {count > 0 && (
-                              <span className="rounded-full bg-white/20 px-1.5 py-0.5 text-[7px] text-white">
-                                {count} {count === 1 ? "recipe" : "recipes"}
-                              </span>
-                            )}
-                            {member.is_memorial && (
-                              <span className="rounded-full bg-white/20 px-1.5 py-0.5 text-[7px] text-white">
-                                In memory
-                              </span>
-                            )}
+                          {/* Cover face */}
+                          <div className={cn("flex flex-1 flex-col justify-between p-2", colors.bg)}>
+                            <p className="text-[7px] text-white/40 uppercase leading-none tracking-widest">
+                              Made with Love
+                            </p>
+                            <p className="line-clamp-3 font-semibold text-[11px] text-white leading-tight">
+                              {member.name}
+                            </p>
+                            <div className="flex flex-wrap gap-1">
+                              {count > 0 && (
+                                <span className="rounded-full bg-white/20 px-1.5 py-0.5 text-[7px] text-white">
+                                  {count} {count === 1 ? "recipe" : "recipes"}
+                                </span>
+                              )}
+                              {member.is_memorial && (
+                                <span className="rounded-full bg-white/20 px-1.5 py-0.5 text-[7px] text-white">
+                                  In memory
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
