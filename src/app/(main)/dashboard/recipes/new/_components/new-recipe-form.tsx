@@ -86,6 +86,11 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
     formState: { errors },
   } = form;
 
+  function closeCountryPicker() {
+    setIsCountryPickerOpen(false);
+    requestAnimationFrame(() => setIsCountryPickerOpen(false));
+  }
+
   useEffect(() => {
     if (!selectedImageFile) {
       setImagePreviewUrl(null);
@@ -488,7 +493,7 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
                                     value={country}
                                     onSelect={() => {
                                       field.onChange(country === field.value ? "" : country);
-                                      setIsCountryPickerOpen(false);
+                                      closeCountryPicker();
                                     }}
                                   >
                                     <Check

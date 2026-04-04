@@ -15,17 +15,13 @@ import {
 } from "@/lib/preferences/layout";
 import { applyContentLayout, applySidebarCollapsible, applySidebarVariant } from "@/lib/preferences/layout-utils";
 import { persistPreference } from "@/lib/preferences/preferences-storage";
-import { THEME_MODE_OPTIONS, THEME_PRESET_OPTIONS, type ThemeMode, type ThemePreset } from "@/lib/preferences/theme";
-import { applyThemePreset } from "@/lib/preferences/theme-utils";
+import { THEME_MODE_OPTIONS, type ThemeMode } from "@/lib/preferences/theme";
 import { usePreferencesStore } from "@/stores/preferences/preferences-provider";
 
 export function AppearanceSettings() {
   const copy = useAppCopy();
   const themeMode = usePreferencesStore((s) => s.themeMode);
-  const resolvedThemeMode = usePreferencesStore((s) => s.resolvedThemeMode);
   const setThemeMode = usePreferencesStore((s) => s.setThemeMode);
-  const themePreset = usePreferencesStore((s) => s.themePreset);
-  const setThemePreset = usePreferencesStore((s) => s.setThemePreset);
   const appLanguage = usePreferencesStore((s) => s.appLanguage);
   const setAppLanguage = usePreferencesStore((s) => s.setAppLanguage);
   const contentLayout = usePreferencesStore((s) => s.contentLayout);
@@ -39,12 +35,6 @@ export function AppearanceSettings() {
     if (!mode) return;
     setThemeMode(mode);
     persistPreference("theme_mode", mode);
-  };
-
-  const onThemePresetChange = (preset: ThemePreset) => {
-    applyThemePreset(preset);
-    setThemePreset(preset);
-    persistPreference("theme_preset", preset);
   };
 
   const onAppLanguageChange = (value: AppLanguage | "") => {
@@ -90,33 +80,6 @@ export function AppearanceSettings() {
             </ToggleGroupItem>
           ))}
         </ToggleGroup>
-      </div>
-
-      {/* Preset */}
-      <div className="space-y-4">
-        <div className="space-y-1">
-          <Label className="font-medium text-sm">{copy.colorPresetLabel}</Label>
-          <p className="text-muted-foreground text-xs">{copy.colorPresetDescription}</p>
-        </div>
-        <Select value={themePreset} onValueChange={onThemePresetChange}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select preset" />
-          </SelectTrigger>
-          <SelectContent>
-            {THEME_PRESET_OPTIONS.map((preset) => (
-              <SelectItem key={preset.value} value={preset.value}>
-                <span
-                  className="size-3 rounded-full"
-                  style={{
-                    backgroundColor:
-                      (resolvedThemeMode ?? "light") === "dark" ? preset.primary.dark : preset.primary.light,
-                  }}
-                />
-                {preset.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
       </div>
 
       <div className="space-y-4">

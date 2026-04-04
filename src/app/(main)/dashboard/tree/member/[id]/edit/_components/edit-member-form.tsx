@@ -83,6 +83,11 @@ export function EditMemberForm({ member, members }: EditMemberFormProps) {
   const isMemorial = watch("is_memorial");
   const otherMembers = members.filter((familyMember) => familyMember.id !== member.id);
 
+  function closeCountryPicker() {
+    setIsCountryPickerOpen(false);
+    requestAnimationFrame(() => setIsCountryPickerOpen(false));
+  }
+
   function toggleParent(id: string) {
     clearErrors("parent_ids");
     setSelectedParentIds((prev) =>
@@ -223,7 +228,7 @@ export function EditMemberForm({ member, members }: EditMemberFormProps) {
                         onSelect={() => {
                           const nextCountry = country === watch("country_of_origin") ? "" : country;
                           setValue("country_of_origin", nextCountry, { shouldDirty: true, shouldValidate: true });
-                          setIsCountryPickerOpen(false);
+                          closeCountryPicker();
                         }}
                       >
                         <Check
