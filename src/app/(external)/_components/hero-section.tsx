@@ -48,25 +48,10 @@ export function HeroSection() {
   if (isReducedMotion) return <ReducedMotionHero />;
 
   return (
-    <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-stone-950">
+    <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-white">
       {/* Invisible cover captures mouse for 3D tilt — aria-hidden so it is decorative only */}
       {/* biome-ignore lint/a11y/noStaticElementInteractions: purely decorative mouse tracking */}
       <div aria-hidden className="absolute inset-0" onMouseMove={handleMouseMove} />
-      {/* ── Grain ──────────────────────────────────────────────────────────── */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.04]"
-        style={{ backgroundImage: GRAIN_SVG, backgroundRepeat: "repeat", backgroundSize: "128px" }}
-      />
-
-      {/* ── Bottom text-lift gradient ──────────────────────────────────────── */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background: "linear-gradient(to top, rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.20) 40%, transparent 70%)",
-        }}
-      />
 
       {/* ── Floating books ─────────────────────────────────────────────────── */}
       <div
@@ -91,7 +76,7 @@ export function HeroSection() {
                 zIndex: Math.round(Math.sin(rad) * 10) + 10,
               }}
             >
-              <div className="relative w-full h-full rounded-xl overflow-hidden shadow-[0_8px_40px_rgba(0,0,0,0.7)] ring-1 ring-white/10">
+              <div className="relative w-full h-full rounded-xl overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.12)] ring-1 ring-stone-200">
                 <Image
                   src={book.src}
                   alt={book.alt}
@@ -110,14 +95,14 @@ export function HeroSection() {
       {/* ── Text content ───────────────────────────────────────────────────── */}
       <div className="relative z-10 w-full max-w-3xl px-6 pb-20 text-center sm:px-8">
         <p
-          className="mb-5 text-[10px] font-medium uppercase tracking-[0.22em] text-amber-400"
+          className="mb-5 text-[10px] font-medium uppercase tracking-[0.22em] text-amber-700"
           style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
         >
           A living family archive
         </p>
 
         <h1
-          className="mb-6 font-normal text-5xl leading-[1.08] text-white sm:text-6xl lg:text-7xl"
+          className="mb-6 font-normal text-5xl leading-[1.08] text-stone-900 sm:text-6xl lg:text-7xl"
           style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
         >
           Every family
@@ -126,7 +111,7 @@ export function HeroSection() {
         </h1>
 
         <p
-          className="mx-auto mb-10 max-w-xl text-base text-stone-300 leading-relaxed sm:text-lg"
+          className="mx-auto mb-10 max-w-xl text-base text-stone-600 leading-relaxed sm:text-lg"
           style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
         >
           The people who fed you, the recipes they carried, the stories that live in the food. All of it, kept safe.
@@ -147,7 +132,7 @@ export function HeroSection() {
             asChild
             variant="ghost"
             size="lg"
-            className="rounded-full px-8 text-base text-white/70 hover:bg-white/10 hover:text-white"
+            className="rounded-full px-8 text-base text-stone-500 hover:bg-stone-100 hover:text-stone-900"
           >
             <Link href="#how-it-works">See how it works</Link>
           </Button>
@@ -161,15 +146,15 @@ export function HeroSection() {
 
 function ReducedMotionHero() {
   return (
-    <section className="flex min-h-screen flex-col items-center justify-center bg-stone-950 px-6 pb-20 text-center sm:px-8">
+    <section className="flex min-h-screen flex-col items-center justify-center bg-white px-6 pb-20 text-center sm:px-8">
       <p
-        className="mb-5 text-[10px] font-medium uppercase tracking-[0.22em] text-amber-400"
+        className="mb-5 text-[10px] font-medium uppercase tracking-[0.22em] text-amber-700"
         style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
       >
         A living family archive
       </p>
       <h1
-        className="mb-6 font-normal text-5xl leading-[1.08] text-white sm:text-6xl lg:text-7xl"
+        className="mb-6 font-normal text-5xl leading-[1.08] text-stone-900 sm:text-6xl lg:text-7xl"
         style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
       >
         Every family
@@ -177,7 +162,7 @@ function ReducedMotionHero() {
         has a tree.
       </h1>
       <p
-        className="mx-auto mb-10 max-w-xl text-base text-stone-300 leading-relaxed sm:text-lg"
+        className="mx-auto mb-10 max-w-xl text-base text-stone-600 leading-relaxed sm:text-lg"
         style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
       >
         The people who fed you, the recipes they carried, the stories that live in the food. All of it, kept safe.
@@ -197,7 +182,7 @@ function ReducedMotionHero() {
           asChild
           variant="ghost"
           size="lg"
-          className="rounded-full px-8 text-base text-white/70 hover:bg-white/10 hover:text-white"
+          className="rounded-full px-8 text-base text-stone-500 hover:bg-stone-100 hover:text-stone-900"
         >
           <Link href="#how-it-works">See how it works</Link>
         </Button>
