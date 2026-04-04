@@ -1,15 +1,12 @@
 import Link from "next/link";
 
-import { Search, SlidersHorizontal } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { getPublicFamilies } from "@/server/family-actions";
 import { getPublicRecipes } from "@/server/recipe-actions";
 
 import { RecipeCard } from "../recipes/_components/recipe-card";
+import { DiscoverSearchForm } from "./_components/discover-search-form";
 
 type CulturalCollection = {
   slug: string;
@@ -253,74 +250,15 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
       {/* Featured editorial story */}
       <FeaturedStoryCard />
 
-      <div className="rounded-2xl border border-amber-100 bg-white/80 p-4 dark:border-amber-900/20 dark:bg-stone-950/60">
-        <form action="/dashboard/discover" className="flex flex-col gap-3 sm:flex-row">
-          {activeCollection && <input type="hidden" name="region" value={activeCollection.slug} />}
-          <div className="relative flex-1">
-            <Search className="-translate-y-1/2 pointer-events-none absolute top-1/2 left-3 size-4 text-muted-foreground" />
-            <Input
-              name="q"
-              defaultValue={q ?? ""}
-              placeholder="Search recipes, countries, traditions, or family members"
-              className="pl-9"
-            />
-          </div>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button type="button" variant="outline">
-                <SlidersHorizontal className="size-4" />
-                Filters
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent align="end" className="w-72 p-3">
-              <p className="mb-2 font-medium text-sm">Filter by region</p>
-              <div className="flex flex-wrap gap-2">
-                {CULTURAL_COLLECTIONS.map((collection) => {
-                  const isActive = activeCollection?.slug === collection.slug;
-                  return (
-                    <Button
-                      key={collection.slug}
-                      variant={isActive ? "default" : "outline"}
-                      size="sm"
-                      className={isActive ? "bg-amber-700 text-white hover:bg-amber-800" : ""}
-                      asChild
-                    >
-                      <Link href={buildDiscoverHref(collection.slug, q ?? null, recipes ?? null, traditions ?? null)}>
-                        {collection.emoji} {collection.region}
-                      </Link>
-                    </Button>
-                  );
-                })}
-              </div>
-              {(activeCollection || q) && (
-                <Button variant="ghost" size="sm" className="mt-2 w-full" asChild>
-                  <Link href="/dashboard/discover">Clear filters</Link>
-                </Button>
-              )}
-            </PopoverContent>
-          </Popover>
-          <select
-            name="sort"
-            defaultValue={sort}
-            className="h-10 rounded-md border border-input bg-background px-3 text-sm"
-            aria-label="Sort recipes"
-          >
-            {SORT_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-          <Button type="submit" className="bg-amber-700 text-white hover:bg-amber-800">
-            Search
-          </Button>
-          {(q || activeCollection) && (
-            <Button variant="outline" asChild>
-              <Link href="/dashboard/discover">Reset</Link>
-            </Button>
-          )}
-        </form>
-      </div>
+      <DiscoverSearchForm
+        activeCollectionSlug={region ?? null}
+        q={q ?? null}
+        sort={sort}
+        recipes={recipes ?? null}
+        traditions={traditions ?? null}
+        sortOptions={SORT_OPTIONS}
+        collections={CULTURAL_COLLECTIONS.map((c) => ({ slug: c.slug, region: c.region, emoji: c.emoji }))}
+      />
 
       {/* Shared recipes */}
       <div>
