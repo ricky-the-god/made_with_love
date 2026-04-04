@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">Prep ingredients</title>
+  <desc id="desc">Cutting board with chopped vegetables.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8ecd8"/>
+      <stop offset="100%" stop-color="#e4c59e"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <rect x="210" y="180" width="780" height="440" rx="28" fill="#af8260"/>
+  <rect x="250" y="220" width="700" height="360" rx="20" fill="#cfa57f"/>
+  <circle cx="380" cy="390" r="52" fill="#803d3b"/>
+  <circle cx="510" cy="370" r="42" fill="#7f9c5b"/>
+  <circle cx="610" cy="430" r="46" fill="#d96f54"/>
+  <rect x="700" y="335" width="190" height="22" rx="11" fill="#322c2b"/>
+  <polygon points="890,320 1010,346 890,372" fill="#5b5656"/>
+</svg>
