@@ -115,7 +115,7 @@ export function HeroSection() {
 
         <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
           <HoverButton asChild variant="dark" size="lg">
-            <Link href="/auth/v2/register">
+            <Link href="/auth/v2/register" className="inline-flex items-center justify-center gap-2 whitespace-nowrap">
               Start preserving
               <ArrowRight className="ml-1 size-4" />
             </Link>
@@ -156,7 +156,7 @@ function ReducedMotionHero() {
       </p>
       <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
         <HoverButton asChild variant="dark" size="lg">
-          <Link href="/auth/v2/register">
+          <Link href="/auth/v2/register" className="inline-flex items-center justify-center gap-2 whitespace-nowrap">
             Start preserving
             <ArrowRight className="ml-1 size-4" />
           </Link>

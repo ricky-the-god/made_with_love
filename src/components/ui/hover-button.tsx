@@ -92,7 +92,7 @@ const HoverButton = React.forwardRef<HTMLButtonElement, HoverButtonProps>(
           : "bg-[rgba(50,44,43,0.5)] text-[#e4c59e] backdrop-blur-lg before:shadow-[inset_0_0_0_1px_rgba(228,197,158,0.25),inset_0_0_16px_0_rgba(228,197,158,0.08),inset_0_-3px_12px_0_rgba(228,197,158,0.12),0_1px_3px_0_rgba(0,0,0,0.5),0_4px_12px_0_rgba(0,0,0,0.45)]";
 
     const buttonClass = cn(
-      "relative isolate overflow-hidden cursor-pointer rounded-3xl font-medium leading-6",
+      "relative isolate inline-flex items-center justify-center gap-2 overflow-hidden whitespace-nowrap cursor-pointer rounded-3xl font-medium leading-6",
       sizeClass,
       variantClass,
       "before:pointer-events-none before:absolute before:inset-0 before:z-[1] before:rounded-[inherit] before:content-['']",

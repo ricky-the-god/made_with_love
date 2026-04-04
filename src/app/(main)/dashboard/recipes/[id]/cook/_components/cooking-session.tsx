@@ -295,19 +295,21 @@ export function CookingSession({
         <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-amber-100 text-2xl dark:bg-amber-900/30">
           👵
         </div>
-        {isTipLoading && !grandmaTip ? (
-          <div className="flex items-center gap-2 text-base text-muted-foreground">
-            <Spinner className="size-4" />
-            <span className="italic">Thinking of a tip...</span>
-          </div>
-        ) : (
-          <p className="italic leading-relaxed">
-            {grandmaTip ||
-              (isOnIngredients
-                ? "Get everything ready before you start — it makes all the difference."
-                : "Take your time. This dish was made with love and patience.")}
-          </p>
-        )}
+        <div className="min-w-0 flex-1">
+          {isTipLoading && !grandmaTip ? (
+            <div className="flex items-center gap-2 text-base text-muted-foreground">
+              <Spinner className="size-4" />
+              <span className="italic">Thinking of a tip...</span>
+            </div>
+          ) : (
+            <p className="[overflow-wrap:anywhere] whitespace-pre-wrap pr-1 italic leading-relaxed">
+              {grandmaTip ||
+                (isOnIngredients
+                  ? "Get everything ready before you start — it makes all the difference."
+                  : "Take your time. This dish was made with love and patience.")}
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Navigation */}

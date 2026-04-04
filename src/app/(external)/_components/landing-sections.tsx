@@ -225,8 +225,11 @@ export function LandingSections() {
             >
               Free to start. A living archive that grows with your family.
             </p>
-            <HoverButton asChild variant="light" size="lg">
-              <Link href="/auth/v2/register">
+            <HoverButton asChild variant="dark" size="lg" className="px-10 shadow-[0_18px_45px_rgba(50,44,43,0.22)]">
+              <Link
+                href="/auth/v2/register"
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap"
+              >
                 Create your family archive
                 <ArrowRight className="ml-1 size-4" />
               </Link>

@@ -25,20 +25,21 @@ const fadeIn = (delay = 0, x = 0) => ({
 
 function FamilyTreeVisual() {
   const nodes = [
-    { id: "g", label: "Grandma Rosa", gen: 0, x: 50, y: 8, delay: 0 },
-    { id: "gf", label: "Grandpa Luis", gen: 0, x: 50, y: 8, delay: 0.1 },
-    { id: "m", label: "Mamá", gen: 1, x: 25, y: 40, delay: 0.25 },
-    { id: "d", label: "Papá", gen: 1, x: 75, y: 40, delay: 0.3 },
+    { id: "g", label: "Grandma Rosa", gen: 0, x: 34, y: 8, delay: 0 },
+    { id: "gf", label: "Grandpa Luis", gen: 0, x: 66, y: 8, delay: 0.1 },
+    { id: "m", label: "Mamá", gen: 1, x: 30, y: 40, delay: 0.25 },
+    { id: "d", label: "Papá", gen: 1, x: 70, y: 40, delay: 0.3 },
     { id: "y", label: "You", gen: 2, x: 50, y: 74, delay: 0.45 },
-    { id: "s", label: "Sibling", gen: 2, x: 20, y: 74, delay: 0.5 },
+    { id: "s", label: "Sibling", gen: 2, x: 18, y: 74, delay: 0.5 },
   ];
 
   const lines = [
-    { x1: "50%", y1: "13%", x2: "25%", y2: "43%" },
-    { x1: "50%", y1: "13%", x2: "75%", y2: "43%" },
-    { x1: "25%", y1: "47%", x2: "50%", y2: "77%" },
-    { x1: "75%", y1: "47%", x2: "50%", y2: "77%" },
-    { x1: "25%", y1: "47%", x2: "20%", y2: "77%" },
+    { x1: "34%", y1: "13%", x2: "66%", y2: "13%" },
+    { x1: "34%", y1: "13%", x2: "30%", y2: "43%" },
+    { x1: "66%", y1: "13%", x2: "70%", y2: "43%" },
+    { x1: "30%", y1: "47%", x2: "50%", y2: "77%" },
+    { x1: "70%", y1: "47%", x2: "50%", y2: "77%" },
+    { x1: "30%", y1: "47%", x2: "18%", y2: "77%" },
   ];
 
   return (
