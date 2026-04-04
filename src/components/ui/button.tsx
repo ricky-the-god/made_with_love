@@ -144,21 +144,26 @@ function Button({
   )
 
   if (asChild) {
-    const child = React.Children.only(children) as React.ReactElement<React.HTMLAttributes<HTMLElement> & { ref?: React.Ref<HTMLElement>; href?: string }>
-    return React.cloneElement(child, {
-      ...handlers,
-      ref: setRef,
-      "data-slot": "button",
-      "data-variant": variant ?? "default",
-      "data-size": size ?? "default",
-      className: cn(buttonClass, child.props.className),
-      children: (
-        <>
-          <CircleTrail circles={circles} />
-          {child.props.children}
-        </>
-      ),
-    } as React.HTMLAttributes<HTMLElement>)
+    const elementChild = React.Children.toArray(children).find((child) => React.isValidElement(child)) as
+      | React.ReactElement<React.HTMLAttributes<HTMLElement> & { ref?: React.Ref<HTMLElement>; href?: string }>
+      | undefined
+
+    if (elementChild) {
+      return React.cloneElement(elementChild, {
+        ...handlers,
+        ref: setRef,
+        "data-slot": "button",
+        "data-variant": variant ?? "default",
+        "data-size": size ?? "default",
+        className: cn(buttonClass, elementChild.props.className),
+        children: (
+          <>
+            <CircleTrail circles={circles} />
+            {elementChild.props.children}
+          </>
+        ),
+      } as React.HTMLAttributes<HTMLElement>)
+    }
   }
 
   return (

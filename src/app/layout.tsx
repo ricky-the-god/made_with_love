@@ -6,7 +6,6 @@ import { Toaster } from "@/components/ui/sonner";
 import { APP_CONFIG } from "@/config/app-config";
 import { fontVars } from "@/lib/fonts/registry";
 import { PREFERENCE_DEFAULTS } from "@/lib/preferences/preferences-config";
-import { ThemeBootScript } from "@/scripts/theme-boot";
 import { PreferencesStoreProvider } from "@/stores/preferences/preferences-provider";
 
 import "./globals.css";
@@ -44,10 +43,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       data-font={font}
       suppressHydrationWarning
     >
-      <head>
-        {/* Applies theme and layout preferences on load to avoid flicker and unnecessary server rerenders. */}
-        <ThemeBootScript />
-      </head>
+      <head />
       <body className={`${fontVars} min-h-screen antialiased`} suppressHydrationWarning>
         <PreferencesStoreProvider
           themeMode={theme_mode}

@@ -1,6 +1,5 @@
-// Plain <script> in a Server Component — React 19 / Next.js App Router hoists
-// this to <head> automatically. next/script with beforeInteractive triggers a
-// React 19 console warning and is not needed for static public scripts.
+import Script from "next/script";
+
 export function ThemeBootScript() {
-  return <script src="/theme-boot.js" />;
+  return <Script src="/theme-boot.js" strategy="beforeInteractive" />;
 }
