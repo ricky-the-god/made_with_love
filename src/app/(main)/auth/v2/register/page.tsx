@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { ArrowLeft } from "lucide-react";
+
 import { APP_CONFIG } from "@/config/app-config";
 
 import { RegisterForm } from "../../_components/register-form";
@@ -22,10 +24,18 @@ export default function RegisterV2() {
         </div>
       </div>
 
-      <div className="absolute top-5 flex w-full justify-end px-10">
+      <div className="absolute top-5 left-0 flex w-full items-center justify-between px-10">
+        <Link
+          prefetch={false}
+          href="/"
+          className="inline-flex items-center gap-1 text-muted-foreground text-sm transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="size-4" />
+          Back
+        </Link>
         <div className="text-muted-foreground text-sm">
           Already have an account?{" "}
-          <Link prefetch={false} className="text-foreground" href="login">
+          <Link prefetch={false} className="text-foreground" href="/auth/v2/login">
             Login
           </Link>
         </div>
