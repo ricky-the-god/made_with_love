@@ -111,7 +111,7 @@ function NavSection({
         {title}
       </motion.h3>
       {links.map((link, linkIndex) => (
-        <motion.div key={link.href} variants={linkVariants} custom={linkIndex}>
+        <motion.div key={`${title}-${link.label}-${link.href}`} variants={linkVariants} custom={linkIndex}>
           <motion.a
             href={link.href}
             whileHover={{ x: 8, transition: { type: "spring", stiffness: 300, damping: 20 } }}
