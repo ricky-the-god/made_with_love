@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import Link from "next/link";
 
-import { BookOpen, Heart, Pencil, Star, X } from "lucide-react";
+import { BookOpen, Heart, MapPin, Pencil, Star, UtensilsCrossed, X } from "lucide-react";
 
 import { getRelationLabel } from "@/lib/family-constants";
 import type { FamilyMember } from "@/lib/supabase/types";
@@ -46,13 +46,11 @@ export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly 
     closeTimerRef.current = window.setTimeout(completeClose, CLOSE_DURATION + 80);
   }, [completeClose]);
 
-  // Trigger open animation on mount
   useEffect(() => {
     const raf = requestAnimationFrame(() => setIsOpen(true));
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  // Lock body scroll while modal is mounted to keep interactions stable.
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -61,7 +59,6 @@ export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly 
     };
   }, []);
 
-  // Move keyboard focus into the dialog after mount.
   useEffect(() => {
     const raf = requestAnimationFrame(() => {
       closeButtonRef.current?.focus();
@@ -70,7 +67,6 @@ export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly 
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  // Keyboard dismiss — window-level so it works regardless of focus
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") handleClose();
@@ -87,10 +83,6 @@ export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly 
     },
     [],
   );
-
-  const visibleRecipes = recipes.slice(0, 6);
-  const hasMore = recipes.length > 6;
-  const relationLabel = getRelationLabel(member.relation);
 
   const SWIPE_DISMISS_THRESHOLD = 110;
 
@@ -143,13 +135,16 @@ export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly 
     shouldTrackSwipeRef.current = false;
   }
 
+  const relationLabel = getRelationLabel(member.relation);
+  const favoriteRecipes = recipes.filter((r) => r.is_favorite);
+  const otherRecipes = recipes.filter((r) => !r.is_favorite);
+
   return (
-    /* Backdrop */
-    // biome-ignore lint/a11y/noStaticElementInteractions: backdrop dismiss is a secondary affordance; dialog role handles a11y
+    // biome-ignore lint/a11y/noStaticElementInteractions: backdrop dismiss is secondary
     <div
       role="presentation"
       className={cn(
-        "fixed inset-0 z-30 flex items-center justify-center bg-black/50 backdrop-blur-sm",
+        "fixed inset-0 z-30 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4",
         "transition-opacity duration-300",
         isOpen ? "opacity-100" : "opacity-0",
       )}
@@ -157,14 +152,13 @@ export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly 
         if (e.target === e.currentTarget) handleClose();
       }}
     >
-      {/* Book container — role="dialog" handles a11y; stops click propagation */}
       <div
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label={`${member.name}'s cookbook`}
         tabIndex={-1}
-        className="relative w-[min(92vw,640px)]"
+        className="relative w-full max-w-lg"
         style={{
           perspective: "1200px",
           transform: `translateY(${swipeOffsetY}px)`,
@@ -189,111 +183,165 @@ export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly 
           }
         }}
       >
-        {/* Open book pages — fade in when open, fade out as cover swings back */}
-        <div
-          className="flex overflow-hidden rounded-r-2xl shadow-2xl transition-opacity duration-300"
-          style={{ width: "100%", height: "min(80dvh, 420px)", opacity: isOpen ? 1 : 0 }}
-        >
-          {/* ── Left page: member info ─────────────────────────────────────── */}
-          <div className="relative flex w-1/2 min-w-0 flex-col gap-3 bg-[#f0ece3] p-6 max-sm:p-4">
-            {/* Spine strip */}
-            <div className={cn("absolute top-0 left-0 h-full w-3 shrink-0", coverColors.spine)} />
+        {/* ── Drag handle (mobile) ──────────────────────────────────────────── */}
+        <div className="mx-auto mb-2 h-1 w-10 rounded-full bg-white/30 sm:hidden" aria-hidden />
 
-            <div className="pl-4">
+        {/* ── Book pages (the actual content) ──────────────────────────────── */}
+        <div
+          className={cn("overflow-hidden rounded-2xl shadow-2xl", "transition-opacity duration-300")}
+          style={{
+            background: "#f5efe6",
+            maxHeight: "min(85dvh, 640px)",
+            opacity: isOpen ? 1 : 0,
+          }}
+        >
+          {/* ── Hero header ────────────────────────────────────────────────── */}
+          <div className={cn("relative overflow-hidden px-6 pt-7 pb-5", coverColors.bg)}>
+            {/* Spine strip */}
+            <div className={cn("absolute top-0 left-0 h-full w-3", coverColors.spine)} />
+
+            {/* Subtle paper texture overlay */}
+            <div
+              className="absolute inset-0 opacity-10"
+              style={{
+                backgroundImage:
+                  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='none'/%3E%3Ccircle cx='1' cy='1' r='0.6' fill='%23ffffff'/%3E%3C/svg%3E\")",
+              }}
+              aria-hidden
+            />
+
+            <div className="relative pl-4">
+              {/* Eyebrow */}
+              <p className="mb-2 font-medium text-[10px] text-white/50 uppercase tracking-[0.2em]">Family Cookbook</p>
+
+              {/* Name + memorial badge */}
               <div className="flex items-start gap-2">
-                <div>
-                  <h2 className="font-bold text-amber-800 text-xl leading-tight dark:text-amber-700">{member.name}</h2>
-                  {(relationLabel || member.country_of_origin) && (
-                    <p className="mt-0.5 text-muted-foreground text-xs capitalize">
-                      {[relationLabel, member.country_of_origin].filter(Boolean).join(" · ")}
-                    </p>
-                  )}
-                </div>
+                <h2 className="font-bold text-2xl text-white leading-tight sm:text-3xl">{member.name}</h2>
                 {member.is_memorial && (
-                  <span className="mt-0.5 shrink-0 rounded-full bg-stone-300/60 px-2 py-0.5 text-[10px] text-stone-600">
+                  <span className="mt-1.5 shrink-0 rounded-full border border-white/20 bg-white/10 px-2 py-0.5 text-[10px] text-white/70 backdrop-blur-sm">
                     In memory
                   </span>
                 )}
               </div>
 
-              {member.bio ? (
-                <p className="mt-3 line-clamp-5 text-muted-foreground text-sm italic leading-relaxed">{member.bio}</p>
-              ) : (
-                <p className="mt-3 text-muted-foreground/60 text-sm italic">No story written yet.</p>
+              {/* Relation + origin */}
+              {(relationLabel || member.country_of_origin) && (
+                <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+                  {relationLabel && <p className="font-medium text-sm text-white/70 capitalize">{relationLabel}</p>}
+                  {member.country_of_origin && (
+                    <span className="flex items-center gap-1 text-white/50 text-xs">
+                      <MapPin className="size-3" aria-hidden />
+                      {member.country_of_origin}
+                    </span>
+                  )}
+                </div>
               )}
 
-              <div className="mt-4 flex gap-2">
-                {!readOnly && (
-                  <Link
-                    href={`/dashboard/tree/member/${member.id}`}
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-amber-700 px-3 py-1.5 font-medium text-sm text-white transition-colors hover:bg-amber-800"
-                  >
-                    <BookOpen className="size-3.5" />
-                    View profile
-                  </Link>
-                )}
-                {!readOnly && (
-                  <Link
-                    href={`/dashboard/tree/member/${member.id}/edit`}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-white px-3 py-1.5 font-medium text-amber-800 text-sm transition-colors hover:bg-amber-50"
-                  >
-                    <Pencil className="size-3.5" />
-                    Edit / Link
-                  </Link>
-                )}
+              {/* Recipe count pill */}
+              <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs text-white/80 backdrop-blur-sm">
+                <UtensilsCrossed className="size-3" aria-hidden />
+                {recipes.length === 0
+                  ? "No recipes yet"
+                  : `${recipes.length} ${recipes.length === 1 ? "recipe" : "recipes"}`}
               </div>
             </div>
           </div>
 
-          {/* ── Right page: recipe list ────────────────────────────────────── */}
-          <div className="flex w-1/2 min-w-0 flex-col bg-stone-50 p-6 max-sm:p-4 dark:bg-stone-100">
-            <p className="font-semibold text-[10px] text-stone-500 uppercase tracking-widest">Recipes</p>
+          {/* ── Scrollable body ─────────────────────────────────────────────── */}
+          <div
+            className="overflow-y-auto"
+            style={{
+              background: "#f5efe6",
+              maxHeight: "min(55dvh, 400px)",
+            }}
+          >
+            {/* Divider rule */}
+            <div className="mx-6 border-[#d4c0a8] border-t" />
 
-            {recipes.length === 0 ? (
-              <div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
-                <p className="text-muted-foreground text-sm">No recipes yet.</p>
+            {/* Bio section */}
+            <div className="px-6 pt-5 pb-4">
+              {member.bio ? (
+                <p className="font-serif text-[#5c4a37] text-sm italic leading-relaxed">{member.bio}</p>
+              ) : (
+                <p className="font-serif text-[#a08060]/70 text-sm italic leading-relaxed">
+                  {readOnly
+                    ? "No story has been written yet for this cookbook."
+                    : "Every cook has a story. Add a memory, a tradition, or a few words about this person."}
+                </p>
+              )}
+            </div>
+
+            {/* Action buttons */}
+            {!readOnly && (
+              <div className="flex flex-wrap gap-2 px-6 pb-5">
                 <Link
-                  href={`/dashboard/recipes/new?member=${member.id}`}
-                  className="text-amber-700 text-xs hover:underline"
+                  href={`/dashboard/tree/member/${member.id}`}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-[#803d3b] px-3.5 py-2.5 font-medium text-sm text-white shadow-sm transition-colors hover:bg-[#6e3230]"
                 >
-                  Add the first recipe
+                  <BookOpen className="size-3.5" />
+                  View full profile
+                </Link>
+                <Link
+                  href={`/dashboard/tree/member/${member.id}/edit`}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-[#c9a882] bg-white px-3.5 py-2.5 font-medium text-[#7a5a3a] text-sm shadow-sm transition-colors hover:bg-[#faf5ee]"
+                >
+                  <Pencil className="size-3.5" />
+                  Edit &amp; link recipes
                 </Link>
               </div>
-            ) : (
-              <>
-                <ul className="mt-3 flex flex-1 flex-col gap-1 overflow-y-auto">
-                  {visibleRecipes.map((recipe) => (
-                    <li key={recipe.id}>
-                      <Link
-                        href={`/dashboard/recipes/${recipe.id}`}
-                        className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-stone-700 transition-colors hover:bg-amber-50 hover:text-amber-800"
-                      >
-                        {recipe.is_favorite && <Star className="size-3 shrink-0 fill-amber-400 text-amber-400" />}
-                        <span className="line-clamp-1">{recipe.title}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-
-                {hasMore && (
-                  <Link
-                    href={`/dashboard/tree/member/${member.id}`}
-                    className="mt-2 text-amber-700 text-xs hover:underline"
-                  >
-                    View all {recipes.length} recipes →
-                  </Link>
-                )}
-              </>
             )}
 
-            {/* Heart / favorite visual — bottom-right */}
-            <div className="mt-auto flex justify-end pt-2">
-              <Heart className="size-4 text-stone-300" aria-hidden="true" />
+            {/* Recipes section */}
+            <div className="px-6 pb-6">
+              <div className="mb-3 flex items-center justify-between">
+                <p className="font-semibold text-[#7a5a3a] text-[11px] uppercase tracking-widest">Recipes</p>
+                {recipes.length > 0 && <Heart className="size-3.5 fill-[#c97d6a]/40 text-[#c97d6a]" aria-hidden />}
+              </div>
+
+              {recipes.length === 0 ? (
+                /* Empty state */
+                <div className="rounded-xl border border-dashed border-[#c9a882]/60 bg-[#fdf8f1] px-5 py-8 text-center">
+                  <UtensilsCrossed className="mx-auto mb-3 size-8 text-[#c9a882]/60" aria-hidden />
+                  <p className="font-serif text-[#7a5a3a] text-sm italic leading-relaxed">
+                    No recipes yet — start this cookbook
+                    <br />
+                    with a dish worth remembering.
+                  </p>
+                  {!readOnly && (
+                    <Link
+                      href={`/dashboard/recipes/new?member=${member.id}`}
+                      className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-[#803d3b] px-4 py-2.5 font-medium text-sm text-white shadow-sm transition-colors hover:bg-[#6e3230]"
+                    >
+                      Add first recipe
+                    </Link>
+                  )}
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  {/* Favorites first */}
+                  {favoriteRecipes.map((recipe) => (
+                    <RecipeCard key={recipe.id} recipe={recipe} isFavorite memberId={member.id} />
+                  ))}
+                  {otherRecipes.map((recipe) => (
+                    <RecipeCard key={recipe.id} recipe={recipe} isFavorite={false} memberId={member.id} />
+                  ))}
+
+                  {/* View all link if more than shown */}
+                  {recipes.length > 6 && (
+                    <Link
+                      href={`/dashboard/tree/member/${member.id}`}
+                      className="mt-1 text-center text-[#803d3b] text-xs hover:underline"
+                    >
+                      View all {recipes.length} recipes →
+                    </Link>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* ── Cover (animates open on mount, closed on dismiss) ──────────── */}
+        {/* ── Animated cover (flips open on mount) ─────────────────────────── */}
         <div
           className={cn("absolute inset-0 flex overflow-hidden rounded-2xl", "pointer-events-none")}
           style={{
@@ -303,14 +351,11 @@ export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly 
             backfaceVisibility: "hidden",
           }}
         >
-          {/* Spine */}
           <div className={cn("w-3 shrink-0", coverColors.spine)} />
-
-          {/* Cover face */}
-          <div className={cn("flex flex-1 flex-col justify-between p-5", coverColors.bg)}>
-            <p className="text-[9px] text-white/40 uppercase tracking-widest">Made with Love</p>
+          <div className={cn("flex flex-1 flex-col justify-between p-6", coverColors.bg)}>
+            <p className="font-medium text-[10px] text-white/40 uppercase tracking-widest">Made with Love</p>
             <div>
-              <p className="font-bold text-base text-white leading-tight">{member.name}</p>
+              <p className="font-bold text-lg text-white leading-tight">{member.name}</p>
               {relationLabel && <p className="mt-1 text-white/60 text-xs capitalize">{relationLabel}</p>}
             </div>
             <p className="text-[9px] text-white/40">
@@ -319,14 +364,14 @@ export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly 
           </div>
         </div>
 
-        {/* ── Close button (top-right of open book) ─────────────────────── */}
+        {/* ── Close button ─────────────────────────────────────────────────── */}
         <button
           ref={closeButtonRef}
           type="button"
           onClick={handleClose}
           disabled={isClosingRef.current}
           className={cn(
-            "absolute top-3 right-3 z-20 rounded-full bg-white/80 p-1 text-stone-500 shadow-sm transition-all hover:bg-white hover:text-stone-800",
+            "absolute top-2 right-2 z-20 flex size-10 items-center justify-center rounded-full bg-white/80 text-[#7a5a3a] shadow-sm transition-all hover:bg-white hover:text-[#322c2b]",
             "opacity-0 transition-opacity delay-300 duration-300",
             isOpen && "opacity-100",
             isClosingRef.current && "pointer-events-none",
@@ -337,5 +382,38 @@ export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly 
         </button>
       </div>
     </div>
+  );
+}
+
+// ── Recipe card ───────────────────────────────────────────────────────────────
+
+function RecipeCard({
+  recipe,
+  isFavorite,
+  memberId,
+}: {
+  recipe: { id: string; title: string };
+  isFavorite: boolean;
+  memberId: string;
+}) {
+  return (
+    <Link
+      href={`/dashboard/recipes/${recipe.id}`}
+      className={cn(
+        "group flex items-center gap-3 rounded-xl border px-4 py-3 transition-all",
+        "border-[#d4bfa0] bg-white/70 shadow-sm",
+        "hover:border-[#c9a882] hover:bg-[#fdf8f1] hover:shadow-md",
+      )}
+    >
+      {isFavorite ? (
+        <Star className="size-3.5 shrink-0 fill-[#c97d6a] text-[#c97d6a]" aria-label="Favorite" />
+      ) : (
+        <UtensilsCrossed
+          className="size-3.5 shrink-0 text-[#c9a882]/60 transition-colors group-hover:text-[#c97d6a]/80"
+          aria-hidden
+        />
+      )}
+      <span className="line-clamp-1 font-medium text-[#5c4a37] text-sm group-hover:text-[#803d3b]">{recipe.title}</span>
+    </Link>
   );
 }
