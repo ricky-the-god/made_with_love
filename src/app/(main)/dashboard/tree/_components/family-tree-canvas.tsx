@@ -490,32 +490,32 @@ export function FamilyTreeCanvas({
                       )}
                       style={{ transitionDelay: `${transitionDelay}ms` }}
                     >
-                      {/* ── Cookbook shape with folder-fan hover ────────── */}
-                      <div className="relative" style={{ perspective: "700px", transformStyle: "preserve-3d" }}>
-                        {/* Page 3 — deepest layer */}
+                      {/* ── Cookbook shape with side-fan hover ──────────── */}
+                      <div className="relative">
+                        {/* Page 3 — fans furthest right */}
                         <div
                           className={cn(
-                            "absolute inset-x-2 top-1 bottom-0 rounded-lg bg-[#d4c8ba] origin-bottom",
-                            "transition-transform duration-300 ease-out",
-                            "md:group-hover:[transform:rotateX(-38deg)]",
+                            "absolute inset-0 rounded-lg bg-[#d4c8ba]",
+                            "transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                            "md:group-hover:[transform:translateX(52px)_rotate(-4deg)]",
                           )}
                           aria-hidden
                         />
-                        {/* Page 2 — middle layer */}
+                        {/* Page 2 — fans closer */}
                         <div
                           className={cn(
-                            "absolute inset-x-1 top-0.5 bottom-0 rounded-lg bg-[#e0d8ce] origin-bottom",
-                            "transition-transform duration-300 ease-out",
-                            "md:group-hover:[transform:rotateX(-24deg)]",
+                            "absolute inset-0 rounded-lg bg-[#e0d8ce]",
+                            "transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                            "md:group-hover:[transform:translateX(28px)_rotate(-2deg)]",
                           )}
                           aria-hidden
                         />
-                        {/* Cover — front layer */}
+                        {/* Cover — stays in place */}
                         <div
                           className={cn(
-                            "relative flex h-40 w-24 overflow-hidden rounded-lg shadow-md origin-bottom",
-                            "transition-[transform,box-shadow] duration-300 ease-out",
-                            "md:group-hover:[transform:rotateX(-12deg)] md:group-hover:shadow-2xl",
+                            "relative flex h-40 w-24 overflow-hidden rounded-lg shadow-md",
+                            "transition-[box-shadow] duration-300 ease-out",
+                            "md:group-hover:shadow-2xl",
                             isSelected &&
                               "ring-2 ring-[#803d3b] ring-offset-2 ring-offset-[#f4e5d2] dark:ring-offset-[#322c2b]",
                           )}
