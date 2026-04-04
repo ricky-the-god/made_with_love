@@ -111,11 +111,11 @@ function NavSection({
         {title}
       </motion.h3>
       {links.map((link, linkIndex) => (
-        <motion.div key={linkIndex} variants={linkVariants} custom={linkIndex}>
+        <motion.div key={link.href} variants={linkVariants} custom={linkIndex}>
           <motion.a
             href={link.href}
             whileHover={{ x: 8, transition: { type: "spring", stiffness: 300, damping: 20 } }}
-            className="relative block font-sans text-stone-400 text-xs transition-colors duration-300 hover:text-amber-300 md:text-sm"
+            className="relative block font-sans text-[#d2ab84] text-xs transition-colors duration-300 hover:text-[#e4c59e] md:text-sm"
           >
             <span className="relative">
               {link.label}
@@ -151,7 +151,7 @@ function SocialLink({
       href={href}
       whileHover={{ scale: 1.2, rotate: 12, transition: { type: "spring", stiffness: 300, damping: 15 } }}
       whileTap={{ scale: 0.9 }}
-      className="flex size-7 items-center justify-center rounded-full bg-stone-800 text-stone-400 transition-colors duration-300 hover:bg-amber-800 hover:text-amber-200 md:size-9"
+      className="flex size-7 items-center justify-center rounded-full bg-[#5c3432] text-[#d2ab84] transition-colors duration-300 hover:bg-[#803d3b] hover:text-[#e4c59e] md:size-9"
       aria-label={label}
     >
       <Icon className="size-3.5 md:size-4" />
@@ -171,7 +171,7 @@ export function StickyFooter() {
             initial="hidden"
             animate="visible"
             variants={containerVariants}
-            className="relative flex h-full w-full flex-col justify-between overflow-hidden bg-stone-950 px-4 py-6 md:px-12 md:py-10"
+            className="relative flex h-full w-full flex-col justify-between overflow-hidden bg-[#322c2b] px-4 py-6 md:px-12 md:py-10"
           >
             {/* ── Ambient glow blobs ──────────────────────────────────────── */}
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
@@ -233,7 +233,7 @@ export function StickyFooter() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 1.4, duration: 0.5 }}
-                    className="font-sans text-stone-500 text-xs transition-colors duration-300 hover:text-stone-400 md:text-sm"
+                    className="font-sans text-[#af8260] text-xs transition-colors duration-300 hover:text-[#e4c59e] md:text-sm"
                     style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
                   >
                     {footerData.subtitle}
@@ -252,7 +252,7 @@ export function StickyFooter() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 1.8, duration: 0.5 }}
-                  className="mb-2 font-sans text-stone-600 text-xs transition-colors duration-300 hover:text-stone-500 md:mb-3 md:text-sm"
+                  className="mb-2 font-sans text-[#af8260]/80 text-xs transition-colors duration-300 hover:text-[#d2ab84] md:mb-3 md:text-sm"
                   style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
                 >
                   {footerData.copyright}

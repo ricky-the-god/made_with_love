@@ -10,19 +10,19 @@ import { GoogleButton } from "../../_components/social-auth/google-button";
 
 export default function RegisterV2() {
   return (
-    <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-stone-950">
+    <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-[#322c2b]">
       <SmokeyBackground color="#ffffff" backdropBlurAmount="md" />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[430px] flex-col justify-center space-y-8 rounded-2xl border border-white/40 bg-black/70 p-8 shadow-[0_20px_60px_rgba(0,0,0,0.55)] backdrop-blur-lg">
+      <div className="relative z-10 mx-auto flex w-full max-w-[430px] flex-col justify-center space-y-8 rounded-2xl border border-[#e4c59e]/45 bg-[#322c2b]/78 p-8 shadow-[0_20px_60px_rgba(30,20,20,0.45)] backdrop-blur-lg">
         <div className="space-y-2 text-center">
           <h1 className="font-medium text-3xl text-white">Start preserving memories</h1>
-          <p className="text-gray-300 text-sm">Create your family&apos;s recipe book today.</p>
+          <p className="text-[#e4c59e]/80 text-sm">Create your family&apos;s recipe book today.</p>
         </div>
         <div className="space-y-4">
           <GoogleButton className="w-full border border-white/30 bg-white/95 text-stone-800 hover:bg-white" />
           <div className="pt-1">
             <div className="border-white/35 border-t" />
-            <p className="pt-2 text-center text-gray-200 text-sm">Or continue with</p>
+            <p className="pt-2 text-center text-[#e4c59e]/85 text-sm">Or continue with</p>
           </div>
           <RegisterForm />
         </div>
@@ -32,12 +32,12 @@ export default function RegisterV2() {
         <Link
           prefetch={false}
           href="/"
-          className="inline-flex items-center gap-1 rounded-full border border-white/25 bg-black/55 px-3 py-1.5 text-sm text-white/90 backdrop-blur-md transition-colors hover:text-white"
+          className="inline-flex items-center gap-1 rounded-full border border-[#e4c59e]/35 bg-[#322c2b]/65 px-3 py-1.5 text-[#f4e5d2] text-sm backdrop-blur-md transition-colors hover:text-white"
         >
           <ArrowLeft className="size-4" />
           Back
         </Link>
-        <div className="rounded-full border border-white/25 bg-black/55 px-3 py-1.5 text-sm text-white/90 backdrop-blur-md">
+        <div className="rounded-full border border-[#e4c59e]/35 bg-[#322c2b]/65 px-3 py-1.5 text-[#f4e5d2] text-sm backdrop-blur-md">
           Already have an account?{" "}
           <Link prefetch={false} className="text-white" href="/auth/v2/login">
             Login

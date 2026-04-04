@@ -48,9 +48,8 @@ export function HeroSection() {
   if (isReducedMotion) return <ReducedMotionHero />;
 
   return (
-    <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-stone-950">
+    <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#322c2b]">
       {/* Invisible cover captures mouse for 3D tilt — aria-hidden so it is decorative only */}
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: purely decorative mouse tracking */}
       <div aria-hidden className="absolute inset-0" onMouseMove={handleMouseMove} />
       {/* ── Grain ──────────────────────────────────────────────────────────── */}
       <div
@@ -110,7 +109,7 @@ export function HeroSection() {
       {/* ── Text content ───────────────────────────────────────────────────── */}
       <div className="relative z-10 w-full max-w-3xl px-6 pb-20 text-center sm:px-8">
         <p
-          className="mb-5 font-medium text-[10px] text-amber-400 uppercase tracking-[0.22em]"
+          className="mb-5 font-medium text-[#e4c59e] text-[10px] uppercase tracking-[0.22em]"
           style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
         >
           A living family archive
@@ -126,7 +125,7 @@ export function HeroSection() {
         </h1>
 
         <p
-          className="mx-auto mb-10 max-w-xl text-base text-stone-300 leading-relaxed sm:text-lg"
+          className="mx-auto mb-10 max-w-xl text-[#e4c59e]/85 text-base leading-relaxed sm:text-lg"
           style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
         >
           The people who fed you, the recipes they carried, the stories that live in the food. All of it, kept safe.
@@ -161,9 +160,9 @@ export function HeroSection() {
 
 function ReducedMotionHero() {
   return (
-    <section className="flex min-h-screen flex-col items-center justify-center bg-stone-950 px-6 pb-20 text-center sm:px-8">
+    <section className="flex min-h-screen flex-col items-center justify-center bg-[#322c2b] px-6 pb-20 text-center sm:px-8">
       <p
-        className="mb-5 font-medium text-[10px] text-amber-400 uppercase tracking-[0.22em]"
+        className="mb-5 font-medium text-[#e4c59e] text-[10px] uppercase tracking-[0.22em]"
         style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
       >
         A living family archive
@@ -177,7 +176,7 @@ function ReducedMotionHero() {
         has a tree.
       </h1>
       <p
-        className="mx-auto mb-10 max-w-xl text-base text-stone-300 leading-relaxed sm:text-lg"
+        className="mx-auto mb-10 max-w-xl text-[#e4c59e]/85 text-base leading-relaxed sm:text-lg"
         style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
       >
         The people who fed you, the recipes they carried, the stories that live in the food. All of it, kept safe.

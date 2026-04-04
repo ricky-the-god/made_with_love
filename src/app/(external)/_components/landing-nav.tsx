@@ -32,7 +32,7 @@ export function LandingNav() {
         <div
           className={cn(
             "mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12",
-            scrolled && "max-w-4xl rounded-2xl border border-stone-800/60 bg-stone-950/80 backdrop-blur-lg lg:px-5",
+            scrolled && "max-w-4xl rounded-2xl border border-[#af8260]/45 bg-[#322c2b]/85 backdrop-blur-lg lg:px-5",
           )}
         >
           <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0">
@@ -40,7 +40,7 @@ export function LandingNav() {
             <div className="flex w-full justify-between lg:w-auto">
               <Link href="/" aria-label="Made with Love home" className="flex items-center gap-2">
                 <span
-                  className="font-semibold text-amber-400 text-xl tracking-tight"
+                  className="font-semibold text-[#e4c59e] text-xl tracking-tight"
                   style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
                 >
                   Made with Love
@@ -72,7 +72,7 @@ export function LandingNav() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-white/60 transition-colors duration-150 hover:text-amber-300"
+                      className="text-white/70 transition-colors duration-150 hover:text-[#e4c59e]"
                       style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
                     >
                       {link.label}
@@ -87,7 +87,7 @@ export function LandingNav() {
               className={cn(
                 // mobile: hidden by default, revealed when nav is active
                 "in-data-[state=active]:block",
-                "mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border border-stone-800 bg-stone-900 p-6 shadow-2xl",
+                "mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border border-[#af8260]/40 bg-[#322c2b] p-6 shadow-2xl",
                 // desktop: always shown as flex, styles reset
                 "lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:rounded-none lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none",
               )}
@@ -100,7 +100,7 @@ export function LandingNav() {
                       <Link
                         href={link.href}
                         onClick={() => setMenuOpen(false)}
-                        className="text-white/60 transition-colors duration-150 hover:text-amber-300"
+                        className="text-white/70 transition-colors duration-150 hover:text-[#e4c59e]"
                         style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
                       >
                         {link.label}
