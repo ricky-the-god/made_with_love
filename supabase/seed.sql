@@ -813,6 +813,47 @@ E'1. Simmer rice with cinnamon.\n2. Add milk gradually.\n3. Stir until creamy.\n
       member_id = excluded.member_id,
       updated_at = now();
 
+  -- Optional per-step images (newline-delimited URLs aligned to step order)
+  update public.recipes
+  set step_images = case id
+    when v_adobo_id then E'/images/steps/mix-marinade.svg\n/images/steps/simmer-pot.svg\n/images/steps/serve-bowl.svg'
+    when v_sinigang_id then E'/images/steps/prep-chop.svg\n/images/steps/simmer-pot.svg\n/images/steps/serve-bowl.svg'
+    when v_bibingka_id then E'/images/steps/prep-chop.svg\n/images/steps/mix-marinade.svg\n/images/steps/bake-oven.svg'
+    when v_lechon_id then E'/images/steps/prep-chop.svg\n/images/steps/pan-fry.svg\n/images/steps/serve-bowl.svg'
+    when v_pancit_id then E'/images/steps/prep-chop.svg\n/images/steps/noodle-wok.svg\n/images/steps/serve-bowl.svg'
+    when v_nilaga_id then E'/images/steps/prep-chop.svg\n/images/steps/simmer-pot.svg\n/images/steps/serve-bowl.svg'
+    when v_karekare_id then E'/images/steps/prep-chop.svg\n/images/steps/simmer-pot.svg\n/images/steps/serve-bowl.svg'
+    when v_arrozcaldo_id then E'/images/steps/prep-chop.svg\n/images/steps/simmer-pot.svg\n/images/steps/serve-bowl.svg'
+    when v_ubehalaya_id then E'/images/steps/prep-chop.svg\n/images/steps/mix-marinade.svg\n/images/steps/serve-bowl.svg'
+    when v_lumpia_id then E'/images/steps/prep-chop.svg\n/images/steps/pan-fry.svg\n/images/steps/serve-bowl.svg'
+    when v_pho_id then E'/images/steps/prep-chop.svg\n/images/steps/simmer-pot.svg\n/images/steps/serve-bowl.svg'
+    when v_banhxeo_id then E'/images/steps/mix-marinade.svg\n/images/steps/pan-fry.svg\n/images/steps/serve-bowl.svg'
+    when v_chethai_id then E'/images/steps/prep-chop.svg\n/images/steps/mix-marinade.svg\n/images/steps/serve-bowl.svg'
+    when v_birria_id then E'/images/steps/mix-marinade.svg\n/images/steps/simmer-pot.svg\n/images/steps/serve-bowl.svg'
+    when v_tamales_id then E'/images/steps/prep-chop.svg\n/images/steps/steam-basket.svg\n/images/steps/serve-bowl.svg'
+    when v_arrozconleche_id then E'/images/steps/prep-chop.svg\n/images/steps/simmer-pot.svg\n/images/steps/serve-bowl.svg'
+    else step_images
+  end,
+  updated_at = now()
+  where id in (
+    v_adobo_id,
+    v_sinigang_id,
+    v_bibingka_id,
+    v_lechon_id,
+    v_pancit_id,
+    v_nilaga_id,
+    v_karekare_id,
+    v_arrozcaldo_id,
+    v_ubehalaya_id,
+    v_lumpia_id,
+    v_pho_id,
+    v_banhxeo_id,
+    v_chethai_id,
+    v_birria_id,
+    v_tamales_id,
+    v_arrozconleche_id
+  );
+
   -- ============================================================
   -- MEMORIES
   -- ============================================================

@@ -105,6 +105,7 @@ export async function createRecipe(input: {
   description?: string;
   ingredients?: string;
   steps?: string;
+  step_images?: string;
   notes?: string;
   image_url?: string;
   prep_time?: string;
@@ -151,6 +152,7 @@ export async function updateRecipe(
     description?: string;
     ingredients?: string;
     steps?: string;
+    step_images?: string;
     notes?: string;
     prep_time?: string;
     cook_time?: string;

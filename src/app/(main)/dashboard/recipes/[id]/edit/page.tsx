@@ -36,6 +36,7 @@ export default async function EditRecipePage({ params }: { params: Promise<{ id:
       culture_tag: String(formData.get("culture_tag") ?? "").trim() || undefined,
       ingredients: String(formData.get("ingredients") ?? "").trim() || undefined,
       steps: String(formData.get("steps") ?? "").trim() || undefined,
+      step_images: String(formData.get("step_images") ?? "").trim() || undefined,
       notes: String(formData.get("notes") ?? "").trim() || undefined,
     });
 
@@ -113,6 +114,19 @@ export default async function EditRecipePage({ params }: { params: Promise<{ id:
                 className="min-h-[160px] resize-none text-sm"
                 defaultValue={recipe.steps ?? ""}
               />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="step_images">Step image URLs (optional)</Label>
+              <Textarea
+                id="step_images"
+                name="step_images"
+                className="min-h-[120px] resize-none text-sm"
+                defaultValue={recipe.step_images ?? ""}
+                placeholder={"https://.../step-1.jpg\nhttps://.../step-2.jpg"}
+              />
+              <p className="text-muted-foreground text-xs">
+                One image URL per line. Each line maps to the step number in order.
+              </p>
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="story">Memory or story</Label>
