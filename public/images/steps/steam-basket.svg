@@ -8,5 +8,4 @@
   <rect x="420" y="240" width="360" height="120" rx="20" fill="#e7c29a"/>
   <path d="M500 200 C480 150 520 120 520 80" stroke="#af8260" stroke-width="9" fill="none" stroke-linecap="round"/>
   <path d="M610 190 C590 140 630 110 630 70" stroke="#af8260" stroke-width="9" fill="none" stroke-linecap="round"/>
-  <text x="600" y="700" text-anchor="middle" font-size="56" fill="#322c2b" font-family="Georgia, serif">Step • Steam</text>
 </svg>

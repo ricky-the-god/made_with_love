@@ -10,5 +10,4 @@
   <path d="M420 390 C500 320 700 320 780 390" stroke="#e4c59e" stroke-width="10" fill="none"/>
   <circle cx="500" cy="400" r="14" fill="#e4c59e"/>
   <circle cx="640" cy="380" r="11" fill="#e4c59e"/>
-  <text x="600" y="700" text-anchor="middle" font-size="56" fill="#322c2b" font-family="Georgia, serif">Step 2 • Mix</text>
 </svg>

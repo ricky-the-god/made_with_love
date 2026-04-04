@@ -8,5 +8,4 @@
   <circle cx="390" cy="170" r="16" fill="#e4c59e"/>
   <circle cx="460" cy="170" r="16" fill="#e4c59e"/>
   <circle cx="530" cy="170" r="16" fill="#e4c59e"/>
-  <text x="600" y="700" text-anchor="middle" font-size="56" fill="#322c2b" font-family="Georgia, serif">Step • Bake</text>
 </svg>

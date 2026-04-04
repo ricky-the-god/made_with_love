@@ -10,5 +10,4 @@
   <circle cx="590" cy="470" r="22" fill="#e4c59e"/>
   <path d="M390 320 C390 300 410 285 430 285" stroke="#af8260" stroke-width="8" fill="none"/>
   <path d="M520 310 C520 290 540 275 560 275" stroke="#af8260" stroke-width="8" fill="none"/>
-  <text x="600" y="700" text-anchor="middle" font-size="56" fill="#322c2b" font-family="Georgia, serif">Step 3 • Fry</text>
 </svg>

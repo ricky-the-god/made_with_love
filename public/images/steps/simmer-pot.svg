@@ -10,5 +10,4 @@
   <path d="M480 240 C460 180 500 150 500 110" stroke="#af8260" stroke-width="10" fill="none" stroke-linecap="round"/>
   <path d="M600 230 C580 170 620 140 620 90" stroke="#af8260" stroke-width="10" fill="none" stroke-linecap="round"/>
   <path d="M720 240 C700 180 740 150 740 110" stroke="#af8260" stroke-width="10" fill="none" stroke-linecap="round"/>
-  <text x="600" y="700" text-anchor="middle" font-size="56" fill="#322c2b" font-family="Georgia, serif">Step 2 • Simmer</text>
 </svg>

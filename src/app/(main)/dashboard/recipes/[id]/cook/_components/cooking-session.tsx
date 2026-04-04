@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+import Image from "next/image";
+
 import { ArrowLeft, ArrowRight, CheckCircle, ChefHat, List, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -200,7 +202,7 @@ export function CookingSession({ recipeId, recipeTitle, steps, stepImages = [], 
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 pb-6 sm:px-6 lg:px-8">
+    <div suppressHydrationWarning className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 pb-6 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <Button variant="ghost" size="icon" asChild>
@@ -242,6 +244,28 @@ export function CookingSession({ recipeId, recipeTitle, steps, stepImages = [], 
         </div>
       ) : (
         <div className="relative overflow-hidden rounded-2xl border border-amber-100 bg-amber-50/30 p-8 dark:border-amber-900/20 dark:bg-amber-950/10">
+          <div className="relative mb-6 aspect-[16/9] w-full overflow-hidden rounded-xl border border-amber-200/70 bg-amber-100/50 dark:border-amber-900/40 dark:bg-amber-950/20">
+            {currentStepImage ? (
+              <Image
+                src={currentStepImage}
+                alt={`${recipeTitle} step ${currentStep + 1}`}
+                fill
+                className="object-cover"
+                unoptimized
+              />
+            ) : (
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-amber-100 via-orange-50 to-amber-200/60 text-center dark:from-amber-950/50 dark:via-amber-900/20 dark:to-amber-900/40">
+                <ChefHat className="mb-2 size-8 text-amber-700/80 dark:text-amber-300/80" />
+                <p className="font-medium text-amber-800 text-sm dark:text-amber-300">Step visual coming soon</p>
+              </div>
+            )}
+            {isAiPickedImage && (
+              <span className="absolute top-2 right-2 rounded-full bg-black/65 px-2.5 py-1 font-medium text-[11px] text-white">
+                AI visual
+              </span>
+            )}
+          </div>
+
           {/* Watermark step number */}
           <div
             className="pointer-events-none absolute -right-3 -bottom-5 select-none font-black text-[110px] leading-none text-amber-200/70 dark:text-amber-900/40"
