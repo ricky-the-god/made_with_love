@@ -21,74 +21,6 @@ const fadeIn = (delay = 0, x = 0) => ({
   transition: { duration: 0.5, ease: EASE, delay },
 });
 
-// ─── Feature 1 Visual — Family Tree ──────────────────────────────────────────
-
-function FamilyTreeVisual() {
-  const nodes = [
-    { id: "g", label: "Grandma Rosa", gen: 0, x: 34, y: 8, delay: 0 },
-    { id: "gf", label: "Grandpa Luis", gen: 0, x: 66, y: 8, delay: 0.1 },
-    { id: "m", label: "Mamá", gen: 1, x: 30, y: 40, delay: 0.25 },
-    { id: "d", label: "Papá", gen: 1, x: 70, y: 40, delay: 0.3 },
-    { id: "y", label: "You", gen: 2, x: 50, y: 74, delay: 0.45 },
-    { id: "s", label: "Sibling", gen: 2, x: 18, y: 74, delay: 0.5 },
-  ];
-
-  const lines = [
-    { x1: "34%", y1: "13%", x2: "66%", y2: "13%" },
-    { x1: "34%", y1: "13%", x2: "30%", y2: "43%" },
-    { x1: "66%", y1: "13%", x2: "70%", y2: "43%" },
-    { x1: "30%", y1: "47%", x2: "50%", y2: "77%" },
-    { x1: "70%", y1: "47%", x2: "50%", y2: "77%" },
-    { x1: "30%", y1: "47%", x2: "18%", y2: "77%" },
-  ];
-
-  return (
-    <div className="relative h-72 w-full sm:h-80">
-      {/* Connector lines */}
-      <svg className="absolute inset-0 h-full w-full" aria-hidden="true" role="presentation">
-        {lines.map((l, i) => (
-          <motion.line
-            // biome-ignore lint/suspicious/noArrayIndexKey: static ordered lines, index is stable
-            key={i}
-            x1={l.x1}
-            y1={l.y1}
-            x2={l.x2}
-            y2={l.y2}
-            stroke="#af8260"
-            strokeWidth="1.5"
-            strokeDasharray="4 3"
-            initial={{ pathLength: 0, opacity: 0 }}
-            whileInView={{ pathLength: 1, opacity: 0.5 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.6, delay: 0.2 + i * 0.08, ease: "easeOut" }}
-          />
-        ))}
-      </svg>
-
-      {/* Nodes */}
-      {nodes.map((n) => (
-        <motion.div
-          key={n.id}
-          {...fadeUp(n.delay)}
-          className="absolute flex flex-col items-center gap-1"
-          style={{ left: `${n.x}%`, top: `${n.y}%`, transform: "translate(-50%, 0)" }}
-        >
-          <div
-            className={`flex size-10 items-center justify-center rounded-full border-2 shadow-sm ${
-              n.id === "y" ? "border-amber-500 bg-amber-100 text-amber-700" : "border-amber-200 bg-white text-amber-600"
-            }`}
-          >
-            <span className="font-semibold text-xs">{n.label[0]}</span>
-          </div>
-          <span className="whitespace-nowrap rounded-full bg-amber-50 px-2 py-0.5 font-medium text-[9px] text-amber-800">
-            {n.label}
-          </span>
-        </motion.div>
-      ))}
-    </div>
-  );
-}
-
 // ─── Feature 2 Visual — Recipe + Calories ────────────────────────────────────
 
 function RecipeCardVisual() {
@@ -231,17 +163,19 @@ function FeatureRow({
   tagIcon: React.ElementType;
   headline: string;
   body: string;
-  visual: React.ReactNode;
+  visual?: React.ReactNode;
   reverse?: boolean;
   bg?: string;
 }) {
   return (
     <section className={`${bg} overflow-hidden px-6 py-24`}>
       <div
-        className={`mx-auto flex max-w-6xl flex-col items-center gap-16 lg:flex-row ${reverse ? "lg:flex-row-reverse" : ""}`}
+        className={`mx-auto flex max-w-6xl flex-col items-center gap-16 ${visual ? "lg:flex-row" : ""} ${
+          visual && reverse ? "lg:flex-row-reverse" : ""
+        }`}
       >
         {/* Text side */}
-        <div className="flex-1 text-center lg:text-left">
+        <div className={`text-center ${visual ? "flex-1 lg:text-left" : "max-w-3xl"}`}>
           <motion.div
             {...fadeUp(0)}
             className="mb-4 inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1"
@@ -267,10 +201,11 @@ function FeatureRow({
           </motion.p>
         </div>
 
-        {/* Visual side */}
-        <motion.div {...fadeIn(0.1, reverse ? -50 : 50)} className="w-full flex-1">
-          {visual}
-        </motion.div>
+        {visual ? (
+          <motion.div {...fadeIn(0.1, reverse ? -50 : 50)} className="w-full flex-1">
+            {visual}
+          </motion.div>
+        ) : null}
       </div>
     </section>
   );
@@ -286,7 +221,6 @@ export function FeaturesShowcase() {
         tagIcon={TreePine}
         headline={`Your roots,\nbeautifully mapped.`}
         body="Build a living tree of everyone who shaped your table. Each person holds their own recipes, their own memories, their own story. A way for young people to stay connected to where they come from — one dish at a time."
-        visual={<FamilyTreeVisual />}
         bg="bg-amber-50/40"
       />
 
