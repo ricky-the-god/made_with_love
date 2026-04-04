@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-
 import { motion, type Variants } from "framer-motion";
 import { Facebook, Instagram, Twitter } from "lucide-react";
 
@@ -108,7 +106,7 @@ function NavSection({
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 + index * 0.1, duration: 0.5 }}
-        className="mb-2 border-b border-amber-200/40 pb-1 font-semibold text-amber-400 text-xs uppercase tracking-wider transition-colors duration-300 hover:text-amber-300 dark:border-amber-800/40"
+        className="mb-2 border-amber-200/40 border-b pb-1 font-semibold text-amber-400 text-xs uppercase tracking-wider transition-colors duration-300 hover:text-amber-300 dark:border-amber-800/40"
       >
         {title}
       </motion.h3>
@@ -167,7 +165,7 @@ export function StickyFooter() {
   return (
     // Clip prevents the sticky footer from overflowing during upward scroll
     <div className="relative h-[70vh]" style={{ clipPath: "polygon(0% 0, 100% 0%, 100% 100%, 0 100%)" }}>
-      <div className="relative -top-[100vh] h-[calc(100vh+70vh)]">
+      <div className="-top-[100vh] relative h-[calc(100vh+70vh)]">
         <div className="sticky top-[calc(100vh-70vh)] h-[70vh]">
           <motion.div
             initial="hidden"
@@ -214,7 +212,7 @@ export function StickyFooter() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 1, duration: 0.8, ease: "easeOut" }}
                   whileHover={{ scale: 1.02, transition: { type: "spring", stiffness: 300, damping: 20 } }}
-                  className="cursor-default bg-gradient-to-r from-amber-200 via-amber-400 to-amber-200/60 bg-clip-text font-serif leading-[0.85] text-transparent text-[10vw] md:text-[7vw] lg:text-[5.5vw]"
+                  className="cursor-default bg-gradient-to-r from-amber-200 via-amber-400 to-amber-200/60 bg-clip-text font-serif text-[10vw] text-transparent leading-[0.85] md:text-[7vw] lg:text-[5.5vw]"
                   style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
                 >
                   {footerData.title}

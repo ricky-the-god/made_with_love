@@ -84,14 +84,14 @@ export function HeroSection() {
           return (
             <div
               key={book.id}
-              className="absolute w-28 h-36 sm:w-36 sm:h-48 transition-transform duration-75"
+              className="absolute h-36 w-28 transition-transform duration-75 sm:h-48 sm:w-36"
               style={{
                 transform: `translate(${x}px, ${y}px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) rotateZ(${book.rotation}deg)`,
                 transformStyle: "preserve-3d",
                 zIndex: Math.round(Math.sin(rad) * 10) + 10,
               }}
             >
-              <div className="relative w-full h-full rounded-xl overflow-hidden shadow-[0_8px_40px_rgba(0,0,0,0.7)] ring-1 ring-white/10">
+              <div className="relative h-full w-full overflow-hidden rounded-xl shadow-[0_8px_40px_rgba(0,0,0,0.7)] ring-1 ring-white/10">
                 <Image
                   src={book.src}
                   alt={book.alt}
@@ -110,14 +110,14 @@ export function HeroSection() {
       {/* ── Text content ───────────────────────────────────────────────────── */}
       <div className="relative z-10 w-full max-w-3xl px-6 pb-20 text-center sm:px-8">
         <p
-          className="mb-5 text-[10px] font-medium uppercase tracking-[0.22em] text-amber-400"
+          className="mb-5 font-medium text-[10px] text-amber-400 uppercase tracking-[0.22em]"
           style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
         >
           A living family archive
         </p>
 
         <h1
-          className="mb-6 font-normal text-5xl leading-[1.08] text-white sm:text-6xl lg:text-7xl"
+          className="mb-6 font-normal text-5xl text-white leading-[1.08] sm:text-6xl lg:text-7xl"
           style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
         >
           Every family
@@ -163,13 +163,13 @@ function ReducedMotionHero() {
   return (
     <section className="flex min-h-screen flex-col items-center justify-center bg-stone-950 px-6 pb-20 text-center sm:px-8">
       <p
-        className="mb-5 text-[10px] font-medium uppercase tracking-[0.22em] text-amber-400"
+        className="mb-5 font-medium text-[10px] text-amber-400 uppercase tracking-[0.22em]"
         style={{ fontFamily: "var(--font-dm-sans, sans-serif)" }}
       >
         A living family archive
       </p>
       <h1
-        className="mb-6 font-normal text-5xl leading-[1.08] text-white sm:text-6xl lg:text-7xl"
+        className="mb-6 font-normal text-5xl text-white leading-[1.08] sm:text-6xl lg:text-7xl"
         style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
       >
         Every family

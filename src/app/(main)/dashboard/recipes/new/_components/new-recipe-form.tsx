@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { type ChangeEvent, useEffect, useRef, useState, useTransition } from "react";
 
 import { useRouter } from "next/navigation";
 
@@ -23,6 +23,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { COUNTRY_OPTIONS, RECIPE_CATEGORY_OPTIONS } from "@/data/recipe-options";
 import { getRelationLabel } from "@/lib/family-constants";
+import { createClient } from "@/lib/supabase/client";
 import type { FamilyMember } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils";
 import { createRecipe } from "@/server/recipe-actions";
@@ -50,10 +51,17 @@ interface NewRecipeFormProps {
 
 export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberName }: NewRecipeFormProps) {
   const router = useRouter();
+  const recipeImageInputRef = useRef<HTMLInputElement | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [activeTab, setActiveTab] = useState<"manual" | "image">("manual");
   const [isCountryPickerOpen, setIsCountryPickerOpen] = useState(false);
   const [isSuggesting, setIsSuggesting] = useState(false);
   const [isEstimatingCalories, setIsEstimatingCalories] = useState(false);
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isExtractingImage, setIsExtractingImage] = useState(false);
   const [calorieEstimate, setCalorieEstimate] = useState<{
     calories_per_serving: number;
     total_calories: number;
@@ -77,6 +85,158 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
     setValue,
     formState: { errors },
   } = form;
+
+  useEffect(() => {
+    if (!selectedImageFile) {
+      setImagePreviewUrl(null);
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(selectedImageFile);
+    setImagePreviewUrl(objectUrl);
+
+    return () => {
+      URL.revokeObjectURL(objectUrl);
+    };
+  }, [selectedImageFile]);
+
+  function validateImageFile(file: File) {
+    const supportedTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+    if (!supportedTypes.has(file.type)) {
+      return "Upload a JPG, PNG, WebP, or GIF image.";
+    }
+
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      return "Image must be 10 MB or smaller.";
+    }
+
+    return null;
+  }
+
+  function handleSelectImage(file: File | null) {
+    if (!file) return;
+
+    const validationError = validateImageFile(file);
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
+
+    setSelectedImageFile(file);
+    setUploadedImageUrl(null);
+  }
+
+  function onImageInputChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0] ?? null;
+    handleSelectImage(file);
+  }
+
+  async function uploadRecipeImage() {
+    if (!selectedImageFile) {
+      return uploadedImageUrl;
+    }
+
+    if (uploadedImageUrl) {
+      return uploadedImageUrl;
+    }
+
+    setIsUploadingImage(true);
+
+    try {
+      const supabase = createClient();
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError || !user) {
+        toast.error("You must be signed in to upload recipe images.");
+        return null;
+      }
+
+      const extension = selectedImageFile.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `${user.id}/recipe-${Date.now()}.${extension}`;
+
+      const { error: uploadError } = await supabase.storage.from("recipe-images").upload(path, selectedImageFile, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+
+      if (uploadError) {
+        if (uploadError.message.toLowerCase().includes("bucket")) {
+          toast.error("Storage bucket 'recipe-images' is missing. Create it in Supabase Storage first.");
+        } else {
+          toast.error(uploadError.message);
+        }
+        return null;
+      }
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("recipe-images").getPublicUrl(path);
+
+      setUploadedImageUrl(publicUrl);
+      return publicUrl;
+    } finally {
+      setIsUploadingImage(false);
+    }
+  }
+
+  async function handlePrepareImageRecipe() {
+    if (!selectedImageFile) {
+      toast.error("Select an image first.");
+      return;
+    }
+
+    const imageUrl = await uploadRecipeImage();
+    if (!imageUrl) {
+      return;
+    }
+
+    setIsExtractingImage(true);
+
+    try {
+      const response = await fetch("/api/ai/extract-recipe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageUrl }),
+      });
+
+      const data = (await response.json()) as {
+        title?: string;
+        ingredients?: string;
+        steps?: string;
+        notes?: string;
+        confidence_note?: string;
+        error?: string;
+      };
+
+      if (!response.ok || data.error) {
+        toast.error(data.error || "Could not extract recipe from image.");
+        return;
+      }
+
+      if (data.title?.trim()) {
+        setValue("title", data.title.trim(), { shouldDirty: true });
+      }
+      if (data.ingredients?.trim()) {
+        setValue("ingredients", data.ingredients.trim(), { shouldDirty: true });
+      }
+      if (data.steps?.trim()) {
+        setValue("steps", data.steps.trim(), { shouldDirty: true });
+      }
+      if (data.notes?.trim()) {
+        setValue("notes", data.notes.trim(), { shouldDirty: true });
+      }
+
+      toast.success(data.confidence_note?.trim() || "Recipe extracted. Review and save.");
+    } finally {
+      setIsExtractingImage(false);
+    }
+
+    setActiveTab("manual");
+  }
 
   async function handleSuggestRecipe() {
     const title = form.getValues("title");
@@ -161,6 +321,11 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
 
   function onSubmit(values: FormValues) {
     startTransition(async () => {
+      const imageUrl = await uploadRecipeImage();
+      if (selectedImageFile && !imageUrl) {
+        return;
+      }
+
       const result = await createRecipe({
         title: values.title,
         member_id: values.member_id || undefined,
@@ -172,6 +337,7 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
         ingredients: values.ingredients || undefined,
         steps: values.steps || undefined,
         notes: values.notes || undefined,
+        image_url: imageUrl || undefined,
       });
 
       if ("error" in result) {
@@ -188,7 +354,7 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
   }
 
   return (
-    <Tabs defaultValue="manual">
+    <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "manual" | "image")}>
       <TabsList className="mb-6 w-full">
         <TabsTrigger value="manual" className="flex-1 gap-2">
           <PenLine className="size-4" />
@@ -432,24 +598,53 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
                 <ImageUp className="size-10 text-amber-400" />
                 <div className="text-center">
                   <p className="font-medium">Drop your image here or click to browse</p>
-                  <p className="mt-1 text-muted-foreground text-xs">Supports JPG, PNG, HEIC up to 10MB</p>
+                  <p className="mt-1 text-muted-foreground text-xs">Supports JPG, PNG, WebP, GIF up to 10MB</p>
                 </div>
-                <Input type="file" accept="image/*" className="hidden" id="recipe-image" />
+                <Input
+                  ref={recipeImageInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  id="recipe-image"
+                  onChange={onImageInputChange}
+                />
                 <Button variant="outline" asChild>
                   <label htmlFor="recipe-image" className="cursor-pointer">
                     Choose file
                   </label>
                 </Button>
               </div>
+              {selectedImageFile && (
+                <div className="grid gap-3 rounded-lg border border-amber-100 bg-background p-3 sm:grid-cols-[120px_1fr] dark:border-amber-900/20">
+                  {imagePreviewUrl ? (
+                    <img
+                      src={imagePreviewUrl}
+                      alt="Recipe upload preview"
+                      className="h-28 w-full rounded-md object-cover sm:h-full"
+                    />
+                  ) : (
+                    <div className="h-28 w-full rounded-md bg-muted sm:h-full" />
+                  )}
+                  <div className="flex flex-col justify-center gap-1">
+                    <p className="font-medium text-sm">{selectedImageFile.name}</p>
+                    <p className="text-muted-foreground text-xs">{Math.round(selectedImageFile.size / 1024)} KB</p>
+                    {uploadedImageUrl && <p className="text-emerald-600 text-xs">Image uploaded and ready to save.</p>}
+                  </div>
+                </div>
+              )}
               <div className="rounded-lg border border-amber-100 bg-amber-50/50 px-4 py-3 text-sm dark:border-amber-900/20 dark:bg-amber-950/10">
                 <p className="font-medium text-amber-800 dark:text-amber-300">How it works</p>
                 <p className="mt-1 text-muted-foreground">
-                  Claude AI will read the recipe and extract ingredients and steps. You'll review and confirm everything
-                  before it's saved — uncertain fields will be flagged for you to correct.
+                  Upload the image and AI will extract title, ingredients, and steps into the manual form for your
+                  review. The image is also attached to the saved recipe.
                 </p>
               </div>
-              <Button className="bg-amber-700 text-white hover:bg-amber-800" disabled>
-                Extract recipe with AI
+              <Button
+                className="bg-amber-700 text-white hover:bg-amber-800"
+                disabled={!selectedImageFile || isUploadingImage || isExtractingImage}
+                onClick={handlePrepareImageRecipe}
+              >
+                {isUploadingImage ? "Uploading..." : isExtractingImage ? "Extracting..." : "Extract recipe with AI"}
               </Button>
             </div>
           </CardContent>

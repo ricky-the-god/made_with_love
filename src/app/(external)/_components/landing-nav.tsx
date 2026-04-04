@@ -28,7 +28,7 @@ export function LandingNav() {
 
   return (
     <header>
-      <nav data-state={menuOpen ? "active" : undefined} className="fixed left-0 top-0 z-50 w-full px-2">
+      <nav data-state={menuOpen ? "active" : undefined} className="fixed top-0 left-0 z-50 w-full px-2">
         <div
           className={cn(
             "mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12",
@@ -40,7 +40,7 @@ export function LandingNav() {
             <div className="flex w-full justify-between lg:w-auto">
               <Link href="/" aria-label="Made with Love home" className="flex items-center gap-2">
                 <span
-                  className="text-xl font-semibold tracking-tight text-amber-400"
+                  className="font-semibold text-amber-400 text-xl tracking-tight"
                   style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
                 >
                   Made with Love
@@ -51,7 +51,7 @@ export function LandingNav() {
                 type="button"
                 onClick={() => setMenuOpen(!menuOpen)}
                 aria-label={menuOpen ? "Close menu" : "Open menu"}
-                className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 text-white/70 lg:hidden"
+                className="-m-2.5 -mr-4 relative z-20 block cursor-pointer p-2.5 text-white/70 lg:hidden"
               >
                 <Menu
                   className={cn("size-6 transition-all duration-200", menuOpen && "rotate-180 scale-0 opacity-0")}

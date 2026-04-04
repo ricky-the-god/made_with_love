@@ -31,12 +31,12 @@ export default function RegisterV2() {
         <Link
           prefetch={false}
           href="/"
-          className="inline-flex items-center gap-1 rounded-full border border-white/25 bg-black/55 px-3 py-1.5 text-white/90 text-sm backdrop-blur-md transition-colors hover:text-white"
+          className="inline-flex items-center gap-1 rounded-full border border-white/25 bg-black/55 px-3 py-1.5 text-sm text-white/90 backdrop-blur-md transition-colors hover:text-white"
         >
           <ArrowLeft className="size-4" />
           Back
         </Link>
-        <div className="rounded-full border border-white/25 bg-black/55 px-3 py-1.5 text-white/90 text-sm backdrop-blur-md">
+        <div className="rounded-full border border-white/25 bg-black/55 px-3 py-1.5 text-sm text-white/90 backdrop-blur-md">
           Already have an account?{" "}
           <Link prefetch={false} className="text-white" href="/auth/v2/login">
             Login
@@ -45,7 +45,7 @@ export default function RegisterV2() {
       </div>
 
       <div className="absolute bottom-5 flex w-full justify-center px-10">
-        <div className="text-white/80 text-sm">{APP_CONFIG.copyright}</div>
+        <div className="text-sm text-white/80">{APP_CONFIG.copyright}</div>
       </div>
     </div>
   );

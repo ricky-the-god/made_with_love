@@ -30,7 +30,7 @@ export function RecipeCard({ recipe, href }: RecipeCardProps) {
   const relationLabel = getRelationLabel(member?.relation);
   const ratingCount = Array.isArray(recipe.recipe_ratings) ? recipe.recipe_ratings.length : 0;
   const averageRating =
-    ratingCount > 0 ? recipe.recipe_ratings!.reduce((sum, review) => sum + review.rating, 0) / ratingCount : null;
+    ratingCount > 0 ? recipe.recipe_ratings?.reduce((sum, review) => sum + review.rating, 0) / ratingCount : null;
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-amber-100 bg-amber-50/30 transition-colors hover:border-amber-300 hover:bg-amber-50/60 dark:border-amber-900/20 dark:bg-amber-950/10 dark:hover:border-amber-800/40 dark:hover:bg-amber-950/20">
