@@ -28,7 +28,9 @@
       "WebFetch(domain:21st.dev)",
       "mcp__playwright__browser_take_screenshot",
       "WebFetch(domain:ui.shadcn.com)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"family recipe memory preservation warm cultural heritage emotional\" --design-system -p \"Made with Love\" -f markdown)",
+      "Bash(py -3 .claude/skills/ui-ux-pro-max/scripts/search.py \"family recipe memory preservation warm cultural heritage emotional\" --design-system -p \"Made with Love\" -f markdown)"
     ]
   }
 }

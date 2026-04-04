@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, CheckCircle, ChefHat, List, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { Spinner } from "@/components/ui/spinner";
 
 interface CookingSessionProps {
@@ -147,10 +146,14 @@ export function CookingSession({ recipeId, recipeTitle, steps, stepImages = [], 
   if (completed) {
     return (
       <div className="flex min-h-[80vh] flex-col items-center justify-center gap-6 text-center">
-        <div className="text-8xl">🍽️</div>
+        <div className="relative">
+          <div className="text-8xl">🍽️</div>
+          <div className="absolute -top-2 -right-5 text-4xl">✨</div>
+          <div className="absolute -bottom-1 -left-5 text-3xl">🎉</div>
+        </div>
         <div>
-          <h1 className="font-bold text-4xl">You did it!</h1>
-          <p className="mt-3 text-base text-muted-foreground sm:text-lg">
+          <h1 className="font-bold text-4xl tracking-tight">You did it!</h1>
+          <p className="mt-2 text-muted-foreground">
             You just made <span className="font-medium text-foreground">{recipeTitle}</span> with love. Enjoy every
             bite.
           </p>
@@ -214,14 +217,34 @@ export function CookingSession({ recipeId, recipeTitle, steps, stepImages = [], 
         <div className="w-9" />
       </div>
 
-      {/* Progress */}
-      <Progress value={progress} className="h-2" />
+      {/* Progress bar */}
+      <div className="h-1 bg-border">
+        <div className="h-full bg-amber-500 transition-all duration-500 ease-out" style={{ width: `${progress}%` }} />
+      </div>
+
+      {/* Step dots */}
+      {totalScreens >= 2 && totalScreens <= 14 && (
+        <div className="flex items-center justify-center gap-1.5">
+          {Array.from({ length: totalScreens }, (_, i) => (
+            <div
+              key={i}
+              className={`rounded-full transition-all duration-300 ${
+                i === currentScreenIndex
+                  ? "size-2.5 bg-amber-500"
+                  : i < currentScreenIndex
+                    ? "size-1.5 bg-amber-300 dark:bg-amber-700"
+                    : "size-1.5 bg-border"
+              }`}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Content card */}
       {isOnIngredients ? (
-        <div className="rounded-3xl border border-amber-100 bg-amber-50/30 p-6 sm:p-10 md:p-12 dark:border-amber-900/20 dark:bg-amber-950/10">
-          <div className="mb-3 flex items-center gap-2 text-amber-700 text-base dark:text-amber-400">
-            <List className="size-5" />
+        <div className="relative overflow-hidden rounded-2xl border border-amber-100 bg-amber-50/30 p-8 dark:border-amber-900/20 dark:bg-amber-950/10">
+          <div className="mb-1 flex items-center gap-2 font-medium text-amber-600 text-xs uppercase tracking-wider dark:text-amber-400">
+            <List className="size-4" />
             <span>Before you start</span>
           </div>
           <h2 className="mb-6 font-bold text-3xl sm:text-4xl">Here's what you'll need</h2>
@@ -236,27 +259,19 @@ export function CookingSession({ recipeId, recipeTitle, steps, stepImages = [], 
           </ul>
         </div>
       ) : (
-        <div className="rounded-3xl border border-amber-100 bg-amber-50/30 p-6 sm:p-10 md:p-12 dark:border-amber-900/20 dark:bg-amber-950/10">
-          <div className="mb-4 flex items-center gap-2 text-amber-700 text-base dark:text-amber-400">
-            <ChefHat className="size-5" />
+        <div className="relative overflow-hidden rounded-2xl border border-amber-100 bg-amber-50/30 p-8 dark:border-amber-900/20 dark:bg-amber-950/10">
+          {/* Watermark step number */}
+          <div
+            className="pointer-events-none absolute -right-3 -bottom-5 select-none font-black text-[110px] leading-none text-amber-200/70 dark:text-amber-900/40"
+            aria-hidden
+          >
+            {currentStep + 1}
+          </div>
+          <div className="mb-1 flex items-center gap-2 font-medium text-amber-600 text-xs uppercase tracking-wider dark:text-amber-400">
+            <ChefHat className="size-4" />
             <span>Step {currentStep + 1}</span>
           </div>
-          {currentStepImage && (
-            <div className="relative mb-6 overflow-hidden rounded-2xl border border-amber-200/70 bg-amber-100/20 dark:border-amber-900/40">
-              {isAiPickedImage && (
-                <span className="absolute right-3 top-3 z-10 rounded-full bg-[#322c2b]/90 px-3 py-1 text-[11px] text-white uppercase tracking-wide">
-                  AI-picked image
-                </span>
-              )}
-              <img
-                src={currentStepImage}
-                alt={`Step ${currentStep + 1} illustration for ${recipeTitle}`}
-                className="h-52 w-full object-cover sm:h-64 md:h-72"
-                loading="lazy"
-              />
-            </div>
-          )}
-          <p className="text-foreground text-xl leading-relaxed sm:text-2xl">{steps[currentStep]}</p>
+          <p className="text-foreground text-xl font-medium leading-relaxed">{steps[currentStep]}</p>
         </div>
       )}
 

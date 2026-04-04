@@ -72,6 +72,8 @@ export default async function RecipesPage({ searchParams }: { searchParams?: Pro
                   photo_url: string | null;
                   relation: string | null;
                 } | null,
+                culture_tag: (recipe as Record<string, unknown>).culture_tag as string | null ?? null,
+                image_url: (recipe as Record<string, unknown>).image_url as string | null ?? null,
               }}
             />
           ))}
