@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { motion } from "framer-motion";
+import { MotionConfig, motion } from "framer-motion";
 import { ArrowRight, BookOpen, ChefHat, Heart, TreePine } from "lucide-react";
 
 import { HoverButton } from "@/components/ui/hover-button";
@@ -18,7 +18,7 @@ const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 28 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, margin: "-60px" },
-  transition: { duration: 0.65, ease: EASE_EXPO, delay },
+  transition: { duration: 0.5, ease: EASE_EXPO, delay },
 });
 
 const FEATURES = [
@@ -59,7 +59,7 @@ const STEPS = [
 
 export function LandingSections() {
   return (
-    <>
+    <MotionConfig reducedMotion="user">
       {/* ─── Scroll reveal image ───────────────────────────────────────────── */}
       <ContainerScroll
         titleComponent={
@@ -133,7 +133,7 @@ export function LandingSections() {
       {/* ─── Who this is for ───────────────────────────────────────────────── */}
       <section className="px-6 py-24">
         <motion.div {...fadeUp()} className="mx-auto max-w-2xl text-center">
-          <Heart className="mx-auto mb-6 size-6 text-amber-400 dark:text-amber-500" />
+          <Heart className="mx-auto mb-6 size-6 text-amber-400 dark:text-amber-500" aria-hidden="true" />
           <h2
             className="mb-6 font-normal text-3xl text-[#322c2b] leading-snug sm:text-4xl dark:text-[#e4c59e]"
             style={{ fontFamily: "var(--font-gabriela, Georgia, serif)" }}
@@ -234,6 +234,6 @@ export function LandingSections() {
           </motion.div>
         </div>
       </section>
-    </>
+    </MotionConfig>
   );
 }

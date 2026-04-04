@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { Clock, Globe, Heart, MapPin } from "lucide-react";
+import { ChefHat, Clock, Globe, Heart, MapPin } from "lucide-react";
 
 import { StarRating } from "@/components/star-rating";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { APP_CONFIG } from "@/config/app-config";
 import type { Memory } from "@/lib/supabase/types";
 import { getPublicRecipe, getRecipeRating } from "@/server/recipe-actions";
+
+import { RecipeStorySection } from "./_components/recipe-story-section";
 
 export default async function PublicRecipePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -84,7 +86,15 @@ export default async function PublicRecipePage({ params }: { params: Promise<{ i
           />
 
           <div className="flex flex-wrap gap-3">
-            <Button asChild className="bg-amber-700 text-white hover:bg-amber-800">
+            {stepLines.length > 0 && (
+              <Button asChild className="bg-amber-700 text-white hover:bg-amber-800">
+                <a href={`/recipes/${recipe.id}/cook`}>
+                  <ChefHat className="size-4" />
+                  Cook this recipe
+                </a>
+              </Button>
+            )}
+            <Button asChild variant="outline">
               <a href="/auth/v2/register">Start your own family cookbook</a>
             </Button>
             <Button variant="outline" asChild>
@@ -92,6 +102,13 @@ export default async function PublicRecipePage({ params }: { params: Promise<{ i
             </Button>
           </div>
         </div>
+
+        {/* ── Story section ─────────────────────────────────────────────────── */}
+        <RecipeStorySection
+          description={recipe.description}
+          memories={memories}
+          countryOfOrigin={recipe.country_of_origin ?? null}
+        />
 
         <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-6">
@@ -131,29 +148,6 @@ export default async function PublicRecipePage({ params }: { params: Promise<{ i
           </div>
 
           <div className="space-y-6">
-            <section className="rounded-2xl border border-amber-100 bg-amber-50/60 p-6 dark:border-amber-900/20 dark:bg-amber-950/10">
-              <p className="mb-3 font-semibold text-amber-800 text-sm dark:text-amber-300">
-                The story behind this dish
-              </p>
-              {memories.length > 0 ? (
-                <div className="space-y-4">
-                  {memories.map((memory) => (
-                    <div key={memory.id} className="space-y-1">
-                      {memory.occasion && (
-                        <p className="font-medium text-amber-700 text-xs dark:text-amber-400">{memory.occasion}</p>
-                      )}
-                      {memory.text && <p className="text-sm italic leading-relaxed">{memory.text}</p>}
-                      {memory.meaning_note && <p className="text-muted-foreground text-xs">{memory.meaning_note}</p>}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-muted-foreground text-sm italic">
-                  No family story has been attached to this recipe yet.
-                </p>
-              )}
-            </section>
-
             {recipe.notes && (
               <section className="rounded-2xl border border-amber-100 bg-white/90 p-6 dark:border-amber-900/20 dark:bg-stone-950/70">
                 <h2 className="mb-3 font-semibold text-xl">Notes</h2>

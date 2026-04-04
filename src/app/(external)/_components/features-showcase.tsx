@@ -1,7 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Flame, Leaf, Sparkles, TreePine, UtensilsCrossed } from "lucide-react";
+import { MotionConfig, motion } from "framer-motion";
+import { Check, Flame, Leaf, Sparkles, TreePine, UtensilsCrossed } from "lucide-react";
 
 // ─── Shared animation helpers ────────────────────────────────────────────────
 
@@ -11,14 +11,14 @@ const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 40 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, margin: "-80px" },
-  transition: { duration: 0.7, ease: EASE, delay },
+  transition: { duration: 0.5, ease: EASE, delay },
 });
 
 const fadeIn = (delay = 0, x = 0) => ({
   initial: { opacity: 0, x },
   whileInView: { opacity: 1, x: 0 },
   viewport: { once: true, margin: "-80px" },
-  transition: { duration: 0.75, ease: EASE, delay },
+  transition: { duration: 0.5, ease: EASE, delay },
 });
 
 // ─── Feature 1 Visual — Family Tree ──────────────────────────────────────────
@@ -141,7 +141,7 @@ function RecipeCardVisual() {
       {/* Nutrition grid */}
       <motion.div {...fadeUp(0.45)} className="rounded-xl bg-amber-50 p-3">
         <p className="mb-2 flex items-center gap-1 font-semibold text-[9px] text-amber-700 uppercase tracking-wider">
-          <Flame className="size-3" /> Nutrition per serving
+          <Flame className="size-3" aria-hidden="true" /> Nutrition per serving
         </p>
         <div className="grid grid-cols-4 gap-2">
           {nutrients.map((n, i) => (
@@ -178,7 +178,7 @@ function CookingStepsVisual() {
             initial={{ width: 0 }}
             whileInView={{ width: "40%" }}
             viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.8, delay: 0.3, ease: EASE }}
+            transition={{ duration: 0.5, delay: 0.3, ease: EASE }}
           />
         </div>
         <span className="shrink-0 font-medium text-[#af8260]/70 text-xs">Step 3 of 5</span>
@@ -201,14 +201,14 @@ function CookingStepsVisual() {
                   : "bg-[#e4c59e]/50 text-[#af8260]"
             }`}
           >
-            {step.done ? "✓" : step.num}
+            {step.done ? <Check className="size-3.5" aria-hidden="true" /> : step.num}
           </div>
           <p
             className={`pt-0.5 text-xs leading-relaxed ${step.active ? "font-medium text-[#322c2b]" : "text-[#6e5750]"}`}
           >
             {step.text}
           </p>
-          {step.active && <UtensilsCrossed className="mt-0.5 size-4 shrink-0 text-amber-400" />}
+          {step.active && <UtensilsCrossed className="mt-0.5 size-4 shrink-0 text-amber-400" aria-hidden="true" />}
         </motion.div>
       ))}
     </motion.div>
@@ -279,7 +279,7 @@ function FeatureRow({
 
 export function FeaturesShowcase() {
   return (
-    <>
+    <MotionConfig reducedMotion="user">
       <FeatureRow
         tag="Family Tree"
         tagIcon={TreePine}
@@ -307,6 +307,6 @@ export function FeaturesShowcase() {
         visual={<CookingStepsVisual />}
         bg="bg-[#fcf8f2]"
       />
-    </>
+    </MotionConfig>
   );
 }

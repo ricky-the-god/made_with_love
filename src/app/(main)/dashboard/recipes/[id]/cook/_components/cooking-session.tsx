@@ -15,9 +15,18 @@ interface CookingSessionProps {
   steps: string[];
   stepImages?: string[];
   ingredients: string;
+  backHref?: string;
 }
 
-export function CookingSession({ recipeId, recipeTitle, steps, stepImages = [], ingredients }: CookingSessionProps) {
+export function CookingSession({
+  recipeId,
+  recipeTitle,
+  steps,
+  stepImages = [],
+  ingredients,
+  backHref,
+}: CookingSessionProps) {
+  const resolvedBackHref = backHref ?? `/dashboard/recipes/${recipeId}`;
   // currentStep: -1 = ingredients intro, 0..steps.length-1 = recipe steps
   const hasIngredients = ingredients.trim().length > 0;
   const hasSteps = steps.length > 0;
@@ -162,7 +171,7 @@ export function CookingSession({ recipeId, recipeTitle, steps, stepImages = [], 
         </div>
         <div className="flex gap-3">
           <Button asChild className="bg-amber-700 text-white hover:bg-amber-800">
-            <a href={`/dashboard/recipes/${recipeId}`}>Back to recipe</a>
+            <a href={resolvedBackHref}>Back to recipe</a>
           </Button>
           <Button
             variant="outline"
@@ -194,7 +203,7 @@ export function CookingSession({ recipeId, recipeTitle, steps, stepImages = [], 
             <a href={`/dashboard/recipes/${recipeId}/edit`}>Edit recipe</a>
           </Button>
           <Button variant="outline" asChild>
-            <a href={`/dashboard/recipes/${recipeId}`}>Back to recipe</a>
+            <a href={resolvedBackHref}>Back to recipe</a>
           </Button>
         </div>
       </div>
@@ -205,9 +214,9 @@ export function CookingSession({ recipeId, recipeTitle, steps, stepImages = [], 
     <div suppressHydrationWarning className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 pb-6 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <Button variant="ghost" size="icon" asChild>
-          <a href={`/dashboard/recipes/${recipeId}`}>
-            <X className="size-4" />
+        <Button variant="ghost" size="icon" aria-label="Exit cooking mode" asChild>
+          <a href={resolvedBackHref}>
+            <X className="size-4" aria-hidden="true" />
           </a>
         </Button>
         <div className="text-center">
