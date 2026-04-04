@@ -199,18 +199,15 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
       return;
     }
 
-    const imageUrl = await uploadRecipeImage();
-    if (!imageUrl) {
-      return;
-    }
-
     setIsExtractingImage(true);
 
     try {
+      const formData = new FormData();
+      formData.append("image", selectedImageFile);
+
       const response = await fetch("/api/ai/extract-recipe", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageUrl }),
+        body: formData,
       });
 
       const data = (await response.json()) as {
@@ -241,6 +238,8 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
       }
 
       toast.success(data.confidence_note?.trim() || "Recipe extracted. Review and save.");
+    } catch {
+      toast.error("Could not send this image to Groq AI.");
     } finally {
       setIsExtractingImage(false);
     }
@@ -674,14 +673,14 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
         </Card>
       </TabsContent>
 
-      {/* Image upload — AI integration pending */}
+      {/* Image upload with Groq extraction */}
       <TabsContent value="image">
         <Card className="border-amber-100 dark:border-amber-900/20">
           <CardHeader>
             <CardTitle className="text-lg">Upload a recipe photo</CardTitle>
             <CardDescription>
-              Upload a photo of a handwritten recipe card, notebook page, or printed recipe. Claude AI will extract the
-              text and structure it for you to review.
+              Upload a photo of a handwritten recipe card, notebook page, or printed recipe. Groq AI will extract the
+              text and structure it for you to review before saving.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -723,15 +722,17 @@ export function NewRecipeForm({ members, preselectedMemberId, preselectedMemberN
                   <div className="flex flex-col justify-center gap-1">
                     <p className="font-medium text-sm">{selectedImageFile.name}</p>
                     <p className="text-muted-foreground text-xs">{Math.round(selectedImageFile.size / 1024)} KB</p>
-                    {uploadedImageUrl && <p className="text-emerald-600 text-xs">Image uploaded and ready to save.</p>}
+                    {uploadedImageUrl && (
+                      <p className="text-emerald-600 text-xs">Image uploaded and attached to this recipe.</p>
+                    )}
                   </div>
                 </div>
               )}
               <div className="rounded-lg border border-amber-100 bg-amber-50/50 px-4 py-3 text-sm dark:border-amber-900/20 dark:bg-amber-950/10">
-                <p className="font-medium text-amber-800 dark:text-amber-300">How it works</p>
+                <p className="font-medium text-amber-800 dark:text-amber-300">How Groq extraction works</p>
                 <p className="mt-1 text-muted-foreground">
-                  Upload the image and AI will extract title, ingredients, and steps into the manual form for your
-                  review. The image is also attached to the saved recipe.
+                  Choose an image and Groq will extract the title, ingredients, and steps into the manual form for your
+                  review. The photo is only uploaded when you save the recipe.
                 </p>
               </div>
               <Button

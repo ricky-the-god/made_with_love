@@ -23,7 +23,13 @@ function parseJsonPayload(rawText: string) {
     .replace(/^```json\s*/i, "")
     .replace(/```$/i, "")
     .trim();
-  return JSON.parse(withoutFence) as {
+
+  const objectStart = withoutFence.indexOf("{");
+  const objectEnd = withoutFence.lastIndexOf("}");
+  const jsonCandidate =
+    objectStart >= 0 && objectEnd > objectStart ? withoutFence.slice(objectStart, objectEnd + 1) : withoutFence;
+
+  return JSON.parse(jsonCandidate) as {
     title?: unknown;
     ingredients?: unknown;
     steps?: unknown;
@@ -73,27 +79,78 @@ async function extractWithGroq(args: { imageUrl: string }) {
   return toExtractedRecipe(parseJsonPayload(rawText));
 }
 
+function toDataUrl(mimeType: string, bytes: Buffer) {
+  return `data:${mimeType};base64,${bytes.toString("base64")}`;
+}
+
+function parseDataUrl(dataUrl: string) {
+  const match = dataUrl.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
+
+  if (!match) {
+    return null;
+  }
+
+  const mimeType = match[1]?.toLowerCase() ?? "";
+  const base64 = match[2] ?? "";
+
+  return {
+    mimeType,
+    bytes: Buffer.from(base64, "base64"),
+  };
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { imageUrl } = body as { imageUrl?: string };
-
-    if (!imageUrl || typeof imageUrl !== "string") {
-      return NextResponse.json({ error: "imageUrl is required" }, { status: 400 });
-    }
-
-    if (!process.env.GROQ_API_KEY) {
-      return NextResponse.json({ error: "GROQ_API_KEY is not configured" }, { status: 500 });
-    }
-
-    const imageResponse = await fetch(imageUrl);
-    if (!imageResponse.ok) {
-      return NextResponse.json({ error: "Could not fetch image for extraction" }, { status: 400 });
-    }
-
-    const contentType = imageResponse.headers.get("content-type")?.toLowerCase() ?? "image/jpeg";
-    const normalizedType = contentType.split(";")[0]?.trim() || "image/jpeg";
+    const contentType = request.headers.get("content-type")?.toLowerCase() ?? "";
     const supportedMediaTypes = new Set(["image/jpeg", "image/png", "image/gif", "image/webp"]);
+
+    let groqImageUrl: string | null = null;
+    let normalizedType = "image/jpeg";
+    let byteLength = 0;
+
+    if (contentType.includes("multipart/form-data")) {
+      const formData = await request.formData();
+      const image = formData.get("image");
+
+      if (!(image instanceof File)) {
+        return NextResponse.json({ error: "image file is required" }, { status: 400 });
+      }
+
+      normalizedType = image.type.toLowerCase() || "image/jpeg";
+      const bytes = Buffer.from(await image.arrayBuffer());
+      byteLength = bytes.length;
+      groqImageUrl = toDataUrl(normalizedType, bytes);
+    } else {
+      const body = await request.json();
+      const { imageUrl, imageDataUrl } = body as { imageUrl?: string; imageDataUrl?: string };
+
+      if (typeof imageDataUrl === "string" && imageDataUrl.trim()) {
+        const parsed = parseDataUrl(imageDataUrl.trim());
+
+        if (!parsed) {
+          return NextResponse.json({ error: "Invalid uploaded image payload" }, { status: 400 });
+        }
+
+        normalizedType = parsed.mimeType;
+        byteLength = parsed.bytes.length;
+        groqImageUrl = imageDataUrl.trim();
+      } else if (typeof imageUrl === "string" && imageUrl.trim()) {
+        groqImageUrl = imageUrl;
+
+        const imageResponse = await fetch(imageUrl);
+        if (!imageResponse.ok) {
+          return NextResponse.json({ error: "Could not fetch image for extraction" }, { status: 400 });
+        }
+
+        const remoteType = imageResponse.headers.get("content-type")?.toLowerCase() ?? "image/jpeg";
+        normalizedType = remoteType.split(";")[0]?.trim() || "image/jpeg";
+
+        const arrayBuffer = await imageResponse.arrayBuffer();
+        byteLength = Buffer.from(arrayBuffer).length;
+      } else {
+        return NextResponse.json({ error: "image file, imageUrl, or imageDataUrl is required" }, { status: 400 });
+      }
+    }
 
     if (!supportedMediaTypes.has(normalizedType)) {
       return NextResponse.json(
@@ -102,19 +159,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const arrayBuffer = await imageResponse.arrayBuffer();
-    const bytes = Buffer.from(arrayBuffer);
+    if (!process.env.GROQ_API_KEY) {
+      return NextResponse.json({ error: "GROQ_API_KEY is not configured" }, { status: 500 });
+    }
 
-    if (bytes.length > 10 * 1024 * 1024) {
+    if (byteLength > 10 * 1024 * 1024) {
       return NextResponse.json({ error: "Image must be 10 MB or smaller" }, { status: 400 });
     }
 
     let extracted: ReturnType<typeof toExtractedRecipe> | null = null;
 
     try {
-      extracted = await extractWithGroq({ imageUrl });
-    } catch {
-      return NextResponse.json({ error: "Recipe extraction failed" }, { status: 502 });
+      extracted = await extractWithGroq({ imageUrl: groqImageUrl });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Recipe extraction failed";
+      return NextResponse.json({ error: message }, { status: 502 });
     }
 
     if (!extracted || (!extracted.ingredients && !extracted.steps)) {
@@ -122,7 +181,8 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(extracted);
-  } catch {
-    return NextResponse.json({ error: "Recipe extraction failed" }, { status: 500 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Recipe extraction failed";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
