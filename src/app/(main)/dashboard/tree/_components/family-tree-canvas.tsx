@@ -490,27 +490,27 @@ export function FamilyTreeCanvas({
                       )}
                       style={{ transitionDelay: `${transitionDelay}ms` }}
                     >
-                      {/* ── Cookbook shape with side-fan hover ──────────── */}
-                      <div className="relative">
-                        {/* Page 3 — fans furthest right */}
+                      {/* ── Cookbook shape — book-open fan from spine ────── */}
+                      <div className="relative" style={{ perspective: "600px", transformStyle: "preserve-3d" }}>
+                        {/* Page 3 — opens furthest (like back pages of a real book) */}
                         <div
                           className={cn(
-                            "absolute inset-0 rounded-lg bg-[#d4c8ba]",
-                            "transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                            "md:group-hover:[transform:translateX(52px)_rotate(-4deg)]",
+                            "absolute inset-0 rounded-lg bg-[#d4c8ba] origin-left",
+                            "transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                            "md:group-hover:[transform:rotateY(-40deg)]",
                           )}
                           aria-hidden
                         />
-                        {/* Page 2 — fans closer */}
+                        {/* Page 2 — opens partway */}
                         <div
                           className={cn(
-                            "absolute inset-0 rounded-lg bg-[#e0d8ce]",
-                            "transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                            "md:group-hover:[transform:translateX(28px)_rotate(-2deg)]",
+                            "absolute inset-0 rounded-lg bg-[#e0d8ce] origin-left",
+                            "transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                            "md:group-hover:[transform:rotateY(-25deg)]",
                           )}
                           aria-hidden
                         />
-                        {/* Cover — stays in place */}
+                        {/* Cover — stays closed, shadow deepens */}
                         <div
                           className={cn(
                             "relative flex h-40 w-24 overflow-hidden rounded-lg shadow-md",
