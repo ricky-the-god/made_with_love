@@ -4,7 +4,7 @@
 -- BEFORE RUNNING THIS FILE:
 --   1. Create a user in Supabase Auth with:
 --      Email: demo@madewithlo.ve
---      Password: demo123456
+--      Password: 123456
 --   2. Run the schema migrations first.
 --   3. Then run this file in the Supabase SQL Editor.
 --
@@ -210,7 +210,7 @@ begin
       v_lili_id,
       v_family_id,
       'Lili Santos',
-      'Me',
+      'Myself',
       4,
       'Started this archive out of fear that family flavors could vanish faster than the stories behind them.',
       'United States',
@@ -412,8 +412,8 @@ begin
       v_user_id,
       'Lola Carmen''s Chicken Adobo',
       'The recipe that defines our family. Salty, sharp, glossy, and better the next day.',
-      '1 whole chicken, cut into serving pieces\n1/2 cup cane vinegar\n1/3 cup soy sauce\n1 head garlic, smashed\n3 bay leaves\n1 tsp black peppercorns\n2 tbsp oil\n1/2 cup water',
-      '1. Marinate chicken with vinegar, soy sauce, garlic, bay leaves, and peppercorns.\n2. Bring to a boil without stirring.\n3. Lower heat and simmer until tender.\n4. Reduce the sauce until glossy.\n5. Briefly fry the chicken if you want a richer finish.\n6. Serve with rice.',
+E'1 whole chicken, cut into serving pieces\n1/2 cup cane vinegar\n1/3 cup soy sauce\n1 head garlic, smashed\n3 bay leaves\n1 tsp black peppercorns\n2 tbsp oil\n1/2 cup water',
+E'1. Marinate chicken with vinegar, soy sauce, garlic, bay leaves, and peppercorns.\n2. Bring to a boil without stirring.\n3. Lower heat and simmer until tender.\n4. Reduce the sauce until glossy.\n5. Briefly fry the chicken if you want a richer finish.\n6. Serve with rice.',
       'Never stir during the first boil. That rule gets repeated in our family more often than birthdays.',
       '15 min',
       '45 min',
@@ -435,8 +435,8 @@ begin
       v_user_id,
       'Tita Rosa''s Sinigang na Baboy',
       'A sour pork soup for rainy days, heartbreak, and any week that needs comfort.',
-      '1.5 lbs pork belly\n1 packet sinigang mix\n6 cups water\n1 tomato\n1 onion\n2 green chilies\n1 bunch water spinach\n6 string beans\n1 radish\nFish sauce to taste',
-      '1. Simmer pork, tomato, and onion until tender.\n2. Add radish and string beans.\n3. Stir in the souring mix.\n4. Add fish sauce and chilies.\n5. Turn off heat and fold in water spinach.\n6. Serve hot over rice.',
+E'1.5 lbs pork belly\n1 packet sinigang mix\n6 cups water\n1 tomato\n1 onion\n2 green chilies\n1 bunch water spinach\n6 string beans\n1 radish\nFish sauce to taste',
+E'1. Simmer pork, tomato, and onion until tender.\n2. Add radish and string beans.\n3. Stir in the souring mix.\n4. Add fish sauce and chilies.\n5. Turn off heat and fold in water spinach.\n6. Serve hot over rice.',
       'The right level of sour should make you sit up straighter after the first spoonful.',
       '15 min',
       '55 min',
@@ -458,8 +458,8 @@ begin
       v_user_id,
       'Lola Carmen''s Christmas Bibingka',
       'Coconut rice cake lined with banana leaf and tied to dawn masses in December.',
-      '2 cups glutinous rice flour\n1 cup rice flour\n1 can coconut milk\n3/4 cup sugar\n3 eggs\n1 tsp baking powder\nBanana leaves\nSalted duck eggs\nGrated coconut\nButter',
-      '1. Line pans with banana leaves.\n2. Mix dry ingredients.\n3. Whisk wet ingredients.\n4. Combine gently.\n5. Bake until almost set.\n6. Add toppings.\n7. Bake until golden.\n8. Brush with butter and serve warm.',
+E'2 cups glutinous rice flour\n1 cup rice flour\n1 can coconut milk\n3/4 cup sugar\n3 eggs\n1 tsp baking powder\nBanana leaves\nSalted duck eggs\nGrated coconut\nButter',
+E'1. Line pans with banana leaves.\n2. Mix dry ingredients.\n3. Whisk wet ingredients.\n4. Combine gently.\n5. Bake until almost set.\n6. Add toppings.\n7. Bake until golden.\n8. Brush with butter and serve warm.',
       'The banana leaf fragrance matters as much as the flavor.',
       '20 min',
       '30 min',
@@ -481,8 +481,8 @@ begin
       v_user_id,
       'Tatay Mario''s Lechon Kawali',
       'Crispy pork belly with the kind of crackling that silences a room.',
-      '2 lbs pork belly\n1 head garlic\n3 bay leaves\n1 tbsp peppercorns\n1 tbsp salt\nWater\nOil for frying',
-      '1. Simmer pork with aromatics until tender.\n2. Chill uncovered until completely dry.\n3. Heat oil.\n4. Fry carefully until deeply blistered.\n5. Rest and chop.\n6. Serve with cane vinegar.',
+E'2 lbs pork belly\n1 head garlic\n3 bay leaves\n1 tbsp peppercorns\n1 tbsp salt\nWater\nOil for frying',
+E'1. Simmer pork with aromatics until tender.\n2. Chill uncovered until completely dry.\n3. Heat oil.\n4. Fry carefully until deeply blistered.\n5. Rest and chop.\n6. Serve with cane vinegar.',
       'The drying step is not optional.',
       '20 min',
       '1 hr 20 min',
@@ -504,8 +504,8 @@ begin
       v_user_id,
       'Tita Elena''s Birthday Pancit Bihon',
       'Long noodles for long life, made in a tray big enough for cousins, neighbors, and whoever walks in hungry.',
-      '400g bihon noodles\n300g shredded chicken\n1/4 cabbage\n2 carrots\n1 cup snap peas\n1 stalk celery\n4 garlic cloves\n1 onion\n3 tbsp soy sauce\n2 cups chicken broth',
-      '1. Soak noodles briefly.\n2. Sauté garlic and onion.\n3. Add chicken and vegetables.\n4. Add noodles, broth, and soy sauce.\n5. Toss until just tender.\n6. Serve with calamansi.',
+E'400g bihon noodles\n300g shredded chicken\n1/4 cabbage\n2 carrots\n1 cup snap peas\n1 stalk celery\n4 garlic cloves\n1 onion\n3 tbsp soy sauce\n2 cups chicken broth',
+E'1. Soak noodles briefly.\n2. Sauté garlic and onion.\n3. Add chicken and vegetables.\n4. Add noodles, broth, and soy sauce.\n5. Toss until just tender.\n6. Serve with calamansi.',
       'Do not cut the noodles. That point gets made every single year.',
       '20 min',
       '20 min',
@@ -527,8 +527,8 @@ begin
       v_user_id,
       'Tatay Mario''s Bulalo-style Nilaga',
       'Slow beef broth with bone marrow, potatoes, greens, and a long afternoon built into it.',
-      '2 lbs beef shanks\n2 lbs short ribs\n8 cups water\n1 onion\n1 tsp peppercorns\n2 tsp salt\n3 potatoes\n1/4 cabbage\n1 bundle pechay\nFish sauce',
-      '1. Boil and rinse the beef.\n2. Simmer with fresh water and aromatics for several hours.\n3. Add potatoes.\n4. Add cabbage.\n5. Turn off heat and add pechay.\n6. Season and serve.',
+E'2 lbs beef shanks\n2 lbs short ribs\n8 cups water\n1 onion\n1 tsp peppercorns\n2 tsp salt\n3 potatoes\n1/4 cabbage\n1 bundle pechay\nFish sauce',
+E'1. Boil and rinse the beef.\n2. Simmer with fresh water and aromatics for several hours.\n3. Add potatoes.\n4. Add cabbage.\n5. Turn off heat and add pechay.\n6. Season and serve.',
       'The marrow gets its own little ceremony at the table.',
       '15 min',
       '3 hrs',
@@ -550,8 +550,8 @@ begin
       v_user_id,
       'Tita Rosa''s Kare-Kare',
       'Peanut stew with oxtail and vegetables, always served with bagoong and a warning not to skimp on it.',
-      '2 lbs oxtail\n1 onion\n6 cups water\n1/2 cup peanut butter\n2 tbsp toasted rice powder\n1 eggplant\n1 bunch bok choy\n1 banana blossom\nBagoong to serve',
-      '1. Simmer oxtail until tender.\n2. Stir in peanut butter and rice powder.\n3. Add vegetables in stages.\n4. Simmer until silky.\n5. Serve with bagoong and rice.',
+E'2 lbs oxtail\n1 onion\n6 cups water\n1/2 cup peanut butter\n2 tbsp toasted rice powder\n1 eggplant\n1 bunch bok choy\n1 banana blossom\nBagoong to serve',
+E'1. Simmer oxtail until tender.\n2. Stir in peanut butter and rice powder.\n3. Add vegetables in stages.\n4. Simmer until silky.\n5. Serve with bagoong and rice.',
       'This is one of the dishes guests ask for by name.',
       '25 min',
       '3 hrs',
@@ -573,8 +573,8 @@ begin
       v_user_id,
       'Lili''s Late-Night Arroz Caldo',
       'Ginger rice porridge for sick days, late arrivals, and homesick evenings.',
-      '1 cup rice\n6 cups chicken stock\n2 chicken thighs\n1 onion\n6 cloves garlic\n2 inches ginger\nFish sauce\nGreen onions\nBoiled eggs\nCalamansi',
-      '1. Toast garlic separately for topping.\n2. Sauté ginger and onion.\n3. Add chicken and rice.\n4. Pour in stock and simmer until creamy.\n5. Season.\n6. Top with garlic, egg, and green onion.',
+E'1 cup rice\n6 cups chicken stock\n2 chicken thighs\n1 onion\n6 cloves garlic\n2 inches ginger\nFish sauce\nGreen onions\nBoiled eggs\nCalamansi',
+E'1. Toast garlic separately for topping.\n2. Sauté ginger and onion.\n3. Add chicken and rice.\n4. Pour in stock and simmer until creamy.\n5. Season.\n6. Top with garlic, egg, and green onion.',
       'This is the first dish I learned to make without calling anyone halfway through.',
       '10 min',
       '40 min',
@@ -596,8 +596,8 @@ begin
       v_user_id,
       'Nina''s Ube Halaya',
       'Purple yam jam for holiday dessert tables and violet-stained wooden spoons.',
-      '2 lbs ube\n1 can condensed milk\n1 can evaporated milk\n1/2 cup butter\n1/2 cup sugar\n1 tsp vanilla',
-      '1. Boil and mash the ube.\n2. Cook with milks, butter, and sugar over low heat.\n3. Stir constantly until thick and glossy.\n4. Transfer to a buttered dish.\n5. Chill or serve warm.',
+E'2 lbs ube\n1 can condensed milk\n1 can evaporated milk\n1/2 cup butter\n1/2 cup sugar\n1 tsp vanilla',
+E'1. Boil and mash the ube.\n2. Cook with milks, butter, and sugar over low heat.\n3. Stir constantly until thick and glossy.\n4. Transfer to a buttered dish.\n5. Chill or serve warm.',
       'Every good batch gives you a sore arm by the end.',
       '20 min',
       '50 min',
@@ -619,8 +619,8 @@ begin
       v_user_id,
       'Tito Joel''s Party Lumpiang Shanghai',
       'The first platter to disappear at every gathering and the first thing people start snacking on before dinner.',
-      '1 lb ground pork\n1 carrot\n1 onion\n4 garlic cloves\n1 egg\n2 tbsp soy sauce\nSalt\nPepper\nSpring roll wrappers\nOil for frying',
-      '1. Mix filling ingredients thoroughly.\n2. Roll tightly in wrappers.\n3. Fry in batches until crisp and golden.\n4. Drain well.\n5. Serve with sweet chili sauce.',
+E'1 lb ground pork\n1 carrot\n1 onion\n4 garlic cloves\n1 egg\n2 tbsp soy sauce\nSalt\nPepper\nSpring roll wrappers\nOil for frying',
+E'1. Mix filling ingredients thoroughly.\n2. Roll tightly in wrappers.\n3. Fry in batches until crisp and golden.\n4. Drain well.\n5. Serve with sweet chili sauce.',
       'No one can roll these as tightly as Joel when he''s showing off.',
       '35 min',
       '20 min',
@@ -663,8 +663,8 @@ begin
       v_user_id,
       'Ba Lan''s Weekend Pho',
       'A broth that takes all day and makes the whole house smell like it is waiting for people to arrive.',
-      '3 lbs beef bones\n1 onion\n1 ginger knob\nStar anise\nCinnamon stick\nFish sauce\nRice noodles\nThinly sliced beef\nThai basil\nBean sprouts\nLime',
-      '1. Roast bones, onion, and ginger.\n2. Simmer bones for several hours.\n3. Toast spices and add to the broth.\n4. Season carefully.\n5. Cook noodles separately.\n6. Assemble bowls with beef and herbs.\n7. Pour hot broth over everything.',
+E'3 lbs beef bones\n1 onion\n1 ginger knob\nStar anise\nCinnamon stick\nFish sauce\nRice noodles\nThinly sliced beef\nThai basil\nBean sprouts\nLime',
+E'1. Roast bones, onion, and ginger.\n2. Simmer bones for several hours.\n3. Toast spices and add to the broth.\n4. Season carefully.\n5. Cook noodles separately.\n6. Assemble bowls with beef and herbs.\n7. Pour hot broth over everything.',
       'The broth should smell deep and clean before anyone starts tasting.',
       '40 min',
       '6 hrs',
@@ -686,8 +686,8 @@ begin
       v_user_id,
       'Mei''s Crispy Banh Xeo',
       'Turmeric crepes with shrimp, herbs, and a crisp edge that matters as much as the filling.',
-      'Rice flour\nCoconut milk\nTurmeric\nShrimp\nPork belly\nBean sprouts\nScallions\nLettuce\nMint\nNuoc cham',
-      '1. Whisk the batter smooth.\n2. Cook pork and shrimp.\n3. Pour batter into a hot skillet.\n4. Add the filling and let the crepe crisp.\n5. Fold and serve with herbs and sauce.',
+E'Rice flour\nCoconut milk\nTurmeric\nShrimp\nPork belly\nBean sprouts\nScallions\nLettuce\nMint\nNuoc cham',
+E'1. Whisk the batter smooth.\n2. Cook pork and shrimp.\n3. Pour batter into a hot skillet.\n4. Add the filling and let the crepe crisp.\n5. Fold and serve with herbs and sauce.',
       'The first crepe is a test and does not count.',
       '25 min',
       '25 min',
@@ -709,8 +709,8 @@ begin
       v_user_id,
       'Daniel''s Che Thai',
       'A bright, icy fruit dessert that arrives when the afternoon gets too warm for anything heavy.',
-      'Jackfruit\nLychees\nLongan\nCoconut milk\nHalf-and-half\nSugar\nCrushed ice\nJellies',
-      '1. Chill the fruit.\n2. Sweeten the coconut milk mixture.\n3. Fill bowls with fruit and jellies.\n4. Add ice.\n5. Pour over the coconut milk and serve immediately.',
+E'Jackfruit\nLychees\nLongan\nCoconut milk\nHalf-and-half\nSugar\nCrushed ice\nJellies',
+E'1. Chill the fruit.\n2. Sweeten the coconut milk mixture.\n3. Fill bowls with fruit and jellies.\n4. Add ice.\n5. Pour over the coconut milk and serve immediately.',
       'The ice goes in last so the photos stay sharp and the dessert stays cold.',
       '15 min',
       '10 min',
@@ -732,8 +732,8 @@ begin
       v_user_id,
       'Mateo''s Sunday Birria',
       'Slow-braised meat with chile broth and tortillas waiting nearby before anyone is seated.',
-      '3 lbs beef chuck\nDried guajillo chiles\nDried ancho chiles\nOnion\nGarlic\nCloves\nCinnamon\nVinegar\nBay leaves\nTortillas',
-      '1. Toast and soak the chiles.\n2. Blend the marinade.\n3. Coat the meat and rest it.\n4. Braise slowly until shreddable.\n5. Reduce the broth.\n6. Serve with tortillas, onion, and cilantro.',
+E'3 lbs beef chuck\nDried guajillo chiles\nDried ancho chiles\nOnion\nGarlic\nCloves\nCinnamon\nVinegar\nBay leaves\nTortillas',
+E'1. Toast and soak the chiles.\n2. Blend the marinade.\n3. Coat the meat and rest it.\n4. Braise slowly until shreddable.\n5. Reduce the broth.\n6. Serve with tortillas, onion, and cilantro.',
       'The broth should be strong enough that people ask for a cup of it on the side.',
       '35 min',
       '4 hrs',
@@ -755,8 +755,8 @@ begin
       v_user_id,
       'Abuela Carmen''s Red Chile Tamales',
       'A masa-and-filling assembly line recipe that only makes sense when the whole kitchen helps.',
-      'Corn husks\nMasa harina\nLard\nChicken broth\nShredded pork\nRed chile sauce\nSalt',
-      '1. Soak the husks.\n2. Whip the masa until light.\n3. Prepare the filling.\n4. Spread masa on husks.\n5. Fill and fold.\n6. Steam until set.',
+E'Corn husks\nMasa harina\nLard\nChicken broth\nShredded pork\nRed chile sauce\nSalt',
+E'1. Soak the husks.\n2. Whip the masa until light.\n3. Prepare the filling.\n4. Spread masa on husks.\n5. Fill and fold.\n6. Steam until set.',
       'Tamales are never really a solo recipe in this family.',
       '1 hr',
       '2 hrs',
@@ -778,8 +778,8 @@ begin
       v_user_id,
       'Sofia''s Arroz con Leche Notebook Version',
       'Rice pudding captured in writing before it had the chance to disappear back into oral tradition.',
-      '1 cup rice\n4 cups milk\n1 cinnamon stick\n1 lemon peel\n1/2 cup sugar\nVanilla\nGround cinnamon',
-      '1. Simmer rice with cinnamon.\n2. Add milk gradually.\n3. Stir until creamy.\n4. Add sugar and vanilla.\n5. Cool slightly.\n6. Dust with cinnamon.',
+E'1 cup rice\n4 cups milk\n1 cinnamon stick\n1 lemon peel\n1/2 cup sugar\nVanilla\nGround cinnamon',
+E'1. Simmer rice with cinnamon.\n2. Add milk gradually.\n3. Stir until creamy.\n4. Add sugar and vanilla.\n5. Cool slightly.\n6. Dust with cinnamon.',
       'This is the first version in the family with exact measurements on purpose.',
       '10 min',
       '45 min',
@@ -812,6 +812,47 @@ begin
       visibility = excluded.visibility,
       member_id = excluded.member_id,
       updated_at = now();
+
+  -- Optional per-step images (newline-delimited URLs aligned to step order)
+  update public.recipes
+  set step_images = case id
+    when v_adobo_id then E'/images/steps/mix-marinade.svg\n/images/steps/simmer-pot.svg\n/images/steps/serve-bowl.svg'
+    when v_sinigang_id then E'/images/steps/prep-chop.svg\n/images/steps/simmer-pot.svg\n/images/steps/serve-bowl.svg'
+    when v_bibingka_id then E'/images/steps/prep-chop.svg\n/images/steps/mix-marinade.svg\n/images/steps/bake-oven.svg'
+    when v_lechon_id then E'/images/steps/prep-chop.svg\n/images/steps/pan-fry.svg\n/images/steps/serve-bowl.svg'
+    when v_pancit_id then E'/images/steps/prep-chop.svg\n/images/steps/noodle-wok.svg\n/images/steps/serve-bowl.svg'
+    when v_nilaga_id then E'/images/steps/prep-chop.svg\n/images/steps/simmer-pot.svg\n/images/steps/serve-bowl.svg'
+    when v_karekare_id then E'/images/steps/prep-chop.svg\n/images/steps/simmer-pot.svg\n/images/steps/serve-bowl.svg'
+    when v_arrozcaldo_id then E'/images/steps/prep-chop.svg\n/images/steps/simmer-pot.svg\n/images/steps/serve-bowl.svg'
+    when v_ubehalaya_id then E'/images/steps/prep-chop.svg\n/images/steps/mix-marinade.svg\n/images/steps/serve-bowl.svg'
+    when v_lumpia_id then E'/images/steps/prep-chop.svg\n/images/steps/pan-fry.svg\n/images/steps/serve-bowl.svg'
+    when v_pho_id then E'/images/steps/prep-chop.svg\n/images/steps/simmer-pot.svg\n/images/steps/serve-bowl.svg'
+    when v_banhxeo_id then E'/images/steps/mix-marinade.svg\n/images/steps/pan-fry.svg\n/images/steps/serve-bowl.svg'
+    when v_chethai_id then E'/images/steps/prep-chop.svg\n/images/steps/mix-marinade.svg\n/images/steps/serve-bowl.svg'
+    when v_birria_id then E'/images/steps/mix-marinade.svg\n/images/steps/simmer-pot.svg\n/images/steps/serve-bowl.svg'
+    when v_tamales_id then E'/images/steps/prep-chop.svg\n/images/steps/steam-basket.svg\n/images/steps/serve-bowl.svg'
+    when v_arrozconleche_id then E'/images/steps/prep-chop.svg\n/images/steps/simmer-pot.svg\n/images/steps/serve-bowl.svg'
+    else step_images
+  end,
+  updated_at = now()
+  where id in (
+    v_adobo_id,
+    v_sinigang_id,
+    v_bibingka_id,
+    v_lechon_id,
+    v_pancit_id,
+    v_nilaga_id,
+    v_karekare_id,
+    v_arrozcaldo_id,
+    v_ubehalaya_id,
+    v_lumpia_id,
+    v_pho_id,
+    v_banhxeo_id,
+    v_chethai_id,
+    v_birria_id,
+    v_tamales_id,
+    v_arrozconleche_id
+  );
 
   -- ============================================================
   -- MEMORIES

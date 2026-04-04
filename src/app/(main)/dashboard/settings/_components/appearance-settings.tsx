@@ -1,9 +1,13 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { type FontKey, fontOptions } from "@/lib/fonts/registry";
+import { APP_LANGUAGE_OPTIONS, type AppLanguage, applyAppLanguagePreference } from "@/lib/i18n/app-language";
+import { useAppCopy } from "@/lib/i18n/use-app-copy";
 import {
   CONTENT_LAYOUT_OPTIONS,
   type ContentLayout,
@@ -12,32 +16,30 @@ import {
   type SidebarCollapsible,
   type SidebarVariant,
 } from "@/lib/preferences/layout";
-import {
-  applyContentLayout,
-  applyFont,
-  applySidebarCollapsible,
-  applySidebarVariant,
-} from "@/lib/preferences/layout-utils";
-import { PREFERENCE_DEFAULTS } from "@/lib/preferences/preferences-config";
+import { applyContentLayout, applySidebarCollapsible, applySidebarVariant } from "@/lib/preferences/layout-utils";
 import { persistPreference } from "@/lib/preferences/preferences-storage";
-import { THEME_MODE_OPTIONS, THEME_PRESET_OPTIONS, type ThemeMode, type ThemePreset } from "@/lib/preferences/theme";
-import { applyThemePreset } from "@/lib/preferences/theme-utils";
+import { THEME_MODE_OPTIONS, type ThemeMode } from "@/lib/preferences/theme";
+import { TREE_NAV_TUTORIAL_SEEN_KEY } from "@/lib/preferences/tutorial-keys";
 import { usePreferencesStore } from "@/stores/preferences/preferences-provider";
 
 export function AppearanceSettings() {
+  const copy = useAppCopy();
   const themeMode = usePreferencesStore((s) => s.themeMode);
-  const resolvedThemeMode = usePreferencesStore((s) => s.resolvedThemeMode);
   const setThemeMode = usePreferencesStore((s) => s.setThemeMode);
-  const themePreset = usePreferencesStore((s) => s.themePreset);
-  const setThemePreset = usePreferencesStore((s) => s.setThemePreset);
-  const font = usePreferencesStore((s) => s.font);
-  const setFont = usePreferencesStore((s) => s.setFont);
+  const appLanguage = usePreferencesStore((s) => s.appLanguage);
+  const setAppLanguage = usePreferencesStore((s) => s.setAppLanguage);
   const contentLayout = usePreferencesStore((s) => s.contentLayout);
   const setContentLayout = usePreferencesStore((s) => s.setContentLayout);
   const variant = usePreferencesStore((s) => s.sidebarVariant);
   const setSidebarVariant = usePreferencesStore((s) => s.setSidebarVariant);
   const collapsible = usePreferencesStore((s) => s.sidebarCollapsible);
   const setSidebarCollapsible = usePreferencesStore((s) => s.setSidebarCollapsible);
+  const [isTreeTutorialEnabled, setIsTreeTutorialEnabled] = useState(true);
+
+  useEffect(() => {
+    const tutorialEnabled = window.localStorage.getItem(TREE_NAV_TUTORIAL_SEEN_KEY) !== "1";
+    setIsTreeTutorialEnabled(tutorialEnabled);
+  }, []);
 
   const onThemeModeChange = (mode: ThemeMode | "") => {
     if (!mode) return;
@@ -45,17 +47,11 @@ export function AppearanceSettings() {
     persistPreference("theme_mode", mode);
   };
 
-  const onThemePresetChange = (preset: ThemePreset) => {
-    applyThemePreset(preset);
-    setThemePreset(preset);
-    persistPreference("theme_preset", preset);
-  };
-
-  const onFontChange = (value: FontKey | "") => {
+  const onAppLanguageChange = (value: AppLanguage | "") => {
     if (!value) return;
-    applyFont(value);
-    setFont(value);
-    persistPreference("font", value);
+    applyAppLanguagePreference(value);
+    setAppLanguage(value);
+    persistPreference("app_language", value);
   };
 
   const onContentLayoutChange = (layout: ContentLayout | "") => {
@@ -79,13 +75,23 @@ export function AppearanceSettings() {
     persistPreference("sidebar_collapsible", value);
   };
 
+  const onEnableTreeTutorial = () => {
+    window.localStorage.setItem(TREE_NAV_TUTORIAL_SEEN_KEY, "0");
+    setIsTreeTutorialEnabled(true);
+  };
+
+  const onDisableTreeTutorial = () => {
+    window.localStorage.setItem(TREE_NAV_TUTORIAL_SEEN_KEY, "1");
+    setIsTreeTutorialEnabled(false);
+  };
+
   return (
     <div className="space-y-6">
       {/* Theme */}
       <div className="space-y-4">
         <div className="space-y-1">
-          <Label className="text-sm font-medium">Theme mode</Label>
-          <p className="text-muted-foreground text-xs">Choose between light, dark, or your system default.</p>
+          <Label className="font-medium text-sm">{copy.themeModeLabel}</Label>
+          <p className="text-muted-foreground text-xs">{copy.themeModeDescription}</p>
         </div>
         <ToggleGroup type="single" value={themeMode} onValueChange={onThemeModeChange} className="w-full **:flex-1">
           {THEME_MODE_OPTIONS.map((opt) => (
@@ -96,47 +102,19 @@ export function AppearanceSettings() {
         </ToggleGroup>
       </div>
 
-      {/* Preset */}
       <div className="space-y-4">
         <div className="space-y-1">
-          <Label className="text-sm font-medium">Color preset</Label>
-          <p className="text-muted-foreground text-xs">Change the accent color used across the app.</p>
+          <Label className="font-medium text-sm">{copy.appLanguageLabel}</Label>
+          <p className="text-muted-foreground text-xs">{copy.appLanguageDescription}</p>
         </div>
-        <Select value={themePreset} onValueChange={onThemePresetChange}>
+        <Select value={appLanguage} onValueChange={onAppLanguageChange}>
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select preset" />
+            <SelectValue placeholder={copy.appLanguageLabel} />
           </SelectTrigger>
           <SelectContent>
-            {THEME_PRESET_OPTIONS.map((preset) => (
-              <SelectItem key={preset.value} value={preset.value}>
-                <span
-                  className="size-3 rounded-full"
-                  style={{
-                    backgroundColor:
-                      (resolvedThemeMode ?? "light") === "dark" ? preset.primary.dark : preset.primary.light,
-                  }}
-                />
-                {preset.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Font */}
-      <div className="space-y-4">
-        <div className="space-y-1">
-          <Label className="text-sm font-medium">Font</Label>
-          <p className="text-muted-foreground text-xs">Select the typeface used throughout the app.</p>
-        </div>
-        <Select value={font} onValueChange={onFontChange}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select font" />
-          </SelectTrigger>
-          <SelectContent>
-            {fontOptions.map((f) => (
-              <SelectItem key={f.key} value={f.key}>
-                {f.label}
+            {APP_LANGUAGE_OPTIONS.map((language) => (
+              <SelectItem key={language.value} value={language.value}>
+                {language.label}
               </SelectItem>
             ))}
           </SelectContent>
@@ -146,10 +124,8 @@ export function AppearanceSettings() {
       {/* Layout */}
       <div className="space-y-4">
         <div className="space-y-1">
-          <Label className="text-sm font-medium">Content layout</Label>
-          <p className="text-muted-foreground text-xs">
-            Centered keeps content readable; full width uses all available space.
-          </p>
+          <Label className="font-medium text-sm">{copy.contentLayoutLabel}</Label>
+          <p className="text-muted-foreground text-xs">{copy.contentLayoutDescription}</p>
         </div>
         <ToggleGroup
           type="single"
@@ -168,8 +144,8 @@ export function AppearanceSettings() {
       {/* Sidebar variant */}
       <div className="space-y-4">
         <div className="space-y-1">
-          <Label className="text-sm font-medium">Sidebar style</Label>
-          <p className="text-muted-foreground text-xs">How the sidebar sits within the page.</p>
+          <Label className="font-medium text-sm">{copy.sidebarStyleLabel}</Label>
+          <p className="text-muted-foreground text-xs">{copy.sidebarStyleDescription}</p>
         </div>
         <ToggleGroup type="single" value={variant} onValueChange={onSidebarVariantChange} className="w-full **:flex-1">
           {SIDEBAR_VARIANT_OPTIONS.map((opt) => (
@@ -183,10 +159,8 @@ export function AppearanceSettings() {
       {/* Sidebar collapse */}
       <div className="space-y-4">
         <div className="space-y-1">
-          <Label className="text-sm font-medium">Sidebar collapse mode</Label>
-          <p className="text-muted-foreground text-xs">
-            Icon mode keeps the sidebar visible as icons; offcanvas slides it off-screen.
-          </p>
+          <Label className="font-medium text-sm">{copy.sidebarCollapseLabel}</Label>
+          <p className="text-muted-foreground text-xs">{copy.sidebarCollapseDescription}</p>
         </div>
         <ToggleGroup
           type="single"
@@ -200,6 +174,24 @@ export function AppearanceSettings() {
             </ToggleGroupItem>
           ))}
         </ToggleGroup>
+      </div>
+
+      {/* Tree tutorial */}
+      <div className="space-y-4">
+        <div className="space-y-1">
+          <Label className="font-medium text-sm">Family tree tutorial</Label>
+          <p className="text-muted-foreground text-xs">
+            Current status: {isTreeTutorialEnabled ? "Enabled" : "Disabled"}. This tutorial explains pan and zoom.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" className="w-full sm:w-auto" onClick={onEnableTreeTutorial}>
+            Enable tutorial
+          </Button>
+          <Button variant="ghost" className="w-full sm:w-auto" onClick={onDisableTreeTutorial}>
+            Disable tutorial
+          </Button>
+        </div>
       </div>
     </div>
   );

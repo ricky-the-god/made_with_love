@@ -1,13 +1,12 @@
 import Link from "next/link";
 
-import { Search } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { getPublicFamilies } from "@/server/family-actions";
 import { getPublicRecipes } from "@/server/recipe-actions";
 
 import { RecipeCard } from "../recipes/_components/recipe-card";
+import { DiscoverSearchForm } from "./_components/discover-search-form";
 
 type CulturalCollection = {
   slug: string;
@@ -23,7 +22,18 @@ type DiscoverSearchParams = {
   q?: string | string[];
   recipes?: string | string[];
   traditions?: string | string[];
+  sort?: string | string[];
 };
+
+type DiscoverSort = "newest" | "oldest" | "title-asc" | "title-desc" | "most-reviewed";
+
+const SORT_OPTIONS: Array<{ value: DiscoverSort; label: string }> = [
+  { value: "newest", label: "Newest" },
+  { value: "oldest", label: "Oldest" },
+  { value: "title-asc", label: "Title (A-Z)" },
+  { value: "title-desc", label: "Title (Z-A)" },
+  { value: "most-reviewed", label: "Most reviewed" },
+];
 
 type PublicRecipe = Awaited<ReturnType<typeof getPublicRecipes>>[number];
 
@@ -143,7 +153,13 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
   const q = firstParamValue(resolvedParams.q);
   const recipes = firstParamValue(resolvedParams.recipes);
   const traditions = firstParamValue(resolvedParams.traditions);
-  const publicRecipes = (await getPublicRecipes(50)).map((recipe) => ({
+  const sortParam = firstParamValue(resolvedParams.sort);
+  const sort: DiscoverSort = SORT_OPTIONS.some((option) => option.value === sortParam)
+    ? (sortParam as DiscoverSort)
+    : "newest";
+  const sortLabel = SORT_OPTIONS.find((option) => option.value === sort)?.label ?? "Newest";
+  const [publicFamilies, rawRecipes] = await Promise.all([getPublicFamilies(20), getPublicRecipes(50)]);
+  const publicRecipes = rawRecipes.map((recipe) => ({
     ...recipe,
     family_members: normalizeFamilyMember(recipe),
   }));
@@ -174,7 +190,30 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
         return haystack.includes(query);
       })
     : recipesByRegion;
-  const visibleRecipes = showAllRecipes ? filteredRecipes : filteredRecipes.slice(0, DEFAULT_RECIPE_COUNT);
+  const sortedRecipes = [...filteredRecipes].sort((a, b) => {
+    if (sort === "most-reviewed") {
+      const aReviewCount = Array.isArray(a.recipe_ratings) ? a.recipe_ratings.length : 0;
+      const bReviewCount = Array.isArray(b.recipe_ratings) ? b.recipe_ratings.length : 0;
+      if (bReviewCount !== aReviewCount) return bReviewCount - aReviewCount;
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    }
+
+    if (sort === "oldest") {
+      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+    }
+
+    if (sort === "title-asc") {
+      return a.title.localeCompare(b.title);
+    }
+
+    if (sort === "title-desc") {
+      return b.title.localeCompare(a.title);
+    }
+
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
+
+  const visibleRecipes = showAllRecipes ? sortedRecipes : sortedRecipes.slice(0, DEFAULT_RECIPE_COUNT);
   const visibleTraditions = showAllTraditions
     ? CULTURAL_COLLECTIONS
     : CULTURAL_COLLECTIONS.slice(0, DEFAULT_TRADITION_COUNT);
@@ -184,13 +223,16 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
     nextQuery?: string | null,
     nextRecipes?: string | null,
     nextTraditions?: string | null,
+    nextSort?: DiscoverSort | null,
   ) => {
     const params = new URLSearchParams();
+    const effectiveSort = nextSort ?? sort;
 
     if (nextRegion) params.set("region", nextRegion);
     if (nextQuery) params.set("q", nextQuery);
     if (nextRecipes) params.set("recipes", nextRecipes);
     if (nextTraditions) params.set("traditions", nextTraditions);
+    if (effectiveSort !== "newest") params.set("sort", effectiveSort);
 
     const queryString = params.toString();
     return queryString ? `/dashboard/discover?${queryString}` : "/dashboard/discover";
@@ -208,28 +250,15 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
       {/* Featured editorial story */}
       <FeaturedStoryCard />
 
-      <div className="rounded-2xl border border-amber-100 bg-white/80 p-4 dark:border-amber-900/20 dark:bg-stone-950/60">
-        <form action="/dashboard/discover" className="flex flex-col gap-3 sm:flex-row">
-          {activeCollection && <input type="hidden" name="region" value={activeCollection.slug} />}
-          <div className="relative flex-1">
-            <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              name="q"
-              defaultValue={q ?? ""}
-              placeholder="Search recipes, countries, traditions, or family members"
-              className="pl-9"
-            />
-          </div>
-          <Button type="submit" className="bg-amber-700 text-white hover:bg-amber-800">
-            Search
-          </Button>
-          {(q || activeCollection) && (
-            <Button variant="outline" asChild>
-              <Link href="/dashboard/discover">Reset</Link>
-            </Button>
-          )}
-        </form>
-      </div>
+      <DiscoverSearchForm
+        activeCollectionSlug={region ?? null}
+        q={q ?? null}
+        sort={sort}
+        recipes={recipes ?? null}
+        traditions={traditions ?? null}
+        sortOptions={SORT_OPTIONS}
+        collections={CULTURAL_COLLECTIONS.map((c) => ({ slug: c.slug, region: c.region, emoji: c.emoji }))}
+      />
 
       {/* Shared recipes */}
       <div>
@@ -243,6 +272,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
                 ? `Public recipes connected to ${activeCollection.region.toLowerCase()} food traditions.`
                 : "Recipes families have chosen to open up to the wider community."}
             </p>
+            <p className="mt-1 text-muted-foreground text-xs">Sorted by {sortLabel}.</p>
             {q && <p className="mt-1 text-muted-foreground text-sm">Search results for "{q}".</p>}
           </div>
           {activeCollection && (
@@ -263,7 +293,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
               ))}
             </div>
 
-            {filteredRecipes.length > DEFAULT_RECIPE_COUNT && (
+            {sortedRecipes.length > DEFAULT_RECIPE_COUNT && (
               <div className="mt-5 flex justify-center">
                 <Button variant="outline" asChild>
                   <Link
@@ -277,7 +307,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
                   >
                     {showAllRecipes
                       ? "Show less"
-                      : `See more recipes (${filteredRecipes.length - DEFAULT_RECIPE_COUNT} more)`}
+                      : `See more recipes (${sortedRecipes.length - DEFAULT_RECIPE_COUNT} more)`}
                   </Link>
                 </Button>
               </div>
@@ -297,7 +327,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
       </div>
 
       {/* Food traditions grid */}
-      <div>
+      <div id="food-traditions">
         <h2 className="mb-4 font-semibold text-lg">Food Traditions</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           {visibleTraditions.map((c) => (
@@ -348,15 +378,31 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
       {/* Public family trees */}
       <div>
         <h2 className="mb-4 font-semibold text-lg">Public Family Trees</h2>
-        <div className="flex flex-col items-center justify-center rounded-xl border border-amber-200 border-dashed py-10 dark:border-amber-900/30">
-          <p className="max-w-xs text-center text-muted-foreground text-sm">
-            Public family trees are not live yet, but public recipes are. Start by sharing a recipe with the wider
-            community.
-          </p>
-          <a href="/dashboard/recipes" className="mt-4 text-amber-700 text-sm hover:underline dark:text-amber-400">
-            Go to my recipes →
-          </a>
-        </div>
+        {publicFamilies.length > 0 ? (
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {publicFamilies.map((family) => (
+              <Link
+                key={family.id}
+                href={`/dashboard/discover/family/${family.id}`}
+                className="group block rounded-xl border border-amber-100 bg-amber-50/30 p-5 transition-colors hover:border-amber-300 hover:bg-amber-50/60 dark:border-amber-900/20 dark:bg-amber-950/10 dark:hover:border-amber-800/40"
+              >
+                <div className="mb-2 flex size-10 items-center justify-center rounded-full bg-amber-100 text-xl dark:bg-amber-950/40">
+                  🌳
+                </div>
+                <p className="font-semibold group-hover:text-amber-800 dark:group-hover:text-amber-300">
+                  {family.family_name}
+                </p>
+                <p className="mt-1 text-muted-foreground text-xs">Public family cookbook</p>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center rounded-xl border border-amber-200 border-dashed py-10 dark:border-amber-900/30">
+            <p className="max-w-xs text-center text-muted-foreground text-sm">
+              No public family trees yet. Make your family public from Profile → Family Settings.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

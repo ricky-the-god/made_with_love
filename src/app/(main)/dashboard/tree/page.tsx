@@ -19,9 +19,12 @@ export default async function TreePage() {
 
   // recipe count per member
   const recipeCountByMember: Record<string, number> = {};
+  const recipesByMember: Record<string, { id: string; title: string; is_favorite: boolean }[]> = {};
   for (const recipe of recipes) {
     if (recipe.member_id) {
       recipeCountByMember[recipe.member_id] = (recipeCountByMember[recipe.member_id] ?? 0) + 1;
+      if (!recipesByMember[recipe.member_id]) recipesByMember[recipe.member_id] = [];
+      recipesByMember[recipe.member_id].push({ id: recipe.id, title: recipe.title, is_favorite: recipe.is_favorite });
     }
   }
 
@@ -48,22 +51,24 @@ export default async function TreePage() {
   return (
     <div className="flex h-full flex-col gap-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="font-semibold text-2xl text-foreground">Family Tree</h1>
           <p className="mt-1 text-muted-foreground text-sm">
             Your living family archive — tap a person to explore their recipes and memories.
           </p>
         </div>
-        <Button
-          asChild
-          className="bg-amber-700 text-white hover:bg-amber-800 dark:bg-amber-600 dark:hover:bg-amber-700"
-        >
-          <a href="/dashboard/tree/member/new">
-            <Plus className="size-4" />
-            Add Member
-          </a>
-        </Button>
+        {members.length > 0 && (
+          <Button
+            asChild
+            className="shrink-0 bg-amber-700 text-white hover:bg-amber-800 dark:bg-amber-600 dark:hover:bg-amber-700"
+          >
+            <a href="/dashboard/tree/member/new">
+              <Plus className="size-4" />
+              Add Member
+            </a>
+          </Button>
+        )}
       </div>
 
       {/* Empty state */}
@@ -85,7 +90,12 @@ export default async function TreePage() {
         </div>
       ) : (
         <div className="flex-1 overflow-hidden rounded-2xl border border-amber-100 bg-amber-50/20 dark:border-amber-900/20 dark:bg-amber-950/5">
-          <FamilyTreeCanvas rows={rows} recipeCountByMember={recipeCountByMember} />
+          <FamilyTreeCanvas
+            rows={rows}
+            members={members}
+            recipeCountByMember={recipeCountByMember}
+            recipesByMember={recipesByMember}
+          />
         </div>
       )}
     </div>

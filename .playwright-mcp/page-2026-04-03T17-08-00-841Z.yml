@@ -1,0 +1,104 @@
+- generic [ref=e2]:
+  - main [ref=e4]:
+    - main [ref=e5]:
+      - generic [ref=e8]:
+        - generic [ref=e13]:
+          - generic [ref=e14]:
+            - generic [ref=e15]:
+              - generic [ref=e18]:
+                - button "21st logo 21st" [ref=e20] [cursor=pointer]:
+                  - generic [ref=e21]:
+                    - generic [ref=e23]:
+                      - img "21st logo"
+                    - generic [ref=e25]: 21st
+                    - img
+                - button "Close sidebar" [ref=e27] [cursor=pointer]:
+                  - img
+              - generic [ref=e30]:
+                - img
+                - textbox "Search" [ref=e31] [cursor=pointer]
+                - generic:
+                  - img
+                  - generic: K
+            - generic [ref=e32]:
+              - generic [ref=e35]:
+                - link "Home" [ref=e37] [cursor=pointer]:
+                  - /url: /
+                  - img [ref=e38]
+                  - generic [ref=e41]: Home
+                - generic [ref=e42]:
+                  - heading "Explore" [level=3] [ref=e44]
+                  - generic [ref=e45]:
+                    - button "Components" [ref=e46] [cursor=pointer]:
+                      - img [ref=e47]
+                      - generic [ref=e49]: Components
+                      - img [ref=e51]
+                    - link "Agent Templates" [ref=e53] [cursor=pointer]:
+                      - /url: /community/templates
+                      - img [ref=e54]
+                      - generic [ref=e56]: Agent Templates
+                - generic [ref=e57]:
+                  - heading "Build" [level=3] [ref=e59]
+                  - generic [ref=e60]:
+                    - button "Agents" [ref=e61] [cursor=pointer]:
+                      - img [ref=e62]
+                      - generic [ref=e77]: Agents
+                      - img [ref=e79]
+                    - link "1Code" [ref=e81] [cursor=pointer]:
+                      - /url: /1code
+                      - generic [ref=e82]:
+                        - img [ref=e83]
+                        - img [ref=e85]
+                      - generic [ref=e87]: 1Code
+                      - img [ref=e88]
+                    - link "Magic Chat" [ref=e92] [cursor=pointer]:
+                      - /url: /magic
+                      - img [ref=e93]
+                      - generic [ref=e97]: Magic Chat
+                      - img [ref=e98]
+              - generic [ref=e104]:
+                - generic [ref=e107]:
+                  - generic [ref=e108]:
+                    - generic [ref=e109]: 21st Agents SDK
+                    - paragraph [ref=e110]: The fastest way to build and deploy AI agents.
+                  - link [ref=e111] [cursor=pointer]:
+                    - /url: https://21st.dev/agents
+                  - generic [ref=e112]:
+                    - link [ref=e113] [cursor=pointer]:
+                      - /url: https://21st.dev/agents
+                      - text: Read more
+                    - button [ref=e114] [cursor=pointer]: Dismiss
+                - generic [ref=e117]:
+                  - generic [ref=e118]:
+                    - generic [ref=e119]: We're in YC
+                    - paragraph [ref=e120]: 21st is backed by Y Combinator. Excited for what's ahead!
+                  - link [ref=e121] [cursor=pointer]:
+                    - /url: https://www.ycombinator.com/companies/1code-21stdev
+                  - generic [ref=e122]:
+                    - link "Read more" [ref=e123] [cursor=pointer]:
+                      - /url: https://www.ycombinator.com/companies/1code-21stdev
+                    - button "Dismiss" [ref=e124] [cursor=pointer]
+              - generic [ref=e126]:
+                - generic [ref=e127]:
+                  - button "Toggle theme" [ref=e128] [cursor=pointer]
+                  - button "Settings" [ref=e130] [cursor=pointer]:
+                    - img
+                - button "Log in" [ref=e131] [cursor=pointer]:
+                  - generic [ref=e132]: Log in
+          - button "Toggle Sidebar" [ref=e133] [cursor=pointer]
+        - generic [ref=e136]:
+          - generic [ref=e138]:
+            - generic [ref=e140]:
+              - button "Themes" [ref=e141] [cursor=pointer]
+              - generic [ref=e142]: /
+              - generic [ref=e143]: Loading...
+            - generic [ref=e144]:
+              - generic:
+                - button "Search":
+                  - img
+                  - generic: Search
+                  - generic:
+                    - img
+                    - generic: K
+          - img "21st logo static" [ref=e151]
+  - region "Notifications alt+T"

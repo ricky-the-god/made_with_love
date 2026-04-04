@@ -320,10 +320,10 @@ export function BookOpenModal({ member, recipes, coverColors, onClose, readOnly 
                 <div className="flex flex-col gap-2">
                   {/* Favorites first */}
                   {favoriteRecipes.map((recipe) => (
-                    <RecipeCard key={recipe.id} recipe={recipe} isFavorite memberId={member.id} />
+                    <RecipeCard key={recipe.id} recipe={recipe} isFavorite />
                   ))}
                   {otherRecipes.map((recipe) => (
-                    <RecipeCard key={recipe.id} recipe={recipe} isFavorite={false} memberId={member.id} />
+                    <RecipeCard key={recipe.id} recipe={recipe} isFavorite={false} />
                   ))}
 
                   {/* View all link if more than shown */}

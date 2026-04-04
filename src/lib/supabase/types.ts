@@ -11,7 +11,13 @@ export interface Profile {
   full_name: string | null;
   avatar_url: string | null;
   family_id: string | null;
-  role: UserRole;
+  role: UserRole | null;
+  pref_recipes_private_by_default: boolean;
+  pref_show_in_discover: boolean;
+  pref_show_memorial_public: boolean;
+  pref_notify_invitations: boolean;
+  pref_notify_new_recipe: boolean;
+  pref_notify_new_memory: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -31,6 +37,7 @@ export interface FamilyMember {
   name: string;
   relation: string | null;
   generation: number | null;
+  parent_ids: string[];
   photo_url: string | null;
   bio: string | null;
   country_of_origin: string | null;
@@ -52,6 +59,7 @@ export interface Recipe {
   description: string | null;
   ingredients: string | null;
   steps: string | null;
+  step_images: string | null;
   notes: string | null;
   prep_time: string | null;
   cook_time: string | null;
@@ -103,6 +111,13 @@ export interface FamilyInvitation {
   token: string;
   accepted_at: string | null;
   expires_at: string;
+  created_at: string;
+}
+
+export interface FamilyConnection {
+  id: string;
+  user_id: string;
+  family_id: string;
   created_at: string;
 }
 

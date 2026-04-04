@@ -1,7 +1,9 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import { ChefHat, Edit } from "lucide-react";
 
+import { StarRating } from "@/components/star-rating";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type { FamilyMember, Memory } from "@/lib/supabase/types";
-import { getRecipe } from "@/server/recipe-actions";
+import { getRecipe, getRecipeRating } from "@/server/recipe-actions";
 
 import { AddMemoryForm } from "./_components/add-memory-form";
 import { FavoriteButton } from "./_components/favorite-button";
@@ -22,7 +24,7 @@ import { ShareRecipePanel } from "./_components/share-recipe-panel";
 export default async function RecipeDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  const recipe = await getRecipe(id);
+  const [recipe, ratingData] = await Promise.all([getRecipe(id), getRecipeRating(id)]);
 
   if (!recipe) {
     notFound();
@@ -67,7 +69,9 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
       {/* Hero */}
       <div className="mb-6 overflow-hidden rounded-2xl border border-amber-100 bg-amber-50/30 dark:border-amber-900/20 dark:bg-amber-950/10">
         {recipe.image_url ? (
-          <img src={recipe.image_url} alt={recipe.title} className="aspect-[3/1] w-full object-cover" />
+          <div className="relative aspect-[3/1] w-full">
+            <Image src={recipe.image_url} alt={recipe.title} fill className="object-cover" unoptimized />
+          </div>
         ) : (
           <div className="aspect-[3/1] bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900/20 dark:to-amber-800/20" />
         )}
@@ -115,6 +119,14 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
               {recipe.servings && <span>{recipe.servings} servings</span>}
             </div>
           )}
+
+          <StarRating
+            className="mt-4"
+            recipeId={recipe.id}
+            myRating={ratingData.myRating}
+            average={ratingData.average}
+            count={ratingData.count}
+          />
         </div>
       </div>
 
